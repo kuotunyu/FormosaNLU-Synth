@@ -9,11 +9,14 @@ description: FormosaNLU（03-formosanlu-sdg）專案的脈絡恢復與工作慣�
 
 ---
 
-## 1. 恢復脈絡（每次回來先做這三步）
+## 1. 恢復脈絡（每次回來先做這幾步）
 
+0. 先看 `docs/HANDOFF.md` 的 **📌 早晨摘要** —— 如果昨晚有 agent 獨自跑過，這裡有做到哪、卡在哪、需要使用者決定什麼。沒有夜間執行就跳過。
 1. 讀 `CLAUDE.md` —— 規則。三段原文是使用者指定的，逐字保留不得改寫；`<!-- added -->` 標記的是補充條款。
 2. 讀 `PLAN.md` 的 **📍 狀態區塊** —— 現在在哪個里程碑、下一步是什麼、**球在誰身上**、累計成本、有沒有阻塞。
 3. 讀 `docs/DECISIONS.md` —— 為什麼當初這樣決定。**不要重新爭論已標 `accepted` 的事**；要推翻就照每筆的「什麼情況該推翻」欄判斷，並新增一筆 D-XXX 標記舊的為 `superseded`。
+
+> 🌙 **要在無人監督下執行**（使用者睡覺時）：改讀 `docs/AUTONOMOUS_RUN.md`，那是授權書兼守則。
 
 技術細節：**Phase 1**（recipe 規格、過濾關卡、實驗矩陣、指標定義）在 `docs/DESIGN.md`；**Phase 2**（訓練、評測、demo、發佈）在 `docs/DESIGN_PHASE2.md`。需要使用者動手的事在 `docs/instructions_for_me.md`。
 

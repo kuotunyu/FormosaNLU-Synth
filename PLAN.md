@@ -1,16 +1,20 @@
 # PLAN.md — FormosaNLU 里程碑與驗證
 
+> 🌙 **無人監督執行時，先讀 [`docs/AUTONOMOUS_RUN.md`](docs/AUTONOMOUS_RUN.md)。** 那份是夜間執行的授權書與守則：預先授權範圍、卡住時的改道協定、pilot 放行門檻、硬性禁止事項、交接報告格式。
+> 進度與問題寫進 [`docs/HANDOFF.md`](docs/HANDOFF.md)。
+
 ## 📍 狀態區塊（每次收尾都要更新）
 
 | 項目 | 現況 |
 |---|---|
 | **最後更新** | 2026-07-27 |
-| **目前里程碑** | **M-1 文件層建置**（Phase 1 + Phase 2 文件皆已完成，待 commit） |
-| **下一步動作** | commit → 明天從 **M0** 開始施工 |
-| **球在誰身上** | 我（commit 後換使用者決定 M0 的模型下載） |
+| **目前里程碑** | **M-1 文件層建置**（完成，含夜間執行守則） |
+| **下一步動作** | 夜間 agent 從 **M0** 開始，一路做到 **M8 零樣本 baseline** |
+| **球在誰身上** | 夜間 agent |
 | **累計 GPU 時數** | 0 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | M0 會問：是否 pull `qwen3:30b`(19GB) / `gpt-oss:20b`(14GB)、`OLLAMA_MODELS` 是否改指 D: 槽；M8 會問：是否下載 `google/gemma-4-E4B-it` |
+| **待決事項** | 無阻塞。M0/M2/M4/M8 的閘門已由 D-009 預先授權，判準寫在 `docs/AUTONOMOUS_RUN.md` §3–§4 |
+| **今晚範圍** | M0 → M8 零樣本。**M9 訓練批次明確排除**（留給明晚，須先看過 M8 結果） |
 | **阻塞項** | 無 |
 
 ---
@@ -31,6 +35,9 @@
 | M-1.10 | `docs/instructions_for_me.md`（Colab／HF／GitHub 往返 SOP 骨架） | 每個「請你做」的步驟都有預期耗時與成功確認方式的欄位 | ☑ |
 | M-1.11 | D-006 / D-007 / D-008 落地到 CLAUDE.md、DESIGN.md、README、SKILL | 各檔案交叉引用一致；CLAUDE.md 對原文的例外有明確標註 | ☑ |
 | M-1.12 | initial commit（**不帶 `Co-Authored-By`**） | `git log --format=%b` 不含任何 co-author trailer；`git status` 乾淨 | ☑ |
+| M-1.13 | `docs/AUTONOMOUS_RUN.md`（夜間執行守則：授權、改道協定、放行門檻、禁止事項） | §5 相依表涵蓋 M0–M8；§4 門檻皆為可計算的數字，非主觀判斷 | ☑ |
+| M-1.14 | `docs/HANDOFF.md`（早晨交接報告骨架） | 含早晨摘要、執行日誌、里程碑快照三區塊 | ☑ |
+| M-1.15 | `.claude/settings.json`（權限 allowlist + `attribution.commit: ""`） | JSON 通過解析；allow/deny 規則數已核對；co-author trailer 由 harness 層擋掉 | ☑ |
 
 ---
 
@@ -43,8 +50,8 @@
 | `uv` venv + `requirements.txt` + `uv.lock` | `uv pip sync` 在乾淨 venv 成功 |
 | `scripts/check_env.py` 環境健檢 | 全綠：nvidia-smi 看到 4090、python、uv、git、git-lfs、Ollama 服務、磁碟餘裕、`../.env` 中各 key **只印有/無** |
 | `src/**/__init__.py` 套件化 | `python -m src.data` 可 import 不報錯 |
-| Ollama 設定（`OLLAMA_MODELS` 位置、`NUM_PARALLEL`、`CONTEXT_LENGTH`） | `ollama list` 可見；設定值寫進 `configs/ollama.yaml` |
-| **模型 pull** | ⚠️ **停下來問使用者**（19GB / 14GB 都超過 2GB 門檻） |
+| Ollama 設定（`NUM_PARALLEL`、`CONTEXT_LENGTH`） | `ollama list` 可見；設定值寫進 `configs/ollama.yaml`。**`OLLAMA_MODELS` 維持預設不搬**（C: 餘裕足夠，搬遷屬系統層變更） |
+| **模型 pull** | ✅ **已預先授權**（D-009）。下載前檢查磁碟：若下載後 C: 低於 100GB 則停止並寫 `docs/HANDOFF.md` |
 
 ### M1 · 資料稽核 + split 凍結
 
@@ -55,13 +62,13 @@
 | `src/data/normalize.py`（去空白、全半形、繁簡正規化） | 單元測試：對稽核發現的每種形態各有一個 case |
 | `splits/manifest.json`（seed=42、來源 SHA256、每組 id 清單、**真實筆數**） | `python -m src.data.freeze_split --verify` 重跑得到**完全相同**的 SHA256 |
 
-### M2 · Teacher / Judge 決策 → ⛔ 需使用者核可
+### M2 · Teacher / Judge 決策 → 🤖 自動定案（D-009）
 
 | 交付物 | 驗證方法 |
 |---|---|
 | `docs/teacher_choice.md` | 含：Gemini ToS **原文引用 + 生效日**、三條路線比較表（本機／雲端開放權重／封閉 API）、授權矩陣、本機吞吐實測數字、judge 換家族的理由、**升級條款**（pilot 品質不足時才考慮雲端開放權重 API，需另行核可） |
 | 本機吞吐實測 | 用 20 筆真實 seed 實測 tokens/s、VRAM 峰值、`NUM_PARALLEL` 掃描結果，數字進報告 |
-| **使用者點頭** | 沒點頭不得進 M3 |
+| **自動定案** | 依 `docs/AUTONOMOUS_RUN.md` §3 的候選條件與退場順序選定，理由與實測數字寫滿報告，**早上由使用者 review**（換 teacher 只需重跑生成，程式不用改） |
 
 ### M3 · Recipes 與 prompt 版本管理
 
@@ -72,14 +79,14 @@
 | 4 個 recipe + `prompts/*.md`（帶版本號） | — |
 | `reports/m3_recipe_samples.md` | **每 recipe 各 5 筆 dry-run 樣本貼出來給使用者看**，兩種 `style` 都要有 |
 
-### M4 · 生成器 + Pilot → ⛔ 需使用者核可
+### M4 · 生成器 + Pilot → 🤖 門檻自動放行（D-009）
 
 | 交付物 | 驗證方法 |
 |---|---|
 | `src/synthetic/generate.py`（async、Ollama structured output、**斷點續跑**、`logs/cost.json`） | 故意中斷後重跑，不重複、不漏、不覆蓋既有結果 |
 | 500 筆 pilot | — |
 | `reports/pilot_report.md` | 含：prompt/output tokens、吞吐、GPU 時數、JSON 合格率、filter 接受率、每筆 accepted 的 GPU 秒數、**全量時數預估**、品質抽樣觀察 |
-| **使用者點頭** | 沒點頭不得進 M6 全量 |
+| **自動放行判定** | 依 `docs/AUTONOMOUS_RUN.md` §4 的**六道門檻**，全部達標才進 M6 全量；任一項不達標就停下、寫 `docs/HANDOFF.md`、改做 M5 或 M8。**門檻不准為了放行而調降** |
 
 ### M5 · 品質過濾
 
@@ -113,17 +120,19 @@
 > 技術設計在 **`docs/DESIGN_PHASE2.md`**。原始 Phase 2 prompt 與本專案鐵律有四處矛盾，全部在該文件 §0 記載了「prompt 說什麼、我們採用什麼、為什麼」。
 > Student = `google/gemma-4-E4B-it`（D-007）；訓練以**本機 4090** 為主（D-006）。
 
-### M8 · 訓練管線 + 零樣本 baseline → ⛔ 可能需使用者核可
+### M8 · 訓練管線 + 零樣本 baseline → 🌙 今晚的終點
 
 | 交付物 | 驗證方法 |
 |---|---|
 | 超參查證（LoRA rank/alpha/target_modules、lr、scheduler、seq len、`max_steps`） | 上網查證當前建議後定案，寫進 `configs/train.yaml`；**六組共用同一份** |
 | `src/training/train.py` + `prompt_template.py`（帶版本號） | 1-step smoke test 在本機跑通；訓練與推論兩端用**完全相同**的模板 |
 | `src/training/train_all.py` / `scripts/train_all.py` 批次入口 | 故意中斷後 `resume_from_checkpoint` 能正確續跑（**開跑前必須先驗過**，R-13） |
-| 下載 `google/gemma-4-E4B-it` | ⚠️ **先問使用者**；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
+| 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
 | **零樣本 baseline**（未微調 base model 跑真實 Test） | `reports/m8_zeroshot_baseline.md`。**閘門**：若 JSON 完全不成形或 intent accuracy 接近亂猜（1/60≈1.7%），**停下來回報使用者**，考慮換回 `Qwen3-4B-Instruct-2507`（R-9） |
 
-### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證
+### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🚫 **無人監督時不得執行**
+
+> 5–8 小時的批次要先讓使用者看過 M8 的零樣本結果（那是 R-9 的閘門）才開跑。夜間 agent 做到 M8 就收工。
 
 | 交付物 | 驗證方法 |
 |---|---|

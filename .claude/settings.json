@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "env": {
+    "PYTHONUTF8": "1",
+    "PYTHONIOENCODING": "utf-8"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(uv *)",
+      "Bash(uvx *)",
+      "Bash(pip install *)",
+      "Bash(pip list*)",
+      "Bash(pip show *)",
+      "Bash(pip freeze*)",
+      "Bash(pytest*)",
+      "Bash(ruff *)",
+
+      "Bash(git status*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(git check-ignore *)",
+      "Bash(git ls-files*)",
+      "Bash(git config --get *)",
+      "Bash(git rev-parse*)",
+
+      "Bash(ollama list*)",
+      "Bash(ollama ps*)",
+      "Bash(ollama pull *)",
+      "Bash(ollama show *)",
+      "Bash(ollama stop *)",
+      "Bash(ollama run *)",
+
+      "Bash(huggingface-cli download *)",
+      "Bash(huggingface-cli whoami*)",
+      "Bash(hf download *)",
+      "Bash(hf whoami*)",
+
+      "Bash(nvidia-smi*)",
+      "Bash(ls *)",
+      "Bash(ls)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(echo *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(du *)",
+      "Bash(df *)",
+      "Bash(which *)",
+
+      "PowerShell(Get-PSDrive*)",
+      "PowerShell(Get-ChildItem*)",
+      "PowerShell(Get-Command*)",
+      "PowerShell(Test-Path*)"
+    ],
+    "deny": [
+      "Read(../.env)",
+      "Read(**/.env)",
+      "Read(**/*.env)",
+      "Bash(cat *.env*)",
+      "Bash(cat ../.env*)",
+      "Bash(type *.env*)",
+
+      "Bash(git push*)",
+      "Bash(git remote*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean*)",
+      "Bash(git checkout -- *)",
+      "Bash(git filter-repo*)",
+      "Bash(git rebase*)",
+      "Bash(git commit --amend*)",
+      "Bash(gh *)",
+
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(rm -f *)",
+      "Bash(rmdir *)",
+      "PowerShell(Remove-Item*)",
+
+      "Bash(huggingface-cli upload*)",
+      "Bash(huggingface-cli repo*)",
+      "Bash(hf upload*)",
+      "Bash(hf repo*)",
+      "Bash(ollama rm*)",
+      "Bash(ollama push*)",
+
+      "PowerShell(Set-ExecutionPolicy*)",
+      "PowerShell(*SetEnvironmentVariable*)",
+      "Bash(setx *)"
+    ]
+  }
+}
