@@ -1,0 +1,57 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.python-version
+
+# ---- Tooling caches ----
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+
+# ---- Secrets (the shared .env lives OUTSIDE this repo, at ../.env) ----
+.env
+.env.*
+!.env.example
+*credentials*
+*secret*
+*.pem
+*.key
+
+# ---- Data & artifacts (regenerable; never commit) ----
+data/
+runs/
+results/
+logs/
+outputs/
+*.ckpt
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+*.parquet
+*.arrow
+
+# NOTE: splits/ and reports/ ARE tracked on purpose.
+# The frozen split manifest and the milestone reports are part of the
+# reproducibility claim and must live in git.
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

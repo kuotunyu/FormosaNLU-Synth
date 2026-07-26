@@ -1,0 +1,196 @@
+# PLAN.md — FormosaNLU 里程碑與驗證
+
+## 📍 狀態區塊（每次收尾都要更新）
+
+| 項目 | 現況 |
+|---|---|
+| **最後更新** | 2026-07-27 |
+| **目前里程碑** | **M-1 文件層建置**（Phase 1 + Phase 2 文件皆已完成，待 commit） |
+| **下一步動作** | commit → 明天從 **M0** 開始施工 |
+| **球在誰身上** | 我（commit 後換使用者決定 M0 的模型下載） |
+| **累計 GPU 時數** | 0 h |
+| **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
+| **待決事項** | M0 會問：是否 pull `qwen3:30b`(19GB) / `gpt-oss:20b`(14GB)、`OLLAMA_MODELS` 是否改指 D: 槽；M8 會問：是否下載 `google/gemma-4-E4B-it` |
+| **阻塞項** | 無 |
+
+---
+
+## Phase 0 — 文件層（本次）
+
+| # | 交付物 | 驗證方法 | ✔ |
+|---|---|---|---|
+| M-1.1 | 目錄骨架 + 本機 `git init`（不建 remote，D-005） | `find` 對照清單；`git status` | ☑ |
+| M-1.2 | `CLAUDE.md`（三段原文逐字保留 + 標記補充） | 與使用者原始訊息逐字比對 | ☑ |
+| M-1.3 | `PLAN.md`（本檔，每項驗證方法非空） | 目視每列「驗證方法」欄 | ☑ |
+| M-1.4 | `docs/DESIGN.md` | Known Risks 涵蓋 R-1~R-4 + 三項細部風險 | ☑ |
+| M-1.5 | `docs/DECISIONS.md`（D-001~D-005） | 每筆有「考慮過的選項」與「理由」 | ☑ |
+| M-1.6 | `docs/teacher_choice.md` / `docs/data_card.md` 骨架 | 章節標題齊全、`FILL AT Mx` 標記清楚 | ☑ |
+| M-1.7 | `.claude/skills/formosanlu/SKILL.md` | `/formosanlu` 能喚起、內容可讓人三分鐘接回脈絡 | ☑ |
+| M-1.8 | `.gitignore` / `.gitattributes` / `LICENSE` / `README.md` 骨架 | `git check-ignore` 確認 `data/` `logs/` `.env` 被擋 | ☑ |
+| M-1.9 | `docs/DESIGN_PHASE2.md`（Phase 2 完整技術設計） | §0 四處與原 prompt 的差異都有「採用什麼、為什麼」；§11 Known Risks 涵蓋 R-9~R-15 | ☑ |
+| M-1.10 | `docs/instructions_for_me.md`（Colab／HF／GitHub 往返 SOP 骨架） | 每個「請你做」的步驟都有預期耗時與成功確認方式的欄位 | ☑ |
+| M-1.11 | D-006 / D-007 / D-008 落地到 CLAUDE.md、DESIGN.md、README、SKILL | 各檔案交叉引用一致；CLAUDE.md 對原文的例外有明確標註 | ☑ |
+| M-1.12 | initial commit（**不帶 `Co-Authored-By`**） | `git log --format=%b` 不含任何 co-author trailer；`git status` 乾淨 | ☑ |
+
+---
+
+## Phase 1 — 合成資料管線（本機、無 API 成本）
+
+### M0 · 環境與骨架
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `uv` venv + `requirements.txt` + `uv.lock` | `uv pip sync` 在乾淨 venv 成功 |
+| `scripts/check_env.py` 環境健檢 | 全綠：nvidia-smi 看到 4090、python、uv、git、git-lfs、Ollama 服務、磁碟餘裕、`../.env` 中各 key **只印有/無** |
+| `src/**/__init__.py` 套件化 | `python -m src.data` 可 import 不報錯 |
+| Ollama 設定（`OLLAMA_MODELS` 位置、`NUM_PARALLEL`、`CONTEXT_LENGTH`） | `ollama list` 可見；設定值寫進 `configs/ollama.yaml` |
+| **模型 pull** | ⚠️ **停下來問使用者**（19GB / 14GB 都超過 2GB 門檻） |
+
+### M1 · 資料稽核 + split 凍結
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `src/data/load_massive.py`（含 R-3 的四條 fallback） | 實際載入成功，成功路徑寫死並註明在 README |
+| `reports/m1_data_audit.md` + 圖表 | 必答：`utt`/`annot_utt` 的**空白分詞實況**、slot value 是否為 `utt` 的連續子字串（比例）、每 intent 樣本數分佈、slot type 分佈、有 slot 的句子佔比。圖表**我自己打開看過** |
+| `src/data/normalize.py`（去空白、全半形、繁簡正規化） | 單元測試：對稽核發現的每種形態各有一個 case |
+| `splits/manifest.json`（seed=42、來源 SHA256、每組 id 清單、**真實筆數**） | `python -m src.data.freeze_split --verify` 重跑得到**完全相同**的 SHA256 |
+
+### M2 · Teacher / Judge 決策 → ⛔ 需使用者核可
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `docs/teacher_choice.md` | 含：Gemini ToS **原文引用 + 生效日**、三條路線比較表（本機／雲端開放權重／封閉 API）、授權矩陣、本機吞吐實測數字、judge 換家族的理由、**升級條款**（pilot 品質不足時才考慮雲端開放權重 API，需另行核可） |
+| 本機吞吐實測 | 用 20 筆真實 seed 實測 tokens/s、VRAM 峰值、`NUM_PARALLEL` 掃描結果，數字進報告 |
+| **使用者點頭** | 沒點頭不得進 M3 |
+
+### M3 · Recipes 與 prompt 版本管理
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `src/synthetic/schema.py`（Pydantic，供 Ollama `format` 用） | `model_json_schema()` 產出可被 Ollama 接受 |
+| `src/synthetic/labels.py`（60 intents / 55 slot types 凍結常數） | 與 `splits/manifest.json` 記載的 label set 完全一致 |
+| 4 個 recipe + `prompts/*.md`（帶版本號） | — |
+| `reports/m3_recipe_samples.md` | **每 recipe 各 5 筆 dry-run 樣本貼出來給使用者看**，兩種 `style` 都要有 |
+
+### M4 · 生成器 + Pilot → ⛔ 需使用者核可
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `src/synthetic/generate.py`（async、Ollama structured output、**斷點續跑**、`logs/cost.json`） | 故意中斷後重跑，不重複、不漏、不覆蓋既有結果 |
+| 500 筆 pilot | — |
+| `reports/pilot_report.md` | 含：prompt/output tokens、吞吐、GPU 時數、JSON 合格率、filter 接受率、每筆 accepted 的 GPU 秒數、**全量時數預估**、品質抽樣觀察 |
+| **使用者點頭** | 沒點頭不得進 M6 全量 |
+
+### M5 · 品質過濾
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `src/filtering/` 七道關卡（見 DESIGN.md） | `tests/` **每道關卡各有 pass 與 fail 案例**，`pytest` 全綠 |
+| `src/filtering/decontaminate.py`（隔離、只排除、留 log） | 稽核 log 有被刪樣本 id + 相似度 + 對到的 Test id |
+| filtered / unfiltered 雙版本 + 每筆 provenance | schema 驗證：provenance 欄位無缺漏 |
+| pilot 資料的漏斗表 | 各階段刪除數加總 = 生成數 − 最終數（對得起來） |
+
+### M6 · 全量生成 + 過濾
+
+| 交付物 | 驗證方法 |
+|---|---|
+| filtered 8,000–10,000 筆 | 實際筆數進報表；不足就分析原因不硬湊 |
+| `reports/generation_report.md` | 漏斗圖 + 總帳（GPU 時數／電費估算／等值 API 成本）＋去汙染稽核 log 摘要 |
+| `data/formosa_synth_v1/{filtered,unfiltered}/` | 抽 20 筆人工目視，記進報告（抽查觀察，非逐筆標註） |
+
+### M7 · 收尾
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `docs/data_card.md` 草稿（方法、teacher、授權、限制） | 文件完整性自查表 |
+| PLAN 勾選 + 狀態區塊更新 + `git commit` | `git status` 乾淨 |
+| 「換你做」清單 | 交付給使用者 |
+
+---
+
+## Phase 2 — 微調 / 評測 / Demo / 發佈
+
+> 技術設計在 **`docs/DESIGN_PHASE2.md`**。原始 Phase 2 prompt 與本專案鐵律有四處矛盾，全部在該文件 §0 記載了「prompt 說什麼、我們採用什麼、為什麼」。
+> Student = `google/gemma-4-E4B-it`（D-007）；訓練以**本機 4090** 為主（D-006）。
+
+### M8 · 訓練管線 + 零樣本 baseline → ⛔ 可能需使用者核可
+
+| 交付物 | 驗證方法 |
+|---|---|
+| 超參查證（LoRA rank/alpha/target_modules、lr、scheduler、seq len、`max_steps`） | 上網查證當前建議後定案，寫進 `configs/train.yaml`；**六組共用同一份** |
+| `src/training/train.py` + `prompt_template.py`（帶版本號） | 1-step smoke test 在本機跑通；訓練與推論兩端用**完全相同**的模板 |
+| `src/training/train_all.py` / `scripts/train_all.py` 批次入口 | 故意中斷後 `resume_from_checkpoint` 能正確續跑（**開跑前必須先驗過**，R-13） |
+| 下載 `google/gemma-4-E4B-it` | ⚠️ **先問使用者**；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
+| **零樣本 baseline**（未微調 base model 跑真實 Test） | `reports/m8_zeroshot_baseline.md`。**閘門**：若 JSON 完全不成形或 intent accuracy 接近亂猜（1/60≈1.7%），**停下來回報使用者**，考慮換回 `Qwen3-4B-Instruct-2507`（R-9） |
+
+### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證
+
+| 交付物 | 驗證方法 |
+|---|---|
+| 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | 六份 `config.snapshot.yaml` 逐項比對**完全一致**（只有 group 與 seed 不同，R-10） |
+| `real_only` 與最佳 filtered 組補到 3 seeds（合計約 10 runs） | 每個 run 有 `metrics.jsonl`、`adapter/`、`env.json` |
+| 過夜批次（估 5–8 h） | 單組失敗不影響其他組；中斷後可續跑 |
+| `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | 在 Colab **實跑一組**（約 1.5h units），結果放 `results/colab/`，與本機同組比對可攜性（不要求逐位元一致，R-14） |
+| `docs/instructions_for_me.md` 的 Colab 章節填實 | 每步有預期耗時與成功確認方式 |
+
+### M10 · 評測
+
+| 交付物 | 驗證方法 |
+|---|---|
+| `src/evaluation/`（`run_inference` / `parse` / `metrics` / `probe` / `report`）+ `scripts/eval.py` CLI | `metrics.py` 的正規化**必須 import `src/data/normalize.py`**（與過濾 F3 同一份）；`tests/` 有指標的已知答案案例 |
+| **主表七行**（零樣本 + 六組）× 全指標 | 含每組的「最佳 checkpoint step／epoch／真實樣本曝光次數」；**JSON-invalid 樣本計為全錯，不得剔除出分母** |
+| 差距補回率 | 同時報絕對差值；分母過小時標註「此比率不可靠」（R-11） |
+| per-intent 進步排序 | 最進步與**退步最多**都要列（退步的通常最能說明失敗模式） |
+| Robustness 探測集 | 由 `src/synthetic/recipes/noise.py` 施加於真實 Test；標明**輔助分析非主指標**；**不回流訓練** |
+| 效能表 | tokens/s、VRAM 峰值、單筆 latency |
+| **不使用 constrained decoding** | code review 確認：JSON-valid rate 是要量的指標，強制合法會讓它恆等 100% |
+
+### M11 · Gradio demo
+
+| 交付物 | 驗證方法 |
+|---|---|
+| 本機 Gradio：輸入繁中句 → intent / slots / 原始 JSON / latency | 併列**微調前 vs 微調後**同一句的輸出 |
+| 預載示範句，含一組易混淆 minimal pair | 例：「播放周杰倫」vs「搜尋周杰倫的歌」，直接展示 hard negative recipe 的效果 |
+| README GIF | **自己錄自己打開看過** |
+
+### M12 · README + 數字誠實性
+
+| 交付物 | 驗證方法 |
+|---|---|
+| README 依 D-008 排版（主標＝差距補回率 → 過濾管線價值 → $0/4090 → robustness 輔助） | 骨架順序符合 `docs/DESIGN_PHASE2.md` §7 |
+| 方法流程圖、資料漏斗圖、七行主表、資源總帳、Limitations（含負面結果） | 圖表**自己打開看過** |
+| `scripts/verify_readme.py` | 跑給使用者看：README 每個數字都能從 `runs/*/metrics.jsonl` 與 `reports/` 重算 |
+| 選配 roadmap 段落（台灣知識蒸餾 + TMMLU+ / twinkle-eval） | **只寫文字，不實作** |
+
+### M13 · 發佈前總驗收 → 發佈 → ⛔ 需使用者核可
+
+| 交付物 | 驗證方法 |
+|---|---|
+| 重現性 | 全新虛擬環境照 README 的 Reproduce 走一遍（訓練步驟用縮小規模驗流程） |
+| 數字誠實性 | `verify_readme.py` 全綠 |
+| 防洩漏自查 | 確認生成管線與過濾器從未讀 Test；`src/synthetic/` 的 import 稽核；split manifest / seed / SHA256 齊全且與實際一致；去汙染 log 完整 |
+| 授權相容性 | 資料集（MASSIVE CC BY 4.0 + teacher Apache-2.0）／adapter（Apache-2.0）／程式碼（MIT）標註齊全 |
+| 安全掃描 | 全 repo 掃 API key、個人絕對路徑、個資 |
+| HF 上傳 | dataset `steven0226/formosa-nlu-synth-v1`、model `steven0226/gemma-4-e4b-formosanlu-lora`，雙語 card |
+| GitHub | 此時才 `gh repo create kuotunyu/03-formosanlu-sdg`（先 private，D-005）；**commit 不帶 `Co-Authored-By`** |
+| 一頁驗收報告 | 通過項／修正項／殘留風險；**使用者說 OK 才轉 public** |
+
+### Phase 2 資源預估
+
+| 項目 | 估計 |
+|---|---|
+| 本機 GPU（10 runs） | 5–8 小時，過夜批次 |
+| Colab units | 約 1.5 小時（只驗證一組），其餘配額留給專案一、二 |
+| API 花費 | **$0** |
+
+---
+
+## 專案 skill 增建排程
+
+| 時機 | Skill | 內容 |
+|---|---|---|
+| 本次 | `formosanlu` | 恢復脈絡、目錄地圖、慣例、收尾 checklist |
+| M4 後 | `formosanlu-generate` | 生成／斷點續跑／記帳 SOP，Ollama 調參與 OOM 退場 |
+| M5 後 | `formosanlu-filter` | 七道關卡、漏斗報表、去汙染稽核 SOP |
+| M8 後 | `formosanlu-train` | 訓練批次 SOP、`runs/` 目錄契約、斷點續跑、六組超參一致性檢查、Colab 往返 |
+| M10 後 | `formosanlu-eval` | 評測 harness、主表重算、圖表產製、數字誠實性驗證 |
