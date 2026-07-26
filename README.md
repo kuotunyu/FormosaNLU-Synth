@@ -154,7 +154,8 @@ Full design: [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ```bash
 # 1. Environment
-uv venv && uv pip sync requirements.txt
+uv venv
+uv pip sync requirements.txt
 python -m scripts.check_env
 
 # 2. Freeze the split manifest (must reproduce the same SHA256)
@@ -182,6 +183,11 @@ python -m scripts.verify_readme
 
 A Colab notebook (`notebooks/01_sft_student.ipynb`) wraps the same training code
 for portability; one group was actually run there to prove it works.
+
+MASSIVE is loaded from the three targeted
+`refs/convert/parquet/zh-TW/<split>/0000.parquet` shards. This avoids the
+removed upstream loading script and prevents the converted repository's
+`default` configuration from materializing every locale.
 
 <!-- FILL AT M13: confirm a clean venv walks this end to end -->
 
