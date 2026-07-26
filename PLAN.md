@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 04:26 +08:00 |
-| **目前里程碑** | **M8 訓練管線骨架 + 零樣本 baseline**（依夜間改道規則） |
-| **下一步動作** | M4/M5 因 BGE-M3 權重授權停在 F5/F6；先完成不相依的 Gemma 4 零樣本評測 |
+| **最後更新** | 2026-07-27 04:44 +08:00 |
+| **目前里程碑** | **M8 訓練骨架 + 零樣本 baseline**（管線完成；PyTorch DLL 阻塞） |
+| **下一步動作** | 使用者在場時修復 `c10.dll` WinError 1114，先跑 one-step smoke |
 | **球在誰身上** | 夜間 agent |
 | **累計 GPU 時數** | 0.292 h（M2 + M3 + M4 teacher pilot + 兩輪 judge；不含未計時 warmup） |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | 需使用者核可下載 `BAAI/bge-m3` 約 2.27GB 必要權重，才能校準 F5/F6 |
+| **待決事項** | 核可 BGE-M3 約 2.27GB 權重；修復 Windows PyTorch DLL runtime |
 | **今晚範圍** | M0 → M8 零樣本。**M9 訓練批次明確排除**（留給明晚，須先看過 M8 結果） |
-| **阻塞項** | M4 gate #3/#6 尚無 F5/F6；現行 18k wall 投影 6.44h，M6 未放行 |
+| **阻塞項** | M4 gate #3/#6 缺 F5/F6；18k 投影 6.44h；M8 baseline 未能執行 |
 
 ---
 
@@ -120,7 +120,7 @@
 > 技術設計在 **`docs/DESIGN_PHASE2.md`**。原始 Phase 2 prompt 與本專案鐵律有四處矛盾，全部在該文件 §0 記載了「prompt 說什麼、我們採用什麼、為什麼」。
 > Student = `google/gemma-4-E4B-it`（D-007）；訓練以**本機 4090** 為主（D-006）。
 
-### M8 · 訓練管線 + 零樣本 baseline → 🌙 今晚的終點
+### M8 · 訓練管線 + 零樣本 baseline 🛑 管線完成，runtime 阻塞
 
 | 交付物 | 驗證方法 |
 |---|---|
@@ -128,7 +128,7 @@
 | `src/training/train.py` + `prompt_template.py`（帶版本號） | 1-step smoke test 在本機跑通；訓練與推論兩端用**完全相同**的模板 |
 | `src/training/train_all.py` / `scripts/train_all.py` 批次入口 | 故意中斷後 `resume_from_checkpoint` 能正確續跑（**開跑前必須先驗過**，R-13） |
 | 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
-| **零樣本 baseline**（未微調 base model 跑真實 Test） | `reports/m8_zeroshot_baseline.md`。**閘門**：若 JSON 完全不成形或 intent accuracy 接近亂猜（1/60≈1.7%），**停下來回報使用者**，考慮換回 `Qwen3-4B-Instruct-2507`（R-9） |
+| **零樣本 baseline**（未微調 base model 跑真實 Test） | harness 與 blocked report 已完成；PyTorch `c10.dll` WinError 1114，metrics=`null`，沒有假造結果或偷換模型 |
 
 ### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🚫 **無人監督時不得執行**
 

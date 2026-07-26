@@ -1,0 +1,52 @@
+schema_version: 1
+model:
+  hub_id: "google/gemma-4-E4B-it"
+  local_path: "data/models/gemma-4-E4B-it"
+  class: "Gemma4ForCausalLM"
+  text_only: true
+  prompt_template_version: "formosanlu_nlu.v1"
+
+quantization:
+  load_in_4bit: true
+  quant_type: "nf4"
+  double_quant: true
+  compute_dtype: "bfloat16"
+
+lora:
+  rank: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: "all-linear"
+  bias: "none"
+
+training:
+  learning_rate: 0.0002
+  scheduler: "cosine"
+  warmup_ratio: 0.03
+  max_length: 512
+  max_steps: 500
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  effective_batch_size: 16
+  eval_steps: 25
+  save_steps: 25
+  logging_steps: 5
+  seed: 42
+  bf16: true
+  optimizer: "adamw_8bit"
+  gradient_checkpointing: true
+  completion_only_loss: true
+
+inference:
+  max_new_tokens: 128
+  do_sample: false
+  batch_size: 1
+  include_label_catalog_for_zero_shot: true
+
+groups:
+  - "real_only"
+  - "real_std_aug"
+  - "real_syn_unfiltered_full"
+  - "real_syn_unfiltered_eqn"
+  - "real_syn_filtered"
+  - "full_real"

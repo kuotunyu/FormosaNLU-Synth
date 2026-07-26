@@ -72,6 +72,8 @@
 - [ ] **你過目後才轉 public**
 
 > 提醒：commit 一律不帶 `Co-Authored-By` trailer，GitHub Contributors 只會有 `kuotunyu`。
+> push 前先跑 `python scripts/verify_contributors.py`；任何非 `kuotunyu`
+> author/committer 或共同作者 trailer 都會直接失敗。
 
 ---
 
@@ -82,5 +84,5 @@
 | M0 | 是否 pull Ollama teacher/judge 模型（19GB / 14GB）；`OLLAMA_MODELS` 是否改指 D: 槽 |
 | M2 | teacher / judge 選型定案，要你點頭 |
 | M4 | pilot 報告，要你點頭才跑全量 |
-| M8 | 下載 `google/gemma-4-E4B-it`（約 `<FILL>` GB）；零樣本 baseline 若不合格會停下來問你要不要換 base model |
+| M8 | 已下載 `google/gemma-4-E4B-it`（14.924 GiB）；零樣本 baseline 目前被 Windows PyTorch DLL 阻塞 |
 | 任何時候 | 需要花錢（例如升級到雲端 API）一律先問 |

@@ -9,32 +9,40 @@
 
 > 夜間執行結束前必須填完這一節。使用者只讀這裡也要能掌握全局。
 
-**尚未執行。** 這是 2026-07-27 深夜建立的骨架，夜間 agent 開工後會覆寫本節。
-
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | — |
-| 完成到 | — |
-| 卡住的項目 | — |
-| GPU 時數 | — |
-| 磁碟增加 | — |
+| 執行區間 | 2026-07-27 03:14–04:44 +08:00 |
+| 完成到 | M0–M3 完成；M4 pilot 完成；M5/M7/M8 可離線完成部分已完成 |
+| 卡住的項目 | BGE-M3 未獲下載授權；Windows PyTorch `c10.dll` WinError 1114 |
+| GPU 時數 | 0.292 h（M2–M4 measured work；M8 未使用 GPU） |
+| 磁碟增加 | 約 19 GiB；含 Gemma 4 14.924 GiB snapshot |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
 ### 🔴 需要你決定（最重要的放最前面）
 
 <!-- 逐條列出。每條要有：問題、背景、我建議的選項、以及不決定會擋住什麼 -->
 
-_（尚無）_
+1. **核可 BGE-M3 權重下載。** 官方單一權重約 2.27GB；核可後才能量測
+   F5/F6、確認最終 yield，並決定 ≤13,980 筆的 M6 生成量。建議核可。
+2. **處理 Windows PyTorch DLL。** 專案內 PyPI torch 2.13 與官方 CUDA 12.8
+   torch 2.11 都在載入 `c10.dll` 時報 WinError 1114。建議你在場時先檢查
+   Visual C++ runtime；或核可我用乾淨的 uv-managed Python 重建，不要再疊在
+   目前 Anaconda Python 上。這會擋住 Gemma one-step smoke 與零樣本 baseline。
 
 ### 👀 需要你 review 的產出
 
 <!-- 例如 docs/teacher_choice.md、reports/pilot_report.md、M8 零樣本結果 -->
 
-_（尚無）_
+- `docs/teacher_choice.md`：teacher/judge 定案與完整 benchmark
+- `reports/pilot_report.md`：500 筆 pilot、過濾漏斗、固定 gate
+- `reports/m8_training_design.md`：Gemma artifact、QLoRA 設計與 runtime blocker
+- `reports/m8_zeroshot_baseline.md`：誠實的 blocked baseline（沒有假數字）
+- `docs/data_card.md`：已由 pilot 證據填入的 M7 草稿
 
 ### ➡️ 明天的建議起點
 
-_（尚無）_
+先修 PyTorch DLL 並跑 one-step `real_only` smoke；同時核可 BGE-M3。完成
+F5/F6 後重算 gate，只有在真實 yield 與五小時限制同時成立時才啟動 M6。
 
 ---
 
@@ -42,6 +50,22 @@ _（尚無）_
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-27 04:44 +08:00] M7/M8 — 草稿與管線完成，model runtime 卡住
+
+- Gemma 4 snapshot 14.924 GiB 完整下載；revision、size、SHA256、license 已記錄
+- 選用官方文字-only `Gemma4ForCausalLM`，避免載入無用的 vision/audio towers
+- QLoRA config、prompt contract、六組 run plan、resumable trainer、零樣本 Test
+  harness、strict parser 與 metrics 完成；45 tests、Ruff、lock check 通過
+- 11,514 筆 prompt+target tokenizer audit：P99 127、最大 183 tokens；
+  512-token 設定有餘裕
+- 阻塞錯誤：`OSError: [WinError 1114] ... torch\lib\c10.dll`
+- 修法一：全新解析 PyPI torch 2.13；修法二：改用官方 cu128 torch 2.11 並
+  locked sync；兩者相同錯誤，依規則停止，不動系統 DLL／PATH／driver
+- 零樣本結果所有 metrics 明確為 `null`，M9 沒有啟動
+- M7 data card 已填 pilot 可證明內容；full-corpus 欄位仍標示 blocked
+- 新增 `scripts/verify_contributors.py` 作為 push 前 gate：只允許
+  `kuotunyu` 的既有身份，並拒絕任何共同作者 trailer
 
 ### [2026-07-27 04:26 +08:00] M5 過濾管線 — 程式完成，production calibration 卡住
 
@@ -138,8 +162,8 @@ _（尚無）_
 | M4 生成器 + pilot | ⚠️ Pilot 完成，gate 未放行 | 15 分開發 + 14 分 GPU | 500/500；F1 100%、F1–F3 90.8%、judge 98%；F5/F6 未量測 | resumable generator、pilot、報告 |
 | M5 過濾管線 + 測試 | ⚠️ 程式完成，runtime 卡住 | 15 分 | 36 tests；F1–F4 漏斗對齊；BGE thresholds=null | F1–F7 程式、funnel、狀態報告 |
 | M6 全量生成 + 過濾 | 🛑 未獲 gate 放行 | — | 18k 投影 6.44h；F1–F6/8k yield 未證明 | 未執行 |
-| M7 data_card 草稿 | ⬜ 未開始 | | | |
-| M8 零樣本 baseline | ⬜ 未開始 | | | |
+| M7 data_card 草稿 | ⚠️ Pilot-backed 草稿完成 | 5 分 | 所有已填數字可追溯；全量欄位留待 M6 | data card |
+| M8 零樣本 baseline | 🛑 管線完成，runtime 卡住 | 18 分 + 下載 | 45 tests；artifact hash/size；torch WinError 1114 | config、trainer、eval、blocked report |
 | M9 訓練批次 | 🚫 今晚不做 | — | — | 明晚，需先看過 M8 結果 |
 
 狀態圖例：⬜ 未開始／🔄 進行中／✅ 完成且驗證通過／⚠️ 完成但有問題／🛑 卡住／🚫 不在範圍

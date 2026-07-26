@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "model": "google/gemma-4-E4B-it",
+  "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "text_only_class": "Gemma4ForCausalLM",
+  "prompt_template_version": "formosanlu_nlu.v1",
+  "zero_shot_prompt_includes_label_catalog": true,
+  "constrained_decoding": false,
+  "target": 2974,
+  "completed": 0,
+  "blocker": "PyTorch import fails with WinError 1114 while loading torch/lib/c10.dll or a dependency.",
+  "attempts": [
+    "Fresh uv environment resolved with PyPI PyTorch 2.13.",
+    "Fresh locked sync using official Windows CUDA 12.8 PyTorch 2.11 wheel."
+  ],
+  "metrics": {
+    "json_valid_rate": null,
+    "intent_accuracy": null,
+    "intent_macro_f1": null,
+    "slot_micro_f1": null,
+    "exact_match": null
+  }
+}

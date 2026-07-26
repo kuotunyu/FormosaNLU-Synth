@@ -271,4 +271,35 @@ Gemini API Terms（effective **2026-03-23**）明文：
 
 ---
 
-<!-- 新決策從 D-011 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-011 — Gemma 4 使用文字塔 QLoRA，M8 runtime 驗證暫停
+
+- **日期**：2026-07-27
+- **狀態**：`accepted`（設計）／`pending`（runtime 驗證）
+- **決策**：FormosaNLU 只載入 `google/gemma-4-E4B-it` 的
+  `Gemma4ForCausalLM` 文字塔；採 NF4 double-quant QLoRA、LoRA
+  rank/alpha `16/32`、`all-linear` targets、500 steps、effective batch 16、
+  max length 512。M8 不得在 one-step smoke test 通過前宣稱可訓練。
+
+**理由**
+
+1. 任務只有文字 NLU，載入 vision/audio towers 沒有研究價值且浪費 24GB VRAM。
+2. Transformers 隨目前套件提供官方文字-only `Gemma4ForCausalLM` 路徑；
+   PEFT 對 QLoRA 建議以 `all-linear` 覆蓋線性層。
+3. 11,514 筆真實訓練樣本的 prompt+target 實測最大 183 tokens，512 不會截斷。
+4. 六組實驗共用同一 config digest，避免組間偷偷改超參數。
+
+**未通過的 runtime 驗證**
+
+PyPI PyTorch 2.13 與官方 CUDA 12.8 PyTorch 2.11 兩個 project-local 環境都在
+匯入 `torch\lib\c10.dll` 時得到 WinError 1114。因此沒有跑 one-step smoke、
+零樣本 Test 或 M9 訓練，也沒有填入任何虛構數字。詳細證據在
+`reports/m8_training_design.md` 與 `reports/m8_zeroshot_baseline.md`。
+
+**重新審視的觸發條件**：使用者在場時完成 Windows PyTorch DLL 診斷，或核可用
+乾淨的 uv-managed Python／其他隔離 runtime 重建環境；先跑 one-step
+`real_only` smoke，確認 loss、adapter、VRAM 與 checkpoint 後才能接受 runtime
+部分。
+
+---
+
+<!-- 新決策從 D-012 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->

@@ -1,0 +1,100 @@
+"""Fail unless Git history can attribute every commit only to kuotunyu."""
+
+from __future__ import annotations
+
+import re
+import subprocess
+from dataclasses import dataclass
+
+ALLOWED_NAME = "kuotunyu"
+ALLOWED_EMAILS = frozenset(
+    {
+        "61350295+kuotunyu@users.noreply.github.com",
+        "03131047@gm.scu.edu.tw",
+    }
+)
+REQUIRED_LOCAL_EMAIL = "61350295+kuotunyu@users.noreply.github.com"
+TRAILER_PATTERN = re.compile(
+    r"^(?:Co-Authored-By|Co-Author|Coauthor)\s*:",
+    flags=re.IGNORECASE | re.MULTILINE,
+)
+
+
+@dataclass(frozen=True)
+class CommitIdentity:
+    commit: str
+    author_name: str
+    author_email: str
+    committer_name: str
+    committer_email: str
+    body: str
+
+
+def parse_git_log(raw: str) -> list[CommitIdentity]:
+    records = []
+    for raw_record in raw.split("\x1e"):
+        if not raw_record.strip():
+            continue
+        fields = raw_record.strip("\r\n").split("\x1f", maxsplit=5)
+        if len(fields) != 6:
+            raise ValueError("Unexpected git log record")
+        records.append(CommitIdentity(*fields))
+    return records
+
+
+def audit_history(records: list[CommitIdentity]) -> list[str]:
+    errors = []
+    for record in records:
+        short = record.commit[:12]
+        if record.author_name != ALLOWED_NAME:
+            errors.append(f"{short}: unexpected author name {record.author_name!r}")
+        if record.committer_name != ALLOWED_NAME:
+            errors.append(f"{short}: unexpected committer name {record.committer_name!r}")
+        if record.author_email not in ALLOWED_EMAILS:
+            errors.append(f"{short}: unexpected author email {record.author_email!r}")
+        if record.committer_email not in ALLOWED_EMAILS:
+            errors.append(f"{short}: unexpected committer email {record.committer_email!r}")
+        if TRAILER_PATTERN.search(record.body):
+            errors.append(f"{short}: co-author trailer is forbidden")
+    return errors
+
+
+def _git(*args: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return completed.stdout
+
+
+def main() -> int:
+    raw = _git(
+        "log",
+        "--all",
+        "--format=%H%x1f%an%x1f%ae%x1f%cn%x1f%ce%x1f%B%x1e",
+    )
+    records = parse_git_log(raw)
+    errors = audit_history(records)
+    local_name = _git("config", "--local", "user.name").strip()
+    local_email = _git("config", "--local", "user.email").strip()
+    if local_name != ALLOWED_NAME:
+        errors.append(f"local user.name must be {ALLOWED_NAME!r}, got {local_name!r}")
+    if local_email != REQUIRED_LOCAL_EMAIL:
+        errors.append(f"local user.email must be {REQUIRED_LOCAL_EMAIL!r}, got {local_email!r}")
+    if errors:
+        print("Contributor audit FAILED:")
+        for error in errors:
+            print(f"- {error}")
+        return 1
+    print(
+        f"Contributor audit passed: {len(records)} commits, author/committer "
+        f"{ALLOWED_NAME}, no co-author trailers."
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
