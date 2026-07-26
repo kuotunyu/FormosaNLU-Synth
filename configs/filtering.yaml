@@ -1,0 +1,15 @@
+embedding:
+  model: "BAAI/bge-m3"
+  dense_only: true
+  local_files_only: true
+
+# Must remain null until M5 pilot distributions are generated and inspected.
+thresholds:
+  synthetic_duplicate_max: null
+  seed_too_close_max: null
+  seed_outlier_min: null
+  contamination_max: null
+
+locale:
+  latin_ratio_default_max: 0.30
+  latin_ratio_noise_codeswitch_max: 0.55

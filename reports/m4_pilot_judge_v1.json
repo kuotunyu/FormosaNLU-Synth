@@ -1,0 +1,944 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-26T20:21:12.955752+00:00",
+  "model": "gpt-oss:20b",
+  "model_digest": "17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+  "source": "data\\filtered\\pilot_f1_f4.jsonl",
+  "selection_seed": 42,
+  "selection_recipe_counts": {
+    "hard_negative": 32,
+    "noise_codeswitch": 6,
+    "paraphrase": 6,
+    "slot_substitution": 6
+  },
+  "summary": {
+    "samples": 50,
+    "json_valid": 45,
+    "accepted": 42,
+    "accepted_rate": 0.84,
+    "wall_seconds": 119.54819419999967,
+    "output_tokens": 4497
+  },
+  "results": [
+    {
+      "generation_index": 155,
+      "sample_id": "syn_031f219b174da522691d",
+      "recipe": "hard_negative",
+      "utt": "幫我設定下午五點的鬧鐘",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All audit criteria met."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 22.97661530000005,
+      "eval_count": 31,
+      "eval_duration_ns": 355261000,
+      "thinking_chars": 2154
+    },
+    {
+      "generation_index": 386,
+      "sample_id": "syn_ee3746d4e8d7e045f9b6",
+      "recipe": "hard_negative",
+      "utt": "幫我新增一個項目",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request to add an item and unambiguously expresses the target action for a hard negative example."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 22.530585399999836,
+      "eval_count": 51,
+      "eval_duration_ns": 411305000,
+      "thinking_chars": 1730
+    },
+    {
+      "generation_index": 237,
+      "sample_id": "syn_61bc700c44bef70c1429",
+      "recipe": "hard_negative",
+      "utt": "我要點外帶的餐廳",
+      "verdict": "",
+      "json_valid": false,
+      "validation_error": "1 validation error for JudgeOutput\n  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid",
+      "wall_seconds": 12.04550190000009,
+      "eval_count": 512,
+      "eval_duration_ns": 3049675000,
+      "thinking_chars": 2056
+    },
+    {
+      "generation_index": 221,
+      "sample_id": "syn_5103f228b7f9ef48fe36",
+      "recipe": "hard_negative",
+      "utt": "播放歌曲我",
+      "verdict": "",
+      "json_valid": false,
+      "validation_error": "1 validation error for JudgeOutput\n  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid",
+      "wall_seconds": 20.19894039999963,
+      "eval_count": 512,
+      "eval_duration_ns": 3014114000,
+      "thinking_chars": 2269
+    },
+    {
+      "generation_index": 88,
+      "sample_id": "syn_2abbcda5d5ab1d5d0bad",
+      "recipe": "hard_negative",
+      "utt": "幫我新增一個待辦事項",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a clear, colloquial request to add a task, matching the expected intent 'calendar_set' with no slots. It meets all audit criteria."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 14.288200099999813,
+      "eval_count": 57,
+      "eval_duration_ns": 458165000,
+      "thinking_chars": 1356
+    },
+    {
+      "generation_index": 416,
+      "sample_id": "syn_8963917eba987b09f9f3",
+      "recipe": "hard_negative",
+      "utt": "我要訂一張從孟買到果阿的火車票",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All conditions satisfied; hard negative still unambiguously expresses target action."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 10.987746799999513,
+      "eval_count": 37,
+      "eval_duration_ns": 307800000,
+      "thinking_chars": 2183
+    },
+    {
+      "generation_index": 355,
+      "sample_id": "syn_1ab16a3f826910424a3c",
+      "recipe": "hard_negative",
+      "utt": "把買食物加到待辦清單",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 10.747121000000334,
+      "eval_count": 28,
+      "eval_duration_ns": 269756000,
+      "thinking_chars": 1454
+    },
+    {
+      "generation_index": 456,
+      "sample_id": "syn_1066b5f3e2bb80da22e9",
+      "recipe": "hard_negative",
+      "utt": "將這部電影加入希望清單",
+      "verdict": {
+        "accepted": false,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance correctly expresses the target action, yet it is marked as a hard negative. According to the audit rules, hard negatives must unambiguously express the target action but should not be accepted as positive examples. Therefore this example should be rejected."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 10.897716299999956,
+      "eval_count": 73,
+      "eval_duration_ns": 525719000,
+      "thinking_chars": 1890
+    },
+    {
+      "generation_index": 158,
+      "sample_id": "syn_340bfd8d2371c072a595",
+      "recipe": "hard_negative",
+      "utt": "幫我換成中部時區",
+      "verdict": {
+        "accepted": false,
+        "intent_correct": true,
+        "slots_correct": false,
+        "natural": true,
+        "reason": "Missing required slot '我現在的時區' in candidate slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.34158750000006,
+      "eval_count": 40,
+      "eval_duration_ns": 402650000,
+      "thinking_chars": 1249
+    },
+    {
+      "generation_index": 389,
+      "sample_id": "syn_0926987ec3080d4a62cb",
+      "recipe": "hard_negative",
+      "utt": "建立新清單",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance unambiguously requests creating a new list, matching the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.9294488000005,
+      "eval_count": 43,
+      "eval_duration_ns": 385081000,
+      "thinking_chars": 949
+    },
+    {
+      "generation_index": 116,
+      "sample_id": "syn_8fa310957d307aa6269b",
+      "recipe": "hard_negative",
+      "utt": "幫我外帶一份漢堡",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance matches expected intent and slots, is a complete natural request in colloquial Taiwanese Mandarin, and meets all audit criteria."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.79542279999987,
+      "eval_count": 49,
+      "eval_duration_ns": 410088000,
+      "thinking_chars": 1414
+    },
+    {
+      "generation_index": 254,
+      "sample_id": "syn_24ef17929765c05457c2",
+      "recipe": "hard_negative",
+      "utt": "幫我新增一個雜貨清單",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a clear, complete request to create a grocery list, matching the expected intent and slot configuration, and it unambiguously expresses the target action even though labeled as a hard negative. No issues with grammar or meaning."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.82996540000022,
+      "eval_count": 71,
+      "eval_duration_ns": 559714000,
+      "thinking_chars": 1371
+    },
+    {
+      "generation_index": 247,
+      "sample_id": "syn_dfe4ac75d423ef0b1a33",
+      "recipe": "hard_negative",
+      "utt": "幫我播放音樂",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a clear, natural request to play music and matches the expected intent and empty slots; it also unambiguously expresses the target action as required for a hard negative."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.9061528000002,
+      "eval_count": 61,
+      "eval_duration_ns": 497646000,
+      "thinking_chars": 1030
+    },
+    {
+      "generation_index": 203,
+      "sample_id": "syn_6426a0ea51965f0d7f73",
+      "recipe": "hard_negative",
+      "utt": "幫我設定一點的鬧鐘",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria met"
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.536490700000286,
+      "eval_count": 26,
+      "eval_duration_ns": 245931000,
+      "thinking_chars": 1691
+    },
+    {
+      "generation_index": 187,
+      "sample_id": "syn_8ad46145bc2b2c255c12",
+      "recipe": "hard_negative",
+      "utt": "我要點外帶",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Intent and slot match expected, utterance is a complete natural colloquial request for takeaway order, and the hard‑negative example unambiguously expresses the target action."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.955253400000402,
+      "eval_count": 56,
+      "eval_duration_ns": 439817000,
+      "thinking_chars": 1530
+    },
+    {
+      "generation_index": 364,
+      "sample_id": "syn_a32496b32f1c9d40c07d",
+      "recipe": "hard_negative",
+      "utt": "我要點熊貓的壽司外送",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request for takeaway order matching the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.746960200000103,
+      "eval_count": 42,
+      "eval_duration_ns": 363891000,
+      "thinking_chars": 365
+    },
+    {
+      "generation_index": 217,
+      "sample_id": "syn_58dca99787ffbdd38670",
+      "recipe": "hard_negative",
+      "utt": "幫我訂一張星期天去紐約的火車票",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request matching the expected intent and slots; hard_negative label is appropriate as it closely resembles a positive example."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.362726100000145,
+      "eval_count": 52,
+      "eval_duration_ns": 470739000,
+      "thinking_chars": 2234
+    },
+    {
+      "generation_index": 328,
+      "sample_id": "syn_f3ea3ff591be1513d6fe",
+      "recipe": "hard_negative",
+      "utt": "幫我設定一個提醒，十分鐘後要把咖啡從爐子拿起來",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 11.837216899999476,
+      "eval_count": 27,
+      "eval_duration_ns": 293697000,
+      "thinking_chars": 474
+    },
+    {
+      "generation_index": 362,
+      "sample_id": "syn_9d66632c3262cf2f81d8",
+      "recipe": "hard_negative",
+      "utt": "幫我設定兩點的提醒",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a complete, natural colloquial request that matches the expected intent and slots, and it unambiguously expresses the target action."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 10.540777200000775,
+      "eval_count": 52,
+      "eval_duration_ns": 409075000,
+      "thinking_chars": 2244
+    },
+    {
+      "generation_index": 449,
+      "sample_id": "syn_39c04dac1e251cad760e",
+      "recipe": "hard_negative",
+      "utt": "下禮拜四提醒我要打電話給銀行",
+      "verdict": "",
+      "json_valid": false,
+      "validation_error": "1 validation error for JudgeOutput\n  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid",
+      "wall_seconds": 7.684015300000283,
+      "eval_count": 512,
+      "eval_duration_ns": 3114303000,
+      "thinking_chars": 1886
+    },
+    {
+      "generation_index": 193,
+      "sample_id": "syn_51b555c404101ae716c3",
+      "recipe": "hard_negative",
+      "utt": "設定下禮拜二會議的鬧鐘",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied – intent, slots, and utterance match the expected labels and express the target action unambiguously."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 12.717918899999859,
+      "eval_count": 48,
+      "eval_duration_ns": 392716000,
+      "thinking_chars": 1147
+    },
+    {
+      "generation_index": 212,
+      "sample_id": "syn_86f920f33bd12d0eb283",
+      "recipe": "hard_negative",
+      "utt": "請播放音樂",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a clear, natural request to play music, matching the expected intent and slots, and unambiguously expresses the target action."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 7.9535986999999295,
+      "eval_count": 53,
+      "eval_duration_ns": 411873000,
+      "thinking_chars": 665
+    },
+    {
+      "generation_index": 133,
+      "sample_id": "syn_df5b99e942013e3af039",
+      "recipe": "hard_negative",
+      "utt": "幫我轉成中央時區",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a complete, natural request in Taiwanese colloquial style that correctly expresses the datetime_convert intent with a grounded time_zone slot value '中央'."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.08272500000021,
+      "eval_count": 54,
+      "eval_duration_ns": 419844000,
+      "thinking_chars": 2001
+    },
+    {
+      "generation_index": 329,
+      "sample_id": "syn_60ae27c392bb9a2f6f8f",
+      "recipe": "hard_negative",
+      "utt": "推薦下週鎮上的節日",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a complete, natural request that matches the expected intent and slots exactly."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.397575699999834,
+      "eval_count": 41,
+      "eval_duration_ns": 348293000,
+      "thinking_chars": 635
+    },
+    {
+      "generation_index": 417,
+      "sample_id": "syn_c843a4c7f752e3730637",
+      "recipe": "hard_negative",
+      "utt": "我要訂外帶",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All conditions satisfied"
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.129256200000782,
+      "eval_count": 26,
+      "eval_duration_ns": 262982000,
+      "thinking_chars": 2384
+    },
+    {
+      "generation_index": 327,
+      "sample_id": "syn_f7f0c062a5155de24378",
+      "recipe": "hard_negative",
+      "utt": "這裡有什麼活動",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete natural request for event recommendations and matches the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.397977399999945,
+      "eval_count": 48,
+      "eval_duration_ns": 420294000,
+      "thinking_chars": 1429
+    },
+    {
+      "generation_index": 489,
+      "sample_id": "syn_181c3852e3170280576e",
+      "recipe": "noise_codeswitch",
+      "utt": "寄 email 給心如啦",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.262658599999668,
+      "eval_count": 28,
+      "eval_duration_ns": 294340000,
+      "thinking_chars": 1075
+    },
+    {
+      "generation_index": 64,
+      "sample_id": "syn_17f0bc738738347985f8",
+      "recipe": "paraphrase",
+      "utt": "查看我的鬧鐘",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Intent and slots match expected; utterance is a complete, natural request for alarm query."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.20707020000009,
+      "eval_count": 41,
+      "eval_duration_ns": 366961000,
+      "thinking_chars": 830
+    },
+    {
+      "generation_index": 67,
+      "sample_id": "syn_0b780302e8a9a0bbdc6d",
+      "recipe": "slot_substitution",
+      "utt": "取消早上四點的鬧鐘",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.305635400000028,
+      "eval_count": 27,
+      "eval_duration_ns": 298043000,
+      "thinking_chars": 1271
+    },
+    {
+      "generation_index": 36,
+      "sample_id": "syn_6693e0f98c69f2c3409d",
+      "recipe": "hard_negative",
+      "utt": "幫我設一個活動",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request in Taiwanese colloquial style and unambiguously expresses the calendar_set intent with no slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.042011300000013,
+      "eval_count": 51,
+      "eval_duration_ns": 397885000,
+      "thinking_chars": 1494
+    },
+    {
+      "generation_index": 393,
+      "sample_id": "syn_39abc7216d631131a58c",
+      "recipe": "noise_codeswitch",
+      "utt": "這個問題真的沒有意義啦",
+      "verdict": {
+        "accepted": false,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": false,
+        "reason": "Utterance is not a complete natural request for the declared style."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.093230499999663,
+      "eval_count": 38,
+      "eval_duration_ns": 343892000,
+      "thinking_chars": 1081
+    },
+    {
+      "generation_index": 299,
+      "sample_id": "syn_e0fad69e8d25f1dfdfa6",
+      "recipe": "paraphrase",
+      "utt": "把我的工作鬧鐘刪掉",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Intent and slots match expected, utterance is a complete natural request in Taiwanese colloquial style."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 7.686524600000666,
+      "eval_count": 42,
+      "eval_duration_ns": 359281000,
+      "thinking_chars": 586
+    },
+    {
+      "generation_index": 189,
+      "sample_id": "syn_c7acfb47f1dd35ff3516",
+      "recipe": "slot_substitution",
+      "utt": "定一個早上四點的鬧鐘",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.291698600000018,
+      "eval_count": 27,
+      "eval_duration_ns": 284162000,
+      "thinking_chars": 938
+    },
+    {
+      "generation_index": 391,
+      "sample_id": "syn_68294ec776e6663bc0d1",
+      "recipe": "hard_negative",
+      "utt": "推薦臺南的藝術展覽",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.175779600000169,
+      "eval_count": 27,
+      "eval_duration_ns": 281207000,
+      "thinking_chars": 797
+    },
+    {
+      "generation_index": 496,
+      "sample_id": "syn_c7b5dffd594b3b980b1a",
+      "recipe": "noise_codeswitch",
+      "utt": "講個笑話鼓勵一下",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a clear, natural request for a joke in Taiwanese colloquial style and matches the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.236376799999562,
+      "eval_count": 48,
+      "eval_duration_ns": 410754000,
+      "thinking_chars": 653
+    },
+    {
+      "generation_index": 222,
+      "sample_id": "syn_1b576d93ed1d76e2534e",
+      "recipe": "paraphrase",
+      "utt": "請將喇叭靜音一分鐘，因為我要通電話",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request to mute the speaker for one minute, matching the expected intent and having no slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.332939500000066,
+      "eval_count": 49,
+      "eval_duration_ns": 403042000,
+      "thinking_chars": 618
+    },
+    {
+      "generation_index": 321,
+      "sample_id": "syn_acd5c5a40534bdc001e7",
+      "recipe": "slot_substitution",
+      "utt": "請提醒我早上四點把咖啡從爐子拿起來",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance matches the expected intent and slots exactly, uses grounded literal values, is a complete natural request in Taiwanese colloquial style, and unambiguously expresses the target action."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 7.5571383999995305,
+      "eval_count": 59,
+      "eval_duration_ns": 459234000,
+      "thinking_chars": 936
+    },
+    {
+      "generation_index": 218,
+      "sample_id": "syn_cc1762d4bf1091498077",
+      "recipe": "hard_negative",
+      "utt": "新增這個項目",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request matching the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 7.704538099999809,
+      "eval_count": 40,
+      "eval_duration_ns": 372920000,
+      "thinking_chars": 1338
+    },
+    {
+      "generation_index": 313,
+      "sample_id": "syn_c2ce7e31b882c52f9923",
+      "recipe": "noise_codeswitch",
+      "utt": "寄信給朋友",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a complete, natural request in Taiwanese colloquial style that matches the expected intent and slots exactly."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 7.70031629999994,
+      "eval_count": 46,
+      "eval_duration_ns": 400913000,
+      "thinking_chars": 947
+    },
+    {
+      "generation_index": 366,
+      "sample_id": "syn_8c49839e87b1aaa7b14b",
+      "recipe": "paraphrase",
+      "utt": "調低音量",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request matching the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.875750399999561,
+      "eval_count": 39,
+      "eval_duration_ns": 358933000,
+      "thinking_chars": 695
+    },
+    {
+      "generation_index": 278,
+      "sample_id": "syn_0c00fa731f2a055066d7",
+      "recipe": "slot_substitution",
+      "utt": "請問小巨蛋冰上樂園現在幾點？",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a complete, natural request for the current time at 小巨蛋冰上樂園 and matches all expected labels exactly."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.794931799999176,
+      "eval_count": 52,
+      "eval_duration_ns": 447358000,
+      "thinking_chars": 475
+    },
+    {
+      "generation_index": 179,
+      "sample_id": "syn_a2d511201bd6c682ea91",
+      "recipe": "hard_negative",
+      "utt": "幫我找附近評價最好的餐廳，然後點一份壽司盤",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request in colloquial Taiwanese Mandarin that unambiguously expresses the target action of ordering takeaway sushi platter from a nearby highly-rated restaurant."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.592609500000435,
+      "eval_count": 57,
+      "eval_duration_ns": 465847000,
+      "thinking_chars": 823
+    },
+    {
+      "generation_index": 178,
+      "sample_id": "syn_eed1b1668dde8041bcdc",
+      "recipe": "noise_codeswitch",
+      "utt": "幫我找個關於橘子和香蕉的笑話",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied"
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.458161300000029,
+      "eval_count": 26,
+      "eval_duration_ns": 264223000,
+      "thinking_chars": 1213
+    },
+    {
+      "generation_index": 287,
+      "sample_id": "syn_b832777a67fbf5053c85",
+      "recipe": "paraphrase",
+      "utt": "把客廳喇叭靜音",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Utterance is a complete, natural request matching the expected intent and slots."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 6.379758299999594,
+      "eval_count": 39,
+      "eval_duration_ns": 320298000,
+      "thinking_chars": 422
+    },
+    {
+      "generation_index": 275,
+      "sample_id": "syn_8010dd510cc1bac19916",
+      "recipe": "slot_substitution",
+      "utt": "請問日曆上，我的演唱會在禮拜五的什麼時間？",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "The utterance is a complete, natural request matching the expected intent and slots exactly."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 7.186304599999858,
+      "eval_count": 40,
+      "eval_duration_ns": 324809000,
+      "thinking_chars": 402
+    },
+    {
+      "generation_index": 381,
+      "sample_id": "syn_73ca70d8738fb1ff8a81",
+      "recipe": "hard_negative",
+      "utt": "幫我設定明天會議的提醒",
+      "verdict": "",
+      "json_valid": false,
+      "validation_error": "1 validation error for JudgeOutput\n  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid",
+      "wall_seconds": 4.548032400000011,
+      "eval_count": 512,
+      "eval_duration_ns": 3053793000,
+      "thinking_chars": 2407
+    },
+    {
+      "generation_index": 499,
+      "sample_id": "syn_ef58f029e95ec7e5be6d",
+      "recipe": "noise_codeswitch",
+      "utt": "幫我查一下直樹的 email",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 9.277203500000724,
+      "eval_count": 27,
+      "eval_duration_ns": 267420000,
+      "thinking_chars": 634
+    },
+    {
+      "generation_index": 113,
+      "sample_id": "syn_c4553c47610373297085",
+      "recipe": "paraphrase",
+      "utt": "幫我調整音量",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "Intent, slots, and utterance all match the expected labels and form a complete natural request."
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 11.697459600000002,
+      "eval_count": 42,
+      "eval_duration_ns": 386685000,
+      "thinking_chars": 1287
+    },
+    {
+      "generation_index": 239,
+      "sample_id": "syn_55f5a061935730ec7c2a",
+      "recipe": "slot_substitution",
+      "utt": "取消志豪的午餐",
+      "verdict": {
+        "accepted": true,
+        "intent_correct": true,
+        "slots_correct": true,
+        "natural": true,
+        "reason": "All criteria satisfied"
+      },
+      "json_valid": true,
+      "validation_error": null,
+      "wall_seconds": 8.9243306999997,
+      "eval_count": 26,
+      "eval_duration_ns": 267478999,
+      "thinking_chars": 1056
+    },
+    {
+      "generation_index": 314,
+      "sample_id": "syn_dd5e1ec46fdf00ce2018",
+      "recipe": "hard_negative",
+      "utt": "幫我設定早上六點的鬧鐘",
+      "verdict": "",
+      "json_valid": false,
+      "validation_error": "1 validation error for JudgeOutput\n  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid",
+      "wall_seconds": 6.7682846000006975,
+      "eval_count": 512,
+      "eval_duration_ns": 3051612000,
+      "thinking_chars": 2303
+    }
+  ]
+}

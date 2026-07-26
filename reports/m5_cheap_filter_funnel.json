@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "input": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\data\\generated\\pilot.jsonl",
+  "total": 500,
+  "f1_json_valid": 500,
+  "f1_f3_passed": 454,
+  "f1_f4_passed": 437,
+  "rejected": 63,
+  "reject_reasons": {
+    "F2_LABEL_CONTRACT_SLOTS": 21,
+    "F3_UNGROUNDED_OR_OVERLAPPING_SLOT": 25,
+    "F4_LOCALE_LANGUAGE_RATIO": 4,
+    "F4_LOCALE_SIMPLIFIED": 13
+  }
+}

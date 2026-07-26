@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "input": "data\\generated\\pilot.jsonl",
+  "records": 500,
+  "contiguous_indices": true,
+  "unique_sample_ids": 500,
+  "json_valid": 500,
+  "recipe_counts": {
+    "hard_negative": 75,
+    "noise_codeswitch": 100,
+    "paraphrase": 175,
+    "slot_substitution": 150
+  },
+  "style_counts": {
+    "massive_like": 201,
+    "tw_colloquial": 299
+  },
+  "generation_contract_reasons": {
+    "F2_SLOT_CONTRACT": 21,
+    "F3_UNGROUNDED_SLOT": 25,
+    "PASS": 454
+  },
+  "prompt_tokens": 126353,
+  "output_tokens": 21910,
+  "wall_seconds": 643.7332154999999,
+  "requests_per_second": 0.7767192805355561,
+  "output_tokens_per_second": 34.035838873068066,
+  "seconds_per_record": 1.287466431,
+  "projected_18k_hours": 6.437332155,
+  "max_records_under_five_hours": 13980,
+  "minimum_f1_f6_acceptance_for_8k": 0.5722460658082976,
+  "api_cost_usd": 0.0
+}

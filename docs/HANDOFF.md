@@ -43,6 +43,30 @@ _（尚無）_
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
+### [2026-07-27 04:26 +08:00] M5 過濾管線 — 程式完成，production calibration 卡住
+
+- F1–F7 程式契約與 pass/fail 測試完成；全專案 36 tests passed、Ruff 通過
+- F1–F4 實跑：437 accepted + 63 rejected = 500；主要拒絕為 label contract
+  21、grounding/overlap 25、簡體 13、language ratio 4
+- Judge 修正後 50/50 JSON、49/50 accepted（98%），唯一漏檢是非請求片段
+- F5/F6 vectorized cosine、去重／離群／污染決策與去汙染 log 都有測試，但
+  production BGE-M3 權重未下載、threshold 仍為 null
+- 卡點：官方 BGE-M3 單一權重約 2.27GB；夜間預授權模型清單不含 embedding
+  model，硬性禁止下載清單外模型
+- 已試的合法替代：完成 lazy local-only backend 與固定向量測試；拒絕用
+  TF-IDF／小模型數字冒充 BGE-M3
+- 建議：早上核可指定 BGE-M3 必要權重後，跑分布、看圖、定 threshold
+
+### [2026-07-27 04:20 +08:00] M4 生成器 + 500 筆 pilot — 生成完成，gate 未放行
+
+- 斷點驗證：5/12 後續跑到 12/12；index 連續、id 唯一，第三次重跑 SHA 不變
+- 正式 pilot 500/500：500 unique ids、100% JSON；固定 recipe 比例正確
+- Teacher：643.73 秒、126,353 prompt tokens、21,910 output tokens、$0
+- F1–F3 90.8%，F1–F4 87.4%；judge 98%
+- 現行 18,000 筆線性投影 6.44 h，超過 5 h；5 h 最多約 13,980 筆
+- F1–F6 尚無真實接受率，無法證明 13,980 筆能留下 8,000，因此 M6 未放行
+- 完整報告：`reports/pilot_report.md`
+
 ### [2026-07-27 04:05 +08:00] M3 recipes + schema — 完成
 
 - 凍結 60 intents／55 slot types 與 SHA256，程式會對
@@ -111,9 +135,9 @@ _（尚無）_
 | M1 資料稽核 + split 凍結 | ✅ 完成且驗證通過 | 2 分 | 8 tests；manifest SHA256 重建一致 | loader、稽核、圖表、manifest |
 | M2 teacher/judge 選型 | ✅ 完成且驗證通過 | 15 分 | teacher 20/20 JSON、18/20 任務有效；judge 一致率 95% | 選型報告、benchmark JSON、D-010 |
 | M3 recipes + schema | ✅ 完成且驗證通過 | 20 分 | 17 tests；20/20 JSON、19/20 契約；兩種 style | schema、labels、4 recipes、版本化 prompts、dry-run 報告 |
-| M4 生成器 + pilot | ⬜ 未開始 | | | |
-| M5 過濾管線 + 測試 | ⬜ 未開始 | | | |
-| M6 全量生成 + 過濾 | ⬜ 未開始 | | | |
+| M4 生成器 + pilot | ⚠️ Pilot 完成，gate 未放行 | 15 分開發 + 14 分 GPU | 500/500；F1 100%、F1–F3 90.8%、judge 98%；F5/F6 未量測 | resumable generator、pilot、報告 |
+| M5 過濾管線 + 測試 | ⚠️ 程式完成，runtime 卡住 | 15 分 | 36 tests；F1–F4 漏斗對齊；BGE thresholds=null | F1–F7 程式、funnel、狀態報告 |
+| M6 全量生成 + 過濾 | 🛑 未獲 gate 放行 | — | 18k 投影 6.44h；F1–F6/8k yield 未證明 | 未執行 |
 | M7 data_card 草稿 | ⬜ 未開始 | | | |
 | M8 零樣本 baseline | ⬜ 未開始 | | | |
 | M9 訓練批次 | 🚫 今晚不做 | — | — | 明晚，需先看過 M8 結果 |
