@@ -1,0 +1,9 @@
+# Runtime values are intentionally project-local documentation.
+# OLLAMA_MODELS remains at the system default per decision D-009.
+host: "http://127.0.0.1:11434"
+context_length: 4096
+num_parallel: 4
+models:
+  teacher: "qwen3.6:27b"  # Current M2 candidate; final after structured-output benchmark.
+  teacher_fallback: "qwen3:14b"
+  judge: "gpt-oss:20b"

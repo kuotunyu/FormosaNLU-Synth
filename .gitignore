@@ -31,11 +31,11 @@ htmlcov/
 *.key
 
 # ---- Data & artifacts (regenerable; never commit) ----
-data/
-runs/
-results/
-logs/
-outputs/
+/data/
+/runs/
+/results/
+/logs/
+/outputs/
 *.ckpt
 *.safetensors
 *.bin
