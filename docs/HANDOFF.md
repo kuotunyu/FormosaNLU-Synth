@@ -43,6 +43,17 @@ _（尚無）_
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
+### [2026-07-27 03:45 +08:00] M2 teacher/judge 選型 — 完成
+
+- Teacher 定案為 `qwen3.6:27b`：20/20 JSON-valid、18/20 intent／slot／grounding
+  全對；4 併發為 35.86 tok/s，8 併發沒有額外收益
+- Teacher 模型 VRAM 峰值 15,820 MiB，全 GPU 峰值 18,277 MiB
+- Judge `gpt-oss:20b` 兩輪共 40/40 JSON-valid，四個布林判定一致率 95%
+- 找到相容性要求：gpt-oss request 不可傳 `think: false`，否則回空內容
+- 成功 measured batches 共 128.67 秒（0.036 GPU h）；warmup 與失敗診斷未計時
+- API 花費 $0；teacher／judge 已卸載，沒有模型常駐 VRAM
+- 決策與授權證據：`docs/teacher_choice.md`、D-010；原始數字在 `reports/m2_*`
+
 ### [2026-07-27 03:14 +08:00] M0 環境與骨架 — 進行中
 
 - 已確認工作樹乾淨、沒有 GitHub remote；現有兩筆 commit 的 author 都是 `kuotunyu`
@@ -84,7 +95,7 @@ _（尚無）_
 |---|---|---|---|---|
 | M0 環境與骨架 | ✅ 完成且驗證通過 | 14 分 | 健檢全綠；lock/import/Ruff 通過 | uv 環境、package 骨架、模型 |
 | M1 資料稽核 + split 凍結 | ✅ 完成且驗證通過 | 2 分 | 8 tests；manifest SHA256 重建一致 | loader、稽核、圖表、manifest |
-| M2 teacher/judge 選型 | 🔄 進行中 | | | |
+| M2 teacher/judge 選型 | ✅ 完成且驗證通過 | 15 分 | teacher 20/20 JSON、18/20 任務有效；judge 一致率 95% | 選型報告、benchmark JSON、D-010 |
 | M3 recipes + schema | ⬜ 未開始 | | | |
 | M4 生成器 + pilot | ⬜ 未開始 | | | |
 | M5 過濾管線 + 測試 | ⬜ 未開始 | | | |

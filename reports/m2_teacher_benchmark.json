@@ -1,0 +1,1843 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-26T19:37:27.533608+00:00",
+  "seed_source": "splits\\manifest.json",
+  "runs": [
+    {
+      "model": "qwen3.6:27b",
+      "client_concurrency": 1,
+      "num_ctx": 4096,
+      "samples": 20,
+      "wall_seconds": 22.63301619999993,
+      "eval_tokens": 677,
+      "aggregate_tokens_per_second": 29.912053878174756,
+      "summed_eval_tokens_per_second": 42.75641581492244,
+      "json_valid_count": 20,
+      "task_valid_count": 18,
+      "peak_gpu_memory_mib": 18277.0,
+      "peak_ollama_model_vram_mib": 15820.11999797821,
+      "results": [
+        {
+          "seed_id": "5542",
+          "expected": {
+            "id": "5542",
+            "utt": "請告訴我為星期二的會議保留的鬧鐘",
+            "intent": "alarm_query",
+            "slots": [
+              {
+                "type": "date",
+                "value": "星期二的"
+              },
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "output": {
+            "utt": "查詢為星期二會議設定的鬧鐘",
+            "intent": "alarm_query",
+            "slots": [
+              {
+                "type": "date",
+                "value": "星期二的"
+              },
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": false,
+          "validation_error": null,
+          "wall_seconds": 2.079221899999993,
+          "prompt_eval_count": 138,
+          "eval_count": 83,
+          "prompt_eval_duration_ns": 49262000,
+          "eval_duration_ns": 1824402000,
+          "load_duration_ns": 196870300
+        },
+        {
+          "seed_id": "3152",
+          "expected": {
+            "id": "3152",
+            "utt": "刪掉早上六點的鬧鐘",
+            "intent": "alarm_remove",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把早上六點的鬧鐘取消",
+            "intent": "alarm_remove",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.6765191999998024,
+          "prompt_eval_count": 127,
+          "eval_count": 60,
+          "prompt_eval_duration_ns": 136100000,
+          "eval_duration_ns": 1327012000,
+          "load_duration_ns": 207248400
+        },
+        {
+          "seed_id": "5083",
+          "expected": {
+            "id": "5083",
+            "utt": "建立一個早上六點的鬧鐘",
+            "intent": "alarm_set",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "output": {
+            "utt": "設一個早上六點的鬧鐘",
+            "intent": "alarm_set",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.1641052999998465,
+          "prompt_eval_count": 127,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 126479000,
+          "eval_duration_ns": 730458000,
+          "load_duration_ns": 203063400
+        },
+        {
+          "seed_id": "3737",
+          "expected": {
+            "id": "3737",
+            "utt": "降低音響音量",
+            "intent": "audio_volume_down",
+            "slots": []
+          },
+          "output": {
+            "utt": "把喇叭聲音調小一點",
+            "intent": "audio_volume_down",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.8329392000000553,
+          "prompt_eval_count": 115,
+          "eval_count": 20,
+          "prompt_eval_duration_ns": 119968000,
+          "eval_duration_ns": 500147000,
+          "load_duration_ns": 203953800
+        },
+        {
+          "seed_id": "4242",
+          "expected": {
+            "id": "4242",
+            "utt": "請不要說話",
+            "intent": "audio_volume_mute",
+            "slots": []
+          },
+          "output": {
+            "utt": "請保持安靜",
+            "intent": "audio_volume_mute",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.7892647000003308,
+          "prompt_eval_count": 115,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 125658000,
+          "eval_duration_ns": 457443000,
+          "load_duration_ns": 200025900
+        },
+        {
+          "seed_id": "4980",
+          "expected": {
+            "id": "4980",
+            "utt": "音量設置",
+            "intent": "audio_volume_other",
+            "slots": []
+          },
+          "output": {
+            "utt": "調整音量",
+            "intent": "audio_volume_other",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.7422781999998733,
+          "prompt_eval_count": 113,
+          "eval_count": 16,
+          "prompt_eval_duration_ns": 120528000,
+          "eval_duration_ns": 416970000,
+          "load_duration_ns": 199822700
+        },
+        {
+          "seed_id": "3642",
+          "expected": {
+            "id": "3642",
+            "utt": "我聽不到你能不能再大聲點",
+            "intent": "audio_volume_up",
+            "slots": []
+          },
+          "output": {
+            "utt": "聲音太小了，請調大一點音量",
+            "intent": "audio_volume_up",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.9523702999999841,
+          "prompt_eval_count": 118,
+          "eval_count": 23,
+          "prompt_eval_duration_ns": 126943000,
+          "eval_duration_ns": 619014000,
+          "load_duration_ns": 199414400
+        },
+        {
+          "seed_id": "8930",
+          "expected": {
+            "id": "8930",
+            "utt": "上次的會議在什麼時候",
+            "intent": "calendar_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請問上次開會是在何時？",
+            "intent": "calendar_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": false,
+          "validation_error": null,
+          "wall_seconds": 1.0536976999997023,
+          "prompt_eval_count": 124,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 124498000,
+          "eval_duration_ns": 720035000,
+          "load_duration_ns": 201119100
+        },
+        {
+          "seed_id": "7911",
+          "expected": {
+            "id": "7911",
+            "utt": "晚餐志豪我的",
+            "intent": "calendar_remove",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "晚餐"
+              },
+              {
+                "type": "person",
+                "value": "志豪"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把志豪的晚餐行程取消",
+            "intent": "calendar_remove",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "晚餐"
+              },
+              {
+                "type": "person",
+                "value": "志豪"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.2379934999999023,
+          "prompt_eval_count": 132,
+          "eval_count": 38,
+          "prompt_eval_duration_ns": 130503999,
+          "eval_duration_ns": 896055000,
+          "load_duration_ns": 205256900
+        },
+        {
+          "seed_id": "8411",
+          "expected": {
+            "id": "8411",
+            "utt": "事件",
+            "intent": "calendar_set",
+            "slots": []
+          },
+          "output": {
+            "utt": "建立一個行事曆事件",
+            "intent": "calendar_set",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.7836225999999442,
+          "prompt_eval_count": 111,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 117882000,
+          "eval_duration_ns": 458864000,
+          "load_duration_ns": 200706400
+        },
+        {
+          "seed_id": "6637",
+          "expected": {
+            "id": "6637",
+            "utt": "用什麼煮午餐",
+            "intent": "cooking_query",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "午餐"
+              }
+            ]
+          },
+          "output": {
+            "utt": "午餐要用什麼來煮？",
+            "intent": "cooking_query",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "午餐"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.9704133000000184,
+          "prompt_eval_count": 124,
+          "eval_count": 29,
+          "prompt_eval_duration_ns": 125604000,
+          "eval_duration_ns": 638633000,
+          "load_duration_ns": 201225000
+        },
+        {
+          "seed_id": "10141",
+          "expected": {
+            "id": "10141",
+            "utt": "你用什麼做餅乾",
+            "intent": "cooking_recipe",
+            "slots": [
+              {
+                "type": "food_type",
+                "value": "餅乾"
+              }
+            ]
+          },
+          "output": {
+            "utt": "你拿什麼來做餅乾？",
+            "intent": "cooking_recipe",
+            "slots": [
+              {
+                "type": "food_type",
+                "value": "餅乾"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.0513123000000633,
+          "prompt_eval_count": 125,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 126726000,
+          "eval_duration_ns": 717143000,
+          "load_duration_ns": 199199500
+        },
+        {
+          "seed_id": "1284",
+          "expected": {
+            "id": "1284",
+            "utt": "改這裡時區到印度標準時間",
+            "intent": "datetime_convert",
+            "slots": [
+              {
+                "type": "time_zone",
+                "value": "印度標準時間"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把這裡的時區改成印度標準時間",
+            "intent": "datetime_convert",
+            "slots": [
+              {
+                "type": "time_zone",
+                "value": "印度標準時間"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.1322823000000426,
+          "prompt_eval_count": 129,
+          "eval_count": 33,
+          "prompt_eval_duration_ns": 129918000,
+          "eval_duration_ns": 792786000,
+          "load_duration_ns": 203506700
+        },
+        {
+          "seed_id": "2554",
+          "expected": {
+            "id": "2554",
+            "utt": "情人節是星期幾",
+            "intent": "datetime_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "情人節"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請問情人節當天是星期幾？",
+            "intent": "datetime_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "情人節"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.0290898000002926,
+          "prompt_eval_count": 125,
+          "eval_count": 31,
+          "prompt_eval_duration_ns": 131484000,
+          "eval_duration_ns": 691554000,
+          "load_duration_ns": 200398700
+        },
+        {
+          "seed_id": "15894",
+          "expected": {
+            "id": "15894",
+            "utt": "把 john at gmail dot com 加入聯絡人",
+            "intent": "email_addcontact",
+            "slots": [
+              {
+                "type": "email_address",
+                "value": "john at gmail dot com"
+              }
+            ]
+          },
+          "output": {
+            "utt": "將 john at gmail dot com 新增到聯絡人中",
+            "intent": "email_addcontact",
+            "slots": [
+              {
+                "type": "email_address",
+                "value": "john at gmail dot com"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.2293405999998868,
+          "prompt_eval_count": 135,
+          "eval_count": 38,
+          "prompt_eval_duration_ns": 133056000,
+          "eval_duration_ns": 892394000,
+          "load_duration_ns": 192254300
+        },
+        {
+          "seed_id": "15988",
+          "expected": {
+            "id": "15988",
+            "utt": "你有收到這人的 email 嗎",
+            "intent": "email_query",
+            "slots": []
+          },
+          "output": {
+            "utt": "你收到這個人的電子郵件了嗎？",
+            "intent": "email_query",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.9080681000000368,
+          "prompt_eval_count": 118,
+          "eval_count": 20,
+          "prompt_eval_duration_ns": 131377999,
+          "eval_duration_ns": 565325000,
+          "load_duration_ns": 205159000
+        },
+        {
+          "seed_id": "16646",
+          "expected": {
+            "id": "16646",
+            "utt": "寄簡訊給美珍",
+            "intent": "email_querycontact",
+            "slots": [
+              {
+                "type": "person",
+                "value": "美珍"
+              }
+            ]
+          },
+          "output": {
+            "utt": "傳訊息給美珍",
+            "intent": "email_querycontact",
+            "slots": [
+              {
+                "type": "person",
+                "value": "美珍"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.6097787999997308,
+          "prompt_eval_count": 127,
+          "eval_count": 58,
+          "prompt_eval_duration_ns": 123568000,
+          "eval_duration_ns": 1275923000,
+          "load_duration_ns": 204259900
+        },
+        {
+          "seed_id": "16964",
+          "expected": {
+            "id": "16964",
+            "utt": "寫一封 email 給家庭成員然後再讀出來",
+            "intent": "email_sendemail",
+            "slots": [
+              {
+                "type": "relation",
+                "value": "家庭成員"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請寫一封信給家庭成員，接著朗讀出來",
+            "intent": "email_sendemail",
+            "slots": [
+              {
+                "type": "relation",
+                "value": "家庭成員"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.7241515000000618,
+          "prompt_eval_count": 132,
+          "eval_count": 65,
+          "prompt_eval_duration_ns": 54077000,
+          "eval_duration_ns": 1428885000,
+          "load_duration_ns": 197000300
+        },
+        {
+          "seed_id": "3596",
+          "expected": {
+            "id": "3596",
+            "utt": "一切還好吧",
+            "intent": "general_greet",
+            "slots": []
+          },
+          "output": {
+            "utt": "最近一切都好嗎？",
+            "intent": "general_greet",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.9376314000001003,
+          "prompt_eval_count": 114,
+          "eval_count": 19,
+          "prompt_eval_duration_ns": 126966000,
+          "eval_duration_ns": 481562000,
+          "load_duration_ns": 200125700
+        },
+        {
+          "seed_id": "194",
+          "expected": {
+            "id": "194",
+            "utt": "任何笑話",
+            "intent": "general_joke",
+            "slots": []
+          },
+          "output": {
+            "utt": "講個笑話",
+            "intent": "general_joke",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.72585029999982,
+          "prompt_eval_count": 113,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 121001000,
+          "eval_duration_ns": 399276000,
+          "load_duration_ns": 199204800
+        }
+      ]
+    },
+    {
+      "model": "qwen3.6:27b",
+      "client_concurrency": 4,
+      "num_ctx": 4096,
+      "samples": 20,
+      "wall_seconds": 18.876379499999985,
+      "eval_tokens": 677,
+      "aggregate_tokens_per_second": 35.86492844138891,
+      "summed_eval_tokens_per_second": 42.84921859987742,
+      "json_valid_count": 20,
+      "task_valid_count": 18,
+      "peak_gpu_memory_mib": 18277.0,
+      "peak_ollama_model_vram_mib": 15820.11999797821,
+      "results": [
+        {
+          "seed_id": "5542",
+          "expected": {
+            "id": "5542",
+            "utt": "請告訴我為星期二的會議保留的鬧鐘",
+            "intent": "alarm_query",
+            "slots": [
+              {
+                "type": "date",
+                "value": "星期二的"
+              },
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "output": {
+            "utt": "查詢為星期二會議設定的鬧鐘",
+            "intent": "alarm_query",
+            "slots": [
+              {
+                "type": "date",
+                "value": "星期二的"
+              },
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": false,
+          "validation_error": null,
+          "wall_seconds": 3.7045038000001114,
+          "prompt_eval_count": 138,
+          "eval_count": 83,
+          "prompt_eval_duration_ns": 56382000,
+          "eval_duration_ns": 1822449000,
+          "load_duration_ns": 222350000
+        },
+        {
+          "seed_id": "3152",
+          "expected": {
+            "id": "3152",
+            "utt": "刪掉早上六點的鬧鐘",
+            "intent": "alarm_remove",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把早上六點的鬧鐘取消",
+            "intent": "alarm_remove",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 1.680663099999947,
+          "prompt_eval_count": 127,
+          "eval_count": 60,
+          "prompt_eval_duration_ns": 126808000,
+          "eval_duration_ns": 1319112000,
+          "load_duration_ns": 220737400
+        },
+        {
+          "seed_id": "5083",
+          "expected": {
+            "id": "5083",
+            "utt": "建立一個早上六點的鬧鐘",
+            "intent": "alarm_set",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "output": {
+            "utt": "設一個早上六點的鬧鐘",
+            "intent": "alarm_set",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 5.305585600000086,
+          "prompt_eval_count": 127,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 142630000,
+          "eval_duration_ns": 716482000,
+          "load_duration_ns": 253642800
+        },
+        {
+          "seed_id": "3737",
+          "expected": {
+            "id": "3737",
+            "utt": "降低音響音量",
+            "intent": "audio_volume_down",
+            "slots": []
+          },
+          "output": {
+            "utt": "把喇叭聲音調小一點",
+            "intent": "audio_volume_down",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 4.442814400000316,
+          "prompt_eval_count": 115,
+          "eval_count": 20,
+          "prompt_eval_duration_ns": 128012000,
+          "eval_duration_ns": 496535000,
+          "load_duration_ns": 249424100
+        },
+        {
+          "seed_id": "4242",
+          "expected": {
+            "id": "4242",
+            "utt": "請不要說話",
+            "intent": "audio_volume_mute",
+            "slots": []
+          },
+          "output": {
+            "utt": "請保持安靜",
+            "intent": "audio_volume_mute",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 4.208739499999865,
+          "prompt_eval_count": 115,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 124183000,
+          "eval_duration_ns": 456730000,
+          "load_duration_ns": 211486800
+        },
+        {
+          "seed_id": "4980",
+          "expected": {
+            "id": "4980",
+            "utt": "音量設置",
+            "intent": "audio_volume_other",
+            "slots": []
+          },
+          "output": {
+            "utt": "調整音量",
+            "intent": "audio_volume_other",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 2.725604399999611,
+          "prompt_eval_count": 113,
+          "eval_count": 16,
+          "prompt_eval_duration_ns": 124092000,
+          "eval_duration_ns": 413504000,
+          "load_duration_ns": 200023700
+        },
+        {
+          "seed_id": "3642",
+          "expected": {
+            "id": "3642",
+            "utt": "我聽不到你能不能再大聲點",
+            "intent": "audio_volume_up",
+            "slots": []
+          },
+          "output": {
+            "utt": "聲音太小了，請調大一點音量",
+            "intent": "audio_volume_up",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 2.7419724000001224,
+          "prompt_eval_count": 118,
+          "eval_count": 23,
+          "prompt_eval_duration_ns": 136350000,
+          "eval_duration_ns": 620033000,
+          "load_duration_ns": 213714800
+        },
+        {
+          "seed_id": "8930",
+          "expected": {
+            "id": "8930",
+            "utt": "上次的會議在什麼時候",
+            "intent": "calendar_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請問上次開會是在何時？",
+            "intent": "calendar_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": false,
+          "validation_error": null,
+          "wall_seconds": 2.7263738000001467,
+          "prompt_eval_count": 124,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 126885000,
+          "eval_duration_ns": 717123000,
+          "load_duration_ns": 207418600
+        },
+        {
+          "seed_id": "7911",
+          "expected": {
+            "id": "7911",
+            "utt": "晚餐志豪我的",
+            "intent": "calendar_remove",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "晚餐"
+              },
+              {
+                "type": "person",
+                "value": "志豪"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把志豪的晚餐行程取消",
+            "intent": "calendar_remove",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "晚餐"
+              },
+              {
+                "type": "person",
+                "value": "志豪"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.1647484000000077,
+          "prompt_eval_count": 132,
+          "eval_count": 38,
+          "prompt_eval_duration_ns": 127634000,
+          "eval_duration_ns": 891507000,
+          "load_duration_ns": 200272000
+        },
+        {
+          "seed_id": "8411",
+          "expected": {
+            "id": "8411",
+            "utt": "事件",
+            "intent": "calendar_set",
+            "slots": []
+          },
+          "output": {
+            "utt": "建立一個行事曆事件",
+            "intent": "calendar_set",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.212894199999937,
+          "prompt_eval_count": 111,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 129925000,
+          "eval_duration_ns": 455660000,
+          "load_duration_ns": 210435200
+        },
+        {
+          "seed_id": "6637",
+          "expected": {
+            "id": "6637",
+            "utt": "用什麼煮午餐",
+            "intent": "cooking_query",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "午餐"
+              }
+            ]
+          },
+          "output": {
+            "utt": "午餐要用什麼來煮？",
+            "intent": "cooking_query",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "午餐"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.2220799000001534,
+          "prompt_eval_count": 124,
+          "eval_count": 29,
+          "prompt_eval_duration_ns": 122597000,
+          "eval_duration_ns": 643294000,
+          "load_duration_ns": 199932000
+        },
+        {
+          "seed_id": "10141",
+          "expected": {
+            "id": "10141",
+            "utt": "你用什麼做餅乾",
+            "intent": "cooking_recipe",
+            "slots": [
+              {
+                "type": "food_type",
+                "value": "餅乾"
+              }
+            ]
+          },
+          "output": {
+            "utt": "你拿什麼來做餅乾？",
+            "intent": "cooking_recipe",
+            "slots": [
+              {
+                "type": "food_type",
+                "value": "餅乾"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.2389302999999927,
+          "prompt_eval_count": 125,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 132469000,
+          "eval_duration_ns": 728245000,
+          "load_duration_ns": 203790200
+        },
+        {
+          "seed_id": "1284",
+          "expected": {
+            "id": "1284",
+            "utt": "改這裡時區到印度標準時間",
+            "intent": "datetime_convert",
+            "slots": [
+              {
+                "type": "time_zone",
+                "value": "印度標準時間"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把這裡的時區改成印度標準時間",
+            "intent": "datetime_convert",
+            "slots": [
+              {
+                "type": "time_zone",
+                "value": "印度標準時間"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.13021979999985,
+          "prompt_eval_count": 129,
+          "eval_count": 33,
+          "prompt_eval_duration_ns": 126848000,
+          "eval_duration_ns": 783657000,
+          "load_duration_ns": 209300100
+        },
+        {
+          "seed_id": "2554",
+          "expected": {
+            "id": "2554",
+            "utt": "情人節是星期幾",
+            "intent": "datetime_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "情人節"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請問情人節當天是星期幾？",
+            "intent": "datetime_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "情人節"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.3635677999996005,
+          "prompt_eval_count": 125,
+          "eval_count": 31,
+          "prompt_eval_duration_ns": 129963000,
+          "eval_duration_ns": 688996000,
+          "load_duration_ns": 209015100
+        },
+        {
+          "seed_id": "15894",
+          "expected": {
+            "id": "15894",
+            "utt": "把 john at gmail dot com 加入聯絡人",
+            "intent": "email_addcontact",
+            "slots": [
+              {
+                "type": "email_address",
+                "value": "john at gmail dot com"
+              }
+            ]
+          },
+          "output": {
+            "utt": "將 john at gmail dot com 新增到聯絡人中",
+            "intent": "email_addcontact",
+            "slots": [
+              {
+                "type": "email_address",
+                "value": "john at gmail dot com"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.633001400000012,
+          "prompt_eval_count": 135,
+          "eval_count": 38,
+          "prompt_eval_duration_ns": 139356000,
+          "eval_duration_ns": 895730000,
+          "load_duration_ns": 224846000
+        },
+        {
+          "seed_id": "15988",
+          "expected": {
+            "id": "15988",
+            "utt": "你有收到這人的 email 嗎",
+            "intent": "email_query",
+            "slots": []
+          },
+          "output": {
+            "utt": "你收到這個人的電子郵件了嗎？",
+            "intent": "email_query",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.4550428000002285,
+          "prompt_eval_count": 118,
+          "eval_count": 20,
+          "prompt_eval_duration_ns": 125931000,
+          "eval_duration_ns": 556801000,
+          "load_duration_ns": 207488100
+        },
+        {
+          "seed_id": "16646",
+          "expected": {
+            "id": "16646",
+            "utt": "寄簡訊給美珍",
+            "intent": "email_querycontact",
+            "slots": [
+              {
+                "type": "person",
+                "value": "美珍"
+              }
+            ]
+          },
+          "output": {
+            "utt": "傳訊息給美珍",
+            "intent": "email_querycontact",
+            "slots": [
+              {
+                "type": "person",
+                "value": "美珍"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.9483909000000494,
+          "prompt_eval_count": 127,
+          "eval_count": 58,
+          "prompt_eval_duration_ns": 125890000,
+          "eval_duration_ns": 1277841000,
+          "load_duration_ns": 213014300
+        },
+        {
+          "seed_id": "16964",
+          "expected": {
+            "id": "16964",
+            "utt": "寫一封 email 給家庭成員然後再讀出來",
+            "intent": "email_sendemail",
+            "slots": [
+              {
+                "type": "relation",
+                "value": "家庭成員"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請寫一封信給家庭成員，接著朗讀出來",
+            "intent": "email_sendemail",
+            "slots": [
+              {
+                "type": "relation",
+                "value": "家庭成員"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 4.63746110000011,
+          "prompt_eval_count": 132,
+          "eval_count": 65,
+          "prompt_eval_duration_ns": 50619000,
+          "eval_duration_ns": 1428872000,
+          "load_duration_ns": 197251400
+        },
+        {
+          "seed_id": "3596",
+          "expected": {
+            "id": "3596",
+            "utt": "一切還好吧",
+            "intent": "general_greet",
+            "slots": []
+          },
+          "output": {
+            "utt": "最近一切都好嗎？",
+            "intent": "general_greet",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 4.27839670000003,
+          "prompt_eval_count": 114,
+          "eval_count": 19,
+          "prompt_eval_duration_ns": 126249000,
+          "eval_duration_ns": 472660000,
+          "load_duration_ns": 206998200
+        },
+        {
+          "seed_id": "194",
+          "expected": {
+            "id": "194",
+            "utt": "任何笑話",
+            "intent": "general_joke",
+            "slots": []
+          },
+          "output": {
+            "utt": "講個笑話",
+            "intent": "general_joke",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 4.1470580000000155,
+          "prompt_eval_count": 113,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 136770000,
+          "eval_duration_ns": 414357000,
+          "load_duration_ns": 213655500
+        }
+      ]
+    },
+    {
+      "model": "qwen3.6:27b",
+      "client_concurrency": 8,
+      "num_ctx": 4096,
+      "samples": 20,
+      "wall_seconds": 18.88067319999982,
+      "eval_tokens": 677,
+      "aggregate_tokens_per_second": 35.85677231042834,
+      "summed_eval_tokens_per_second": 42.83821594080252,
+      "json_valid_count": 20,
+      "task_valid_count": 18,
+      "peak_gpu_memory_mib": 18275.0,
+      "peak_ollama_model_vram_mib": 15820.11999797821,
+      "results": [
+        {
+          "seed_id": "5542",
+          "expected": {
+            "id": "5542",
+            "utt": "請告訴我為星期二的會議保留的鬧鐘",
+            "intent": "alarm_query",
+            "slots": [
+              {
+                "type": "date",
+                "value": "星期二的"
+              },
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "output": {
+            "utt": "查詢為星期二會議設定的鬧鐘",
+            "intent": "alarm_query",
+            "slots": [
+              {
+                "type": "date",
+                "value": "星期二的"
+              },
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": false,
+          "validation_error": null,
+          "wall_seconds": 2.842225800000051,
+          "prompt_eval_count": 138,
+          "eval_count": 83,
+          "prompt_eval_duration_ns": 141330000,
+          "eval_duration_ns": 1826327000,
+          "load_duration_ns": 277961100
+        },
+        {
+          "seed_id": "3152",
+          "expected": {
+            "id": "3152",
+            "utt": "刪掉早上六點的鬧鐘",
+            "intent": "alarm_remove",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把早上六點的鬧鐘取消",
+            "intent": "alarm_remove",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 5.882580800000142,
+          "prompt_eval_count": 127,
+          "eval_count": 60,
+          "prompt_eval_duration_ns": 130268000,
+          "eval_duration_ns": 1320926000,
+          "load_duration_ns": 289718700
+        },
+        {
+          "seed_id": "5083",
+          "expected": {
+            "id": "5083",
+            "utt": "建立一個早上六點的鬧鐘",
+            "intent": "alarm_set",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "output": {
+            "utt": "設一個早上六點的鬧鐘",
+            "intent": "alarm_set",
+            "slots": [
+              {
+                "type": "time",
+                "value": "早上六點"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 3.681119399999716,
+          "prompt_eval_count": 127,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 127703000,
+          "eval_duration_ns": 712097000,
+          "load_duration_ns": 268781900
+        },
+        {
+          "seed_id": "3737",
+          "expected": {
+            "id": "3737",
+            "utt": "降低音響音量",
+            "intent": "audio_volume_down",
+            "slots": []
+          },
+          "output": {
+            "utt": "把喇叭聲音調小一點",
+            "intent": "audio_volume_down",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 7.452759900000274,
+          "prompt_eval_count": 115,
+          "eval_count": 20,
+          "prompt_eval_duration_ns": 117002000,
+          "eval_duration_ns": 507481000,
+          "load_duration_ns": 297623400
+        },
+        {
+          "seed_id": "4242",
+          "expected": {
+            "id": "4242",
+            "utt": "請不要說話",
+            "intent": "audio_volume_mute",
+            "slots": []
+          },
+          "output": {
+            "utt": "請保持安靜",
+            "intent": "audio_volume_mute",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 0.8672585000003892,
+          "prompt_eval_count": 115,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 124018000,
+          "eval_duration_ns": 456210000,
+          "load_duration_ns": 272407600
+        },
+        {
+          "seed_id": "4980",
+          "expected": {
+            "id": "4980",
+            "utt": "音量設置",
+            "intent": "audio_volume_other",
+            "slots": []
+          },
+          "output": {
+            "utt": "調整音量",
+            "intent": "audio_volume_other",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 7.9934746999997515,
+          "prompt_eval_count": 113,
+          "eval_count": 16,
+          "prompt_eval_duration_ns": 121743000,
+          "eval_duration_ns": 419323000,
+          "load_duration_ns": 309634900
+        },
+        {
+          "seed_id": "3642",
+          "expected": {
+            "id": "3642",
+            "utt": "我聽不到你能不能再大聲點",
+            "intent": "audio_volume_up",
+            "slots": []
+          },
+          "output": {
+            "utt": "聲音太小了，請調大一點音量",
+            "intent": "audio_volume_up",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 4.4229944999997315,
+          "prompt_eval_count": 118,
+          "eval_count": 23,
+          "prompt_eval_duration_ns": 125951000,
+          "eval_duration_ns": 618486000,
+          "load_duration_ns": 275192200
+        },
+        {
+          "seed_id": "8930",
+          "expected": {
+            "id": "8930",
+            "utt": "上次的會議在什麼時候",
+            "intent": "calendar_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請問上次開會是在何時？",
+            "intent": "calendar_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "會議"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": false,
+          "validation_error": null,
+          "wall_seconds": 6.821851400000014,
+          "prompt_eval_count": 124,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 134376000,
+          "eval_duration_ns": 719348000,
+          "load_duration_ns": 292545900
+        },
+        {
+          "seed_id": "7911",
+          "expected": {
+            "id": "7911",
+            "utt": "晚餐志豪我的",
+            "intent": "calendar_remove",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "晚餐"
+              },
+              {
+                "type": "person",
+                "value": "志豪"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把志豪的晚餐行程取消",
+            "intent": "calendar_remove",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "晚餐"
+              },
+              {
+                "type": "person",
+                "value": "志豪"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 8.165085199999794,
+          "prompt_eval_count": 132,
+          "eval_count": 38,
+          "prompt_eval_duration_ns": 140641000,
+          "eval_duration_ns": 895234000,
+          "load_duration_ns": 202660200
+        },
+        {
+          "seed_id": "8411",
+          "expected": {
+            "id": "8411",
+            "utt": "事件",
+            "intent": "calendar_set",
+            "slots": []
+          },
+          "output": {
+            "utt": "建立一個行事曆事件",
+            "intent": "calendar_set",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.78162489999977,
+          "prompt_eval_count": 111,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 126846000,
+          "eval_duration_ns": 457344000,
+          "load_duration_ns": 208031500
+        },
+        {
+          "seed_id": "6637",
+          "expected": {
+            "id": "6637",
+            "utt": "用什麼煮午餐",
+            "intent": "cooking_query",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "午餐"
+              }
+            ]
+          },
+          "output": {
+            "utt": "午餐要用什麼來煮？",
+            "intent": "cooking_query",
+            "slots": [
+              {
+                "type": "meal_type",
+                "value": "午餐"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.7095368000000235,
+          "prompt_eval_count": 124,
+          "eval_count": 29,
+          "prompt_eval_duration_ns": 124649000,
+          "eval_duration_ns": 643241000,
+          "load_duration_ns": 208583800
+        },
+        {
+          "seed_id": "10141",
+          "expected": {
+            "id": "10141",
+            "utt": "你用什麼做餅乾",
+            "intent": "cooking_recipe",
+            "slots": [
+              {
+                "type": "food_type",
+                "value": "餅乾"
+              }
+            ]
+          },
+          "output": {
+            "utt": "你拿什麼來做餅乾？",
+            "intent": "cooking_recipe",
+            "slots": [
+              {
+                "type": "food_type",
+                "value": "餅乾"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.820098099999996,
+          "prompt_eval_count": 125,
+          "eval_count": 30,
+          "prompt_eval_duration_ns": 134266000,
+          "eval_duration_ns": 720996000,
+          "load_duration_ns": 206542100
+        },
+        {
+          "seed_id": "1284",
+          "expected": {
+            "id": "1284",
+            "utt": "改這裡時區到印度標準時間",
+            "intent": "datetime_convert",
+            "slots": [
+              {
+                "type": "time_zone",
+                "value": "印度標準時間"
+              }
+            ]
+          },
+          "output": {
+            "utt": "把這裡的時區改成印度標準時間",
+            "intent": "datetime_convert",
+            "slots": [
+              {
+                "type": "time_zone",
+                "value": "印度標準時間"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.278712799999994,
+          "prompt_eval_count": 129,
+          "eval_count": 33,
+          "prompt_eval_duration_ns": 128729000,
+          "eval_duration_ns": 781435000,
+          "load_duration_ns": 212077600
+        },
+        {
+          "seed_id": "2554",
+          "expected": {
+            "id": "2554",
+            "utt": "情人節是星期幾",
+            "intent": "datetime_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "情人節"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請問情人節當天是星期幾？",
+            "intent": "datetime_query",
+            "slots": [
+              {
+                "type": "event_name",
+                "value": "情人節"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.15014119999978,
+          "prompt_eval_count": 125,
+          "eval_count": 31,
+          "prompt_eval_duration_ns": 130078000,
+          "eval_duration_ns": 686014000,
+          "load_duration_ns": 204710200
+        },
+        {
+          "seed_id": "15894",
+          "expected": {
+            "id": "15894",
+            "utt": "把 john at gmail dot com 加入聯絡人",
+            "intent": "email_addcontact",
+            "slots": [
+              {
+                "type": "email_address",
+                "value": "john at gmail dot com"
+              }
+            ]
+          },
+          "output": {
+            "utt": "將 john at gmail dot com 新增到聯絡人中",
+            "intent": "email_addcontact",
+            "slots": [
+              {
+                "type": "email_address",
+                "value": "john at gmail dot com"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.5444830000001275,
+          "prompt_eval_count": 135,
+          "eval_count": 38,
+          "prompt_eval_duration_ns": 130633000,
+          "eval_duration_ns": 888111000,
+          "load_duration_ns": 200697100
+        },
+        {
+          "seed_id": "15988",
+          "expected": {
+            "id": "15988",
+            "utt": "你有收到這人的 email 嗎",
+            "intent": "email_query",
+            "slots": []
+          },
+          "output": {
+            "utt": "你收到這個人的電子郵件了嗎？",
+            "intent": "email_query",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 6.688676100000066,
+          "prompt_eval_count": 118,
+          "eval_count": 20,
+          "prompt_eval_duration_ns": 127125000,
+          "eval_duration_ns": 558213000,
+          "load_duration_ns": 210425500
+        },
+        {
+          "seed_id": "16646",
+          "expected": {
+            "id": "16646",
+            "utt": "寄簡訊給美珍",
+            "intent": "email_querycontact",
+            "slots": [
+              {
+                "type": "person",
+                "value": "美珍"
+              }
+            ]
+          },
+          "output": {
+            "utt": "傳訊息給美珍",
+            "intent": "email_querycontact",
+            "slots": [
+              {
+                "type": "person",
+                "value": "美珍"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 7.0607239999999365,
+          "prompt_eval_count": 127,
+          "eval_count": 58,
+          "prompt_eval_duration_ns": 135444000,
+          "eval_duration_ns": 1272534000,
+          "load_duration_ns": 210680400
+        },
+        {
+          "seed_id": "16964",
+          "expected": {
+            "id": "16964",
+            "utt": "寫一封 email 給家庭成員然後再讀出來",
+            "intent": "email_sendemail",
+            "slots": [
+              {
+                "type": "relation",
+                "value": "家庭成員"
+              }
+            ]
+          },
+          "output": {
+            "utt": "請寫一封信給家庭成員，接著朗讀出來",
+            "intent": "email_sendemail",
+            "slots": [
+              {
+                "type": "relation",
+                "value": "家庭成員"
+              }
+            ]
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 8.007780599999933,
+          "prompt_eval_count": 132,
+          "eval_count": 65,
+          "prompt_eval_duration_ns": 53954000,
+          "eval_duration_ns": 1436301000,
+          "load_duration_ns": 207318900
+        },
+        {
+          "seed_id": "3596",
+          "expected": {
+            "id": "3596",
+            "utt": "一切還好吧",
+            "intent": "general_greet",
+            "slots": []
+          },
+          "output": {
+            "utt": "最近一切都好嗎？",
+            "intent": "general_greet",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 7.956807399999889,
+          "prompt_eval_count": 114,
+          "eval_count": 19,
+          "prompt_eval_duration_ns": 126399000,
+          "eval_duration_ns": 483323000,
+          "load_duration_ns": 204228000
+        },
+        {
+          "seed_id": "194",
+          "expected": {
+            "id": "194",
+            "utt": "任何笑話",
+            "intent": "general_joke",
+            "slots": []
+          },
+          "output": {
+            "utt": "講個笑話",
+            "intent": "general_joke",
+            "slots": []
+          },
+          "json_valid": true,
+          "task_valid": true,
+          "validation_error": null,
+          "wall_seconds": 7.629217199999857,
+          "prompt_eval_count": 113,
+          "eval_count": 18,
+          "prompt_eval_duration_ns": 127387000,
+          "eval_duration_ns": 400702000,
+          "load_duration_ns": 209221400
+        }
+      ]
+    }
+  ]
+}

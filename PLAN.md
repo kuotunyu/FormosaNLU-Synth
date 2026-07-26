@@ -7,11 +7,11 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 03:30 +08:00 |
-| **目前里程碑** | **M2 teacher/judge 選型與實測**（M0、M1 已驗證完成） |
-| **下一步動作** | 以 `qwen3.6:27b` 做 structured-output 與吞吐實測，完成 M2 定案 |
+| **最後更新** | 2026-07-27 03:45 +08:00 |
+| **目前里程碑** | **M3 Recipes 與 prompt 版本管理**（M0–M2 已驗證完成） |
+| **下一步動作** | 實作 schema、凍結 labels、四個 recipe 與版本化 prompts，產出每類 5 筆 dry-run |
 | **球在誰身上** | 夜間 agent |
-| **累計 GPU 時數** | 0 h |
+| **累計 GPU 時數** | 0.036 h（M2 成功 measured batches；warmup／失敗診斷未計時） |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
 | **待決事項** | 無阻塞。M2 依 D-009 自動定案，早上請使用者 review |
 | **今晚範圍** | M0 → M8 零樣本。**M9 訓練批次明確排除**（留給明晚，須先看過 M8 結果） |
@@ -62,7 +62,7 @@
 | `src/data/normalize.py`（去空白、全半形、繁簡正規化） | 單元測試：對稽核發現的每種形態各有一個 case |
 | `splits/manifest.json`（seed=42、來源 SHA256、每組 id 清單、**真實筆數**） | `python -m src.data.freeze_split --verify` 重跑得到**完全相同**的 SHA256 |
 
-### M2 · Teacher / Judge 決策 → 🤖 自動定案（D-009）
+### M2 · Teacher / Judge 決策 ✅ 2026-07-27 自動定案（D-009／D-010）
 
 | 交付物 | 驗證方法 |
 |---|---|

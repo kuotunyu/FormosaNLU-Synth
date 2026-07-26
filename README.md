@@ -13,7 +13,7 @@ joint intent classification + slot filling with a fixed JSON output contract.
 | --- | --- |
 | **Dataset** | MASSIVE `zh-TW` (CC BY 4.0) — 60 intents, 55 slot types |
 | **Low-resource setting** | `min(20, available)` samples per intent from train, `seed=42` |
-| **Teacher** | Qwen 3 open-weight, run locally via Ollama (Apache-2.0) |
+| **Teacher** | `qwen3.6:27b`, run locally via Ollama (Apache-2.0) |
 | **Student** | `google/gemma-4-E4B-it`, 4-bit QLoRA (Apache-2.0) |
 | **Judge** | gpt-oss open-weight (Apache-2.0) |
 | **API cost** | **$0** — everything runs on one RTX 4090 |

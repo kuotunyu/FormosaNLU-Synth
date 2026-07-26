@@ -15,7 +15,7 @@
 
 - **Intent**：60 類（MASSIVE 定義）
 - **Slot type**：55 類（MASSIVE 定義）
-- **Student**：Qwen3-4B，4-bit QLoRA，non-thinking mode
+- **Student**：`google/gemma-4-E4B-it`，4-bit QLoRA（D-007）
 - **主指標**：在**未經修改的** MASSIVE `zh-TW` Test（2,974 筆）上評測
 
 ---
@@ -51,7 +51,7 @@ class SyntheticSample(BaseModel):
 | 欄位 | 說明 |
 |---|---|
 | `recipe` | `paraphrase` / `slot_substitution` / `noise_codeswitch` / `hard_negative` |
-| `model` | teacher 的完整 tag（例：`qwen3:30b`）+ Ollama digest |
+| `model` | teacher 的完整 tag（例：`qwen3.6:27b`）+ Ollama digest |
 | `prompt_version` | 例：`paraphrase.v3`，對應 `src/synthetic/prompts/` 下的檔案 |
 | `seed_sample_id` | 來源的 20-shot 真實樣本 id（hard negative 可有兩個） |
 | `gen_params` | temperature / top_p / seed / context_length |
@@ -164,8 +164,8 @@ Judge 的判定結果**同時用於兩件事**：剔除壞樣本，以及**回�
 
 | 角色 | 模型 | 大小 | 授權 | 備註 |
 |---|---|---|---|---|
-| Teacher（主） | `qwen3:30b`（Qwen3-30B-A3B MoE，3B 活躍參數） | 19 GB | Apache-2.0 | 256K context |
-| Teacher（保險） | `qwen3:14b` | 9.3 GB | Apache-2.0 | OOM 或吞吐不足時退這個 |
+| Teacher（主，D-010） | `qwen3.6:27b`（27.8B dense，Q4_K_M） | 17 GB | Apache-2.0 | M2 實測：20/20 JSON、18/20 F1–F3，4 併發 35.86 tok/s |
+| Teacher（保險） | `qwen3:14b` | 9.3 GB | Apache-2.0 | OOM、吞吐或 M4 品質門檻不足時才退這個 |
 | Judge（換家族） | `gpt-oss:20b` | 14 GB | Apache-2.0 | 官方稱 16GB 記憶體可跑 |
 
 > **M2 的查證範圍是「當前世代」，不是鎖死上表。** teacher 只做**推論**，因此不受「Qwen3.5 系列不建議 4-bit QLoRA」這類量化警告影響，可以放心採用更新世代的 Qwen 開放權重模型。上表是查證的起點，不是結論。

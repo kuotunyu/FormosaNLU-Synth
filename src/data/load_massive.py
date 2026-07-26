@@ -124,6 +124,30 @@ def load_massive(
     return datasets
 
 
+def load_massive_split(
+    split: str,
+    data_dir: Path = DEFAULT_DATA_DIR,
+    *,
+    download: bool = True,
+) -> Dataset:
+    """Load exactly one split, keeping train-only callers away from Val/Test."""
+    if split not in SPLITS:
+        raise ValueError(f"Unsupported split: {split}")
+    paths = ensure_parquet_files(data_dir, download=download)
+    dataset = Dataset(pq.read_table(paths[split], memory_map=True))
+    if len(dataset) != EXPECTED_ROWS[split]:
+        raise MassiveLoadError(
+            f"Unexpected {split} row count: {len(dataset)}; expected {EXPECTED_ROWS[split]}"
+        )
+    locales = set(dataset.unique("locale"))
+    partitions = set(dataset.unique("partition"))
+    if locales != {LOCALE} or partitions != {EXPECTED_PARTITIONS[split]}:
+        raise MassiveLoadError(
+            f"{split} contains locales={sorted(locales)} partitions={sorted(partitions)}"
+        )
+    return dataset
+
+
 def class_label_names(dataset: Dataset, column: str) -> list[str]:
     """Return names from a Hugging Face ClassLabel column."""
     feature = dataset.features[column]

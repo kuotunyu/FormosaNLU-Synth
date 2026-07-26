@@ -235,4 +235,40 @@ Gemini API Terms（effective **2026-03-23**）明文：
 
 ---
 
-<!-- 新決策從 D-010 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-010 — Teacher／Judge／Embedding 依本機實測定案
+
+- **日期**：2026-07-27
+- **狀態**：`accepted`
+- **決策**：Teacher 使用 `qwen3.6:27b`，judge 使用 `gpt-oss:20b`，F5/F6
+  embedding 使用 `BAAI/bge-m3`。Teacher 固定 `num_ctx=4096`、client concurrency
+  4；judge 不傳 `think: false`，改在 system prompt 指定 `Reasoning: low`。
+
+**考慮過的選項**
+
+| 選項 | 結果 | 理由 |
+|---|---|---|
+| `qwen3.6:27b`（17GB） | **採用** | 最新可用 Qwen、Apache-2.0、≤20GB，Ollama structured output 實測通過 |
+| Qwen3.6 35B（24GB） | 否決 | 超過 D-009 的 20GB teacher 護欄 |
+| Qwen3.5 27B（17GB） | 否決 | 同大小但較舊，沒有優於 Qwen3.6 的理由 |
+| `qwen3:30b`／`qwen3:14b` | 保留 fallback | 只有 M4 未過固定門檻或運行退化時才回退 |
+| 封閉模型 API | 否決 | 蒸餾與公開語料的服務條款風險，且本機路線已達標 |
+
+**理由**
+
+- Teacher 20 筆真實 seed 實測：JSON 20/20，intent／slot／grounding 全對
+  18/20；concurrency 1/4/8 分別為 29.91／35.86／35.86 tok/s，因此選 4。
+- Teacher 模型 VRAM 峰值 15,820 MiB，全 GPU 峰值 18,277 MiB，4090 有餘裕。
+- Judge 兩輪各 20 筆皆為 20/20 JSON-valid，四個布林判定一致 19/20（95%）。
+- gpt-oss 在 Ollama 傳 `think: false` 會產生空內容；移除後 40/40 可解析，
+  因此這是後續 client 的硬性相容設定。
+- 完整原始結果在 `reports/m2_teacher_benchmark.json` 與
+  `reports/m2_judge_benchmark.json`；授權與條款證據在
+  `docs/teacher_choice.md`。
+
+**什麼情況該推翻**：M4 在不調低既定門檻的前提下失敗、Ollama 更新造成輸出或
+吞吐明顯退化，或 M5 實測顯示 BGE-M3 的中文相似度分布無法形成可解釋的閾值。
+若需改走雲端開放權重 API，必須先取得使用者對帳號、ToS 與費用的額外核可。
+
+---
+
+<!-- 新決策從 D-011 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
