@@ -43,6 +43,20 @@ _（尚無）_
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
+### [2026-07-27 04:05 +08:00] M3 recipes + schema — 完成
+
+- 凍結 60 intents／55 slot types 與 SHA256，程式會對
+  `splits/manifest.json` 驗證漂移
+- 完成 `CandidateOutput`／`SyntheticSample`／完整 provenance schema；合成 id
+  是不含時間與機器路徑的 content-address
+- 四個 recipe 與 Markdown prompt 均版本化；slot substitution 的新 value 由程式
+  決定，teacher 只修語氣
+- 第一輪 20/20 JSON、16/20 契約合格；保留完整 v1 證據後改善 prompt
+- 採用版本第二輪 20/20 JSON、19/20 intent／slot／grounding 契約合格；
+  四種 recipe 各 5 筆、兩種 style 都已輸出到 review 報告
+- 17 tests passed；Ruff 與 `git diff --check` 通過
+- 兩輪 measured wall time 共 67.68 秒；結束後模型已卸載，GPU 回到約 960 MiB
+
 ### [2026-07-27 03:45 +08:00] M2 teacher/judge 選型 — 完成
 
 - Teacher 定案為 `qwen3.6:27b`：20/20 JSON-valid、18/20 intent／slot／grounding
@@ -96,7 +110,7 @@ _（尚無）_
 | M0 環境與骨架 | ✅ 完成且驗證通過 | 14 分 | 健檢全綠；lock/import/Ruff 通過 | uv 環境、package 骨架、模型 |
 | M1 資料稽核 + split 凍結 | ✅ 完成且驗證通過 | 2 分 | 8 tests；manifest SHA256 重建一致 | loader、稽核、圖表、manifest |
 | M2 teacher/judge 選型 | ✅ 完成且驗證通過 | 15 分 | teacher 20/20 JSON、18/20 任務有效；judge 一致率 95% | 選型報告、benchmark JSON、D-010 |
-| M3 recipes + schema | ⬜ 未開始 | | | |
+| M3 recipes + schema | ✅ 完成且驗證通過 | 20 分 | 17 tests；20/20 JSON、19/20 契約；兩種 style | schema、labels、4 recipes、版本化 prompts、dry-run 報告 |
 | M4 生成器 + pilot | ⬜ 未開始 | | | |
 | M5 過濾管線 + 測試 | ⬜ 未開始 | | | |
 | M6 全量生成 + 過濾 | ⬜ 未開始 | | | |

@@ -1,0 +1,1109 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-26T19:53:16.660577+00:00",
+  "model": "qwen3.6:27b",
+  "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+  "prompt_versions": [
+    "hard_negative.v1",
+    "noise_codeswitch.v1",
+    "paraphrase.v1",
+    "slot_substitution.v1"
+  ],
+  "summary": {
+    "samples": 20,
+    "json_valid": 20,
+    "contract_valid": 16,
+    "wall_seconds": 36.78761560000021,
+    "prompt_tokens": 4290,
+    "output_tokens": 903
+  },
+  "results": [
+    {
+      "recipe": "paraphrase",
+      "prompt_version": "paraphrase.v1",
+      "style": "massive_like",
+      "expected_intent": "alarm_query",
+      "expected_slots": [
+        {
+          "type": "date",
+          "value": "星期二的"
+        },
+        {
+          "type": "event_name",
+          "value": "會議"
+        }
+      ],
+      "seed_sample_id": "5542",
+      "pair_id": null,
+      "sample": {
+        "utt": "查詢星期二會議設定的鬧鐘",
+        "intent": "alarm_query",
+        "slots": [
+          {
+            "type": "date",
+            "value": "星期二的"
+          },
+          {
+            "type": "event_name",
+            "value": "會議"
+          }
+        ],
+        "id": "syn_e1d1b6029cd97017d3b8",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "paraphrase",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "paraphrase.v1",
+          "seed_sample_id": "5542",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43000,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 0.0
+          },
+          "filter_stage_passed": null,
+          "reject_reason": "F3_UNGROUNDED_SLOT",
+          "generated_at": "2026-07-26T19:52:54.204198Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": false,
+      "reject_reason": "F3_UNGROUNDED_SLOT",
+      "validation_error": null,
+      "wall_seconds": 14.331386100000145,
+      "prompt_eval_count": 195,
+      "eval_count": 38
+    },
+    {
+      "recipe": "paraphrase",
+      "prompt_version": "paraphrase.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "alarm_remove",
+      "expected_slots": [
+        {
+          "type": "time",
+          "value": "早上六點"
+        }
+      ],
+      "seed_sample_id": "3152",
+      "pair_id": null,
+      "sample": {
+        "utt": "把早上六點的鬧鐘取消",
+        "intent": "alarm_remove",
+        "slots": [
+          {
+            "type": "time",
+            "value": "早上六點"
+          }
+        ],
+        "id": "syn_bd7c989ba9838352f53c",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "paraphrase",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "paraphrase.v1",
+          "seed_sample_id": "3152",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43001,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:53.091895Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 13.209571600000345,
+      "prompt_eval_count": 182,
+      "eval_count": 30
+    },
+    {
+      "recipe": "paraphrase",
+      "prompt_version": "paraphrase.v1",
+      "style": "massive_like",
+      "expected_intent": "alarm_set",
+      "expected_slots": [
+        {
+          "type": "time",
+          "value": "早上六點"
+        }
+      ],
+      "seed_sample_id": "5083",
+      "pair_id": null,
+      "sample": {
+        "utt": "設定早上六點的鬧鐘",
+        "intent": "alarm_set",
+        "slots": [
+          {
+            "type": "time",
+            "value": "早上六點"
+          }
+        ],
+        "id": "syn_1361c88d91acf2d3218f",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "paraphrase",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "paraphrase.v1",
+          "seed_sample_id": "5083",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43002,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:55.009473Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 15.125763500000176,
+      "prompt_eval_count": 184,
+      "eval_count": 29
+    },
+    {
+      "recipe": "paraphrase",
+      "prompt_version": "paraphrase.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "audio_volume_down",
+      "expected_slots": [],
+      "seed_sample_id": "3737",
+      "pair_id": null,
+      "sample": {
+        "utt": "把喇叭聲音調小一點",
+        "intent": "audio_volume_down",
+        "slots": [],
+        "id": "syn_57003e70d42939aca78c",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "paraphrase",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "paraphrase.v1",
+          "seed_sample_id": "3737",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43003,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:52.263240Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 12.377663199999915,
+      "prompt_eval_count": 170,
+      "eval_count": 20
+    },
+    {
+      "recipe": "paraphrase",
+      "prompt_version": "paraphrase.v1",
+      "style": "massive_like",
+      "expected_intent": "audio_volume_mute",
+      "expected_slots": [],
+      "seed_sample_id": "4242",
+      "pair_id": null,
+      "sample": {
+        "utt": "請保持安靜",
+        "intent": "audio_volume_mute",
+        "slots": [],
+        "id": "syn_427ffc5c2c876acf1ac8",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "paraphrase",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "paraphrase.v1",
+          "seed_sample_id": "4242",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43004,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:55.557757Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 3.292999900000268,
+      "prompt_eval_count": 172,
+      "eval_count": 18
+    },
+    {
+      "recipe": "slot_substitution",
+      "prompt_version": "slot_substitution.v1",
+      "style": "massive_like",
+      "expected_intent": "alarm_query",
+      "expected_slots": [
+        {
+          "type": "date",
+          "value": "星期四"
+        },
+        {
+          "type": "event_name",
+          "value": "會議"
+        }
+      ],
+      "seed_sample_id": "5542",
+      "pair_id": null,
+      "sample": {
+        "utt": "請幫我查詢為星期四會議設定的鬧鐘",
+        "intent": "alarm_query",
+        "slots": [
+          {
+            "type": "date",
+            "value": "星期四"
+          },
+          {
+            "type": "event_name",
+            "value": "會議"
+          }
+        ],
+        "id": "syn_614842ee2cdc28ecb87b",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "slot_substitution",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "slot_substitution.v1",
+          "seed_sample_id": "5542",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43005,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:56.785564Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 3.6935820999997304,
+      "prompt_eval_count": 222,
+      "eval_count": 40
+    },
+    {
+      "recipe": "slot_substitution",
+      "prompt_version": "slot_substitution.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "alarm_remove",
+      "expected_slots": [
+        {
+          "type": "time",
+          "value": "早上四點"
+        }
+      ],
+      "seed_sample_id": "3152",
+      "pair_id": null,
+      "sample": {
+        "utt": "刪掉早上四點的鬧鐘",
+        "intent": "alarm_remove",
+        "slots": [
+          {
+            "type": "time",
+            "value": "早上四點"
+          }
+        ],
+        "id": "syn_9058fcab165dbbeef390",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "slot_substitution",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "slot_substitution.v1",
+          "seed_sample_id": "3152",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43006,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:57.807479Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 3.602816200000234,
+      "prompt_eval_count": 211,
+      "eval_count": 30
+    },
+    {
+      "recipe": "slot_substitution",
+      "prompt_version": "slot_substitution.v1",
+      "style": "massive_like",
+      "expected_intent": "alarm_set",
+      "expected_slots": [
+        {
+          "type": "time",
+          "value": "早上四點"
+        }
+      ],
+      "seed_sample_id": "5083",
+      "pair_id": null,
+      "sample": {
+        "utt": "設定一個早上四點的鬧鐘",
+        "intent": "alarm_set",
+        "slots": [
+          {
+            "type": "time",
+            "value": "早上四點"
+          }
+        ],
+        "id": "syn_74128d34ce6efaa7ffa2",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "slot_substitution",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "slot_substitution.v1",
+          "seed_sample_id": "5083",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43007,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:52:58.839512Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 3.8297293000000536,
+      "prompt_eval_count": 213,
+      "eval_count": 30
+    },
+    {
+      "recipe": "slot_substitution",
+      "prompt_version": "slot_substitution.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "audio_volume_down",
+      "expected_slots": [
+        {
+          "type": "change_amount",
+          "value": "到百分之十"
+        }
+      ],
+      "seed_sample_id": "2706",
+      "pair_id": null,
+      "sample": {
+        "utt": "把音量調低到百分之十",
+        "intent": "audio_volume_down",
+        "slots": [
+          {
+            "type": "change_amount",
+            "value": "到百分之十"
+          }
+        ],
+        "id": "syn_e9d4c16d71dd3a0f140a",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "slot_substitution",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "slot_substitution.v1",
+          "seed_sample_id": "2706",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43008,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:00.521440Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 4.963418199999978,
+      "prompt_eval_count": 213,
+      "eval_count": 62
+    },
+    {
+      "recipe": "slot_substitution",
+      "prompt_version": "slot_substitution.v1",
+      "style": "massive_like",
+      "expected_intent": "audio_volume_mute",
+      "expected_slots": [
+        {
+          "type": "time",
+          "value": "早上四點"
+        }
+      ],
+      "seed_sample_id": "607",
+      "pair_id": null,
+      "sample": {
+        "utt": "設定早上四點靜音",
+        "intent": "audio_volume_mute",
+        "slots": [
+          {
+            "type": "time",
+            "value": "早上四點"
+          }
+        ],
+        "id": "syn_89731adbdbe31e2a89ac",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "slot_substitution",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "slot_substitution.v1",
+          "seed_sample_id": "607",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43009,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:01.537759Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 4.751726099999814,
+      "prompt_eval_count": 213,
+      "eval_count": 31
+    },
+    {
+      "recipe": "noise_codeswitch",
+      "prompt_version": "noise_codeswitch.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "audio_volume_other",
+      "expected_slots": [],
+      "seed_sample_id": "4980",
+      "pair_id": null,
+      "sample": {
+        "utt": "幫我把音量調高一點",
+        "intent": "audio_volume_other",
+        "slots": [],
+        "id": "syn_4a9b85fc538479e17503",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "noise_codeswitch",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "noise_codeswitch.v1",
+          "seed_sample_id": "4980",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43010,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:02.514194Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 4.706566299999849,
+      "prompt_eval_count": 189,
+      "eval_count": 33
+    },
+    {
+      "recipe": "noise_codeswitch",
+      "prompt_version": "noise_codeswitch.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "audio_volume_up",
+      "expected_slots": [],
+      "seed_sample_id": "3642",
+      "pair_id": null,
+      "sample": {
+        "utt": "我聽不到耶，你能不能再大聲點？",
+        "intent": "audio_volume_up",
+        "slots": [],
+        "id": "syn_966445811ccfa7d7f6c7",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "noise_codeswitch",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "noise_codeswitch.v1",
+          "seed_sample_id": "3642",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43011,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:03.493859Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 4.654357300000356,
+      "prompt_eval_count": 194,
+      "eval_count": 37
+    },
+    {
+      "recipe": "noise_codeswitch",
+      "prompt_version": "noise_codeswitch.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "calendar_query",
+      "expected_slots": [
+        {
+          "type": "event_name",
+          "value": "會議"
+        }
+      ],
+      "seed_sample_id": "8930",
+      "pair_id": null,
+      "sample": {
+        "utt": "上次的會議耶，在什麼時候",
+        "intent": "calendar_query",
+        "slots": [
+          {
+            "type": "event_name",
+            "value": "會議"
+          }
+        ],
+        "id": "syn_771f000ecbb3e489ee8d",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "noise_codeswitch",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "noise_codeswitch.v1",
+          "seed_sample_id": "8930",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43012,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:04.987043Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 4.465382299999874,
+      "prompt_eval_count": 200,
+      "eval_count": 59
+    },
+    {
+      "recipe": "noise_codeswitch",
+      "prompt_version": "noise_codeswitch.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "calendar_remove",
+      "expected_slots": [
+        {
+          "type": "meal_type",
+          "value": "晚餐"
+        },
+        {
+          "type": "person",
+          "value": "志豪"
+        }
+      ],
+      "seed_sample_id": "7911",
+      "pair_id": null,
+      "sample": {
+        "utt": "晚餐志豪我的啦",
+        "intent": "calendar_remove",
+        "slots": [
+          {
+            "type": "meal_type",
+            "value": "晚餐"
+          },
+          {
+            "type": "person",
+            "value": "志豪"
+          }
+        ],
+        "id": "syn_acf95f9e3a6f80bbbafa",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "noise_codeswitch",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "noise_codeswitch.v1",
+          "seed_sample_id": "7911",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43013,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:06.922212Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 5.384130599999935,
+      "prompt_eval_count": 208,
+      "eval_count": 80
+    },
+    {
+      "recipe": "noise_codeswitch",
+      "prompt_version": "noise_codeswitch.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "calendar_set",
+      "expected_slots": [],
+      "seed_sample_id": "8411",
+      "pair_id": null,
+      "sample": {
+        "utt": "事件啦",
+        "intent": "calendar_set",
+        "slots": [],
+        "id": "syn_92f40e4c6b423bd9d26f",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "noise_codeswitch",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "noise_codeswitch.v1",
+          "seed_sample_id": "8411",
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43014,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:07.686069Z",
+          "pair_id": null
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 5.1717084000001705,
+      "prompt_eval_count": 187,
+      "eval_count": 28
+    },
+    {
+      "recipe": "hard_negative",
+      "prompt_version": "hard_negative.v1",
+      "style": "massive_like",
+      "expected_intent": "alarm_set",
+      "expected_slots": [
+        {
+          "type": "time",
+          "value": "早上六點"
+        }
+      ],
+      "seed_sample_id": [
+        "5542",
+        "5083"
+      ],
+      "pair_id": "pair_555d5ed8f01bca34",
+      "sample": {
+        "utt": "設定星期二的會議鬧鐘",
+        "intent": "alarm_set",
+        "slots": [
+          {
+            "type": "date",
+            "value": "星期二的"
+          },
+          {
+            "type": "event_name",
+            "value": "會議"
+          }
+        ],
+        "id": "syn_15316b530cfef5aebe8b",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "hard_negative",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "hard_negative.v1",
+          "seed_sample_id": [
+            "5542",
+            "5083"
+          ],
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43015,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 0.0
+          },
+          "filter_stage_passed": null,
+          "reject_reason": "F2_SLOT_CONTRACT",
+          "generated_at": "2026-07-26T19:53:09.762508Z",
+          "pair_id": "pair_555d5ed8f01bca34"
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": false,
+      "reject_reason": "F2_SLOT_CONTRACT",
+      "validation_error": null,
+      "wall_seconds": 6.268347600000197,
+      "prompt_eval_count": 276,
+      "eval_count": 81
+    },
+    {
+      "recipe": "hard_negative",
+      "prompt_version": "hard_negative.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "calendar_set",
+      "expected_slots": [],
+      "seed_sample_id": [
+        "8930",
+        "8411"
+      ],
+      "pair_id": "pair_ac45feb3b62feabe",
+      "sample": {
+        "utt": "幫我把上次那個會議設成提醒",
+        "intent": "calendar_set",
+        "slots": [
+          {
+            "type": "event_name",
+            "value": "會議"
+          }
+        ],
+        "id": "syn_cd86601b8a293a557895",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "hard_negative",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "hard_negative.v1",
+          "seed_sample_id": [
+            "8930",
+            "8411"
+          ],
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43016,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 0.0
+          },
+          "filter_stage_passed": null,
+          "reject_reason": "F2_SLOT_CONTRACT",
+          "generated_at": "2026-07-26T19:53:11.389665Z",
+          "pair_id": "pair_ac45feb3b62feabe"
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": false,
+      "reject_reason": "F2_SLOT_CONTRACT",
+      "validation_error": null,
+      "wall_seconds": 6.402329500000178,
+      "prompt_eval_count": 244,
+      "eval_count": 60
+    },
+    {
+      "recipe": "hard_negative",
+      "prompt_version": "hard_negative.v1",
+      "style": "massive_like",
+      "expected_intent": "lists_createoradd",
+      "expected_slots": [
+        {
+          "type": "list_name",
+          "value": "待辦"
+        }
+      ],
+      "seed_sample_id": [
+        "10720",
+        "10814"
+      ],
+      "pair_id": "pair_8d618a4922b010ec",
+      "sample": {
+        "utt": "把購物加進我的待辦清單",
+        "intent": "lists_createoradd",
+        "slots": [
+          {
+            "type": "list_name",
+            "value": "待辦"
+          }
+        ],
+        "id": "syn_f84abdd7c249b91e0b11",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "hard_negative",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "hard_negative.v1",
+          "seed_sample_id": [
+            "10720",
+            "10814"
+          ],
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43017,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:13.104378Z",
+          "pair_id": "pair_8d618a4922b010ec"
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 6.181953199999953,
+      "prompt_eval_count": 268,
+      "eval_count": 63
+    },
+    {
+      "recipe": "hard_negative",
+      "prompt_version": "hard_negative.v1",
+      "style": "tw_colloquial",
+      "expected_intent": "takeaway_order",
+      "expected_slots": [
+        {
+          "type": "food_type",
+          "value": "漢堡"
+        }
+      ],
+      "seed_sample_id": [
+        "3456",
+        "88"
+      ],
+      "pair_id": "pair_4cd8794f1be5cabe",
+      "sample": {
+        "utt": "幫我訂漢堡",
+        "intent": "takeaway_order",
+        "slots": [
+          {
+            "type": "food_type",
+            "value": "漢堡"
+          }
+        ],
+        "id": "syn_14d1764bc033c8abdabb",
+        "style": "tw_colloquial",
+        "provenance": {
+          "recipe": "hard_negative",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "hard_negative.v1",
+          "seed_sample_id": [
+            "3456",
+            "88"
+          ],
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43018,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 1.0
+          },
+          "filter_stage_passed": "F3",
+          "reject_reason": null,
+          "generated_at": "2026-07-26T19:53:14.648157Z",
+          "pair_id": "pair_4cd8794f1be5cabe"
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": true,
+      "reject_reason": null,
+      "validation_error": null,
+      "wall_seconds": 6.9617952999997215,
+      "prompt_eval_count": 280,
+      "eval_count": 56
+    },
+    {
+      "recipe": "hard_negative",
+      "prompt_version": "hard_negative.v1",
+      "style": "massive_like",
+      "expected_intent": "play_music",
+      "expected_slots": [
+        {
+          "type": "music_genre",
+          "value": "旋律"
+        }
+      ],
+      "seed_sample_id": [
+        "6374",
+        "1188"
+      ],
+      "pair_id": "pair_98b174602b4bfb8c",
+      "sample": {
+        "utt": "播放今年的旋律音樂",
+        "intent": "play_music",
+        "slots": [
+          {
+            "type": "date",
+            "value": "今年"
+          },
+          {
+            "type": "music_genre",
+            "value": "旋律"
+          }
+        ],
+        "id": "syn_6f989ba0e2394cb352c1",
+        "style": "massive_like",
+        "provenance": {
+          "recipe": "hard_negative",
+          "model": "qwen3.6:27b",
+          "model_digest": "a50eda8ed977ab48a12431878896b27ffd5cef552c17af3317d9623b939a7f1e",
+          "prompt_version": "hard_negative.v1",
+          "seed_sample_id": [
+            "6374",
+            "1188"
+          ],
+          "gen_params": {
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "seed": 43019,
+            "context_length": 4096
+          },
+          "filter_score": {
+            "m3_contract_valid": 0.0
+          },
+          "filter_stage_passed": null,
+          "reject_reason": "F2_SLOT_CONTRACT",
+          "generated_at": "2026-07-26T19:53:16.660058Z",
+          "pair_id": "pair_98b174602b4bfb8c"
+        }
+      },
+      "raw_content": null,
+      "json_valid": true,
+      "contract_valid": false,
+      "reject_reason": "F2_SLOT_CONTRACT",
+      "validation_error": null,
+      "wall_seconds": 6.89745849999963,
+      "prompt_eval_count": 269,
+      "eval_count": 78
+    }
+  ]
+}

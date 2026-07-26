@@ -5,7 +5,7 @@ description: FormosaNLU（03-formosanlu-sdg）專案的脈絡恢復與工作慣�
 
 # FormosaNLU 專案導航
 
-用 LLM 合成資料提升 **Qwen3-4B** 在繁中台灣口語 NLU（intent + slot、固定 JSON 輸出）的 low-resource 表現。最終發佈到 GitHub（kuotunyu）與 Hugging Face（steven0226）。
+用 LLM 合成資料提升 **Gemma 4 E4B-it** 在繁中台灣口語 NLU（intent + slot、固定 JSON 輸出）的 low-resource 表現。最終發佈到 GitHub（kuotunyu）與 Hugging Face（steven0226）。
 
 ---
 
@@ -83,7 +83,8 @@ ollama ps          # 看目前常駐哪顆、佔多少 VRAM
 ollama stop <model>  # 換模型前先卸載，避免 24GB 擠爆
 ```
 
-> `qwen3:30b`(19GB)、`gpt-oss:20b`(14GB) 的 pull **超過 2GB 門檻，一律先問使用者**。
+> Teacher 已依 D-010 定為 `qwen3.6:27b`（17GB），judge 為
+> `gpt-oss:20b`。新的大型權重下載仍須遵守當次授權。
 
 ---
 
@@ -121,8 +122,8 @@ ollama stop <model>  # 換模型前先卸載，避免 24GB 擠爆
 | 時機 | 為什麼 |
 |---|---|
 | M0 pull Ollama 模型前 | 19GB / 14GB 超過 2GB 下載門檻 |
-| **M2 teacher/judge 選型定案後** | 使用者核可才能進 M3 |
-| **M4 pilot 報告出爐後** | 使用者核可才能跑全量 |
+| **M2 teacher/judge 選型定案後** | 一般需使用者核可；D-009 夜間執行可自動定案、早上 review |
+| **M4 pilot 報告出爐後** | 一般需使用者核可；D-009 夜間執行只有六道固定門檻全過才能自動接全量 |
 | 任何花錢動作 | 例如升級到雲端 API（需新註冊 + 儲值） |
 | 轉 public 前 | GitHub / HF 都要使用者過目 |
 
