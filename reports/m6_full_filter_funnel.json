@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "total": 11264,
+  "f1_json_valid": 11264,
+  "f1_f3_passed": 10065,
+  "f1_f4_passed": 9114,
+  "f1_f6_passed": 3760,
+  "f1_f6_rate": 0.3338068181818182,
+  "rejected": 7504,
+  "semantic_rejected": 5354,
+  "f6_exclusions": 248,
+  "reject_reasons": {
+    "F2_LABEL_CONTRACT_INTENT": 7,
+    "F2_LABEL_CONTRACT_SLOTS": 454,
+    "F3_UNGROUNDED_OR_OVERLAPPING_SLOT": 738,
+    "F4_LOCALE_LANGUAGE_RATIO": 300,
+    "F4_LOCALE_SIMPLIFIED": 651,
+    "F5_DUP_SEED": 460,
+    "F5_DUP_SYNTHETIC": 4596,
+    "F5_OUTLIER_SEED": 50,
+    "F6_CONTAM_EVAL": 248
+  },
+  "thresholds": {
+    "synthetic_duplicate_max": 0.999,
+    "seed_too_close_max": 0.995,
+    "seed_outlier_min": 0.65,
+    "contamination_max": 0.99
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T09:22:57.026642+00:00",
+  "status": "ready",
+  "seed": 42,
+  "groups": {
+    "real_only": {
+      "rows": 1176,
+      "unique_ids": 1176,
+      "intent_count": 60,
+      "min_rows_per_intent": 4,
+      "max_rows_per_intent": 20,
+      "sha256": "fe512be14c9a09b99f542049b2090f673a770e7962efef345fef081030e7739d"
+    },
+    "real_std_aug": {
+      "rows": 4936,
+      "unique_ids": 4936,
+      "intent_count": 60,
+      "min_rows_per_intent": 20,
+      "max_rows_per_intent": 113,
+      "sha256": "4cd6a10d81de9fa26d58f48ce11561b9cce5abda2e7d4ea50f1ddfc17dd4437a"
+    },
+    "real_syn_unfiltered_full": {
+      "rows": 12440,
+      "unique_ids": 12440,
+      "intent_count": 60,
+      "min_rows_per_intent": 38,
+      "max_rows_per_intent": 437,
+      "sha256": "d9abf103fcf22ec37475e230bef624e1839fcd265acdf926822649c143f3a6d5"
+    },
+    "real_syn_unfiltered_eqn": {
+      "rows": 4936,
+      "unique_ids": 4936,
+      "intent_count": 60,
+      "min_rows_per_intent": 19,
+      "max_rows_per_intent": 155,
+      "sha256": "91377b69a07ce6d11aad8c24cd009f84f41f900968dd663066d7366164e62d3c"
+    },
+    "real_syn_filtered": {
+      "rows": 4936,
+      "unique_ids": 4936,
+      "intent_count": 60,
+      "min_rows_per_intent": 23,
+      "max_rows_per_intent": 139,
+      "sha256": "1cba20a6de7fa983c236571c0855b9cd3d0c550d50cdda0494a601e419cfa082"
+    },
+    "full_real": {
+      "rows": 11514,
+      "unique_ids": 11514,
+      "intent_count": 60,
+      "min_rows_per_intent": 4,
+      "max_rows_per_intent": 810,
+      "sha256": "b28dc32f4f8b0f27aa5f9997b22710748f8c271e40e556d0b8f1bce1fb266f7a"
+    }
+  },
+  "fairness_checks": {
+    "filtered_added": 3760,
+    "unfiltered_equal_n_added": 3760,
+    "standard_aug_added": 3760,
+    "equal_n": true
+  }
+}

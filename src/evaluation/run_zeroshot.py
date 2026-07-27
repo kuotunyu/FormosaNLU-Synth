@@ -66,6 +66,12 @@ def _write_report(
     max_new_tokens: int,
     report_json: Path,
     report_markdown: Path,
+    evaluation_name: str = "M8 Zero-shot Baseline",
+    evaluation_mode: str = "zero_shot",
+    label_catalog_included: bool = True,
+    adapter_dir: Path | None = None,
+    group: str | None = None,
+    seed: int | None = None,
 ) -> None:
     metrics = aggregate_metrics(
         [record["raw_prediction"] for record in records],
@@ -89,7 +95,14 @@ def _write_report(
         "text_only_class": "Gemma4ForCausalLM",
         "quantization": "NF4 double-quant, bf16 compute",
         "prompt_template_version": TEMPLATE_VERSION,
-        "zero_shot_prompt_includes_label_catalog": True,
+        "evaluation_mode": evaluation_mode,
+        "label_catalog_included": label_catalog_included,
+        "zero_shot_prompt_includes_label_catalog": (
+            label_catalog_included if evaluation_mode == "zero_shot" else False
+        ),
+        "adapter_dir": str(adapter_dir) if adapter_dir is not None else None,
+        "group": group,
+        "seed": seed,
         "constrained_decoding": False,
         "completed": len(records),
         "target": target_count,
@@ -129,12 +142,18 @@ def _write_report(
     report_markdown.write_text(
         "\n".join(
             [
-                "# M8 Zero-shot Baseline",
+                f"# {evaluation_name}",
                 "",
                 f"- Completed: {len(records)}/{target_count}",
                 "- Model: `google/gemma-4-E4B-it` via text-only `Gemma4ForCausalLM`",
+                (
+                    f"- Adapter: `{adapter_dir}` (group `{group}`, seed `{seed}`)"
+                    if adapter_dir is not None
+                    else "- Adapter: none (zero-shot baseline)"
+                ),
                 "- Quantization: NF4 + double quant, bf16 compute",
-                f"- Prompt template: `{TEMPLATE_VERSION}`; zero-shot label catalog included",
+                f"- Prompt template: `{TEMPLATE_VERSION}`; "
+                f"label catalog {'included' if label_catalog_included else 'not included'}",
                 "- Constrained decoding: **disabled**",
                 f"- JSON-valid: {metrics['json_valid_rate']:.2%}",
                 f"- Intent accuracy: {metrics['intent_accuracy']:.2%}",

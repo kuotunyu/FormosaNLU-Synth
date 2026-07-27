@@ -10,7 +10,29 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**無。** 目前所有工作都在本機，不需要你動手。
+**不用操作電腦，但需要做一個決定：**
+
+1. 建議：用固定門檻實得的 3,760 筆 filtered corpus 照實跑 M9；
+2. 或先修訂 generation design，再另開一次正式生成（會延後 M9，且本次結果仍保留）。
+
+選好後，睡前只要在對話裡說「開始跑 M9」；我會先檢查另外兩個專案與 GPU，
+再啟動可續跑的六組批次。你不需要自己輸入 PowerShell 指令。
+
+---
+
+## 0. 本機 M9 過夜批次
+
+準備狀態：六組資料、Standard Aug、dry plan、checkpoint 續跑與 evaluation
+入口均已驗證。技術報告在 `reports/m9_preflight.md`。
+
+若真的需要手動啟動，請在專案根目錄使用：
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.train_all --execute --confirm M9-LOCAL-4090
+```
+
+正常情況不需要你做這一步；由我協調其他專案並啟動較安全。中斷後重跑同一命令
+會跳過完整 run，未完成 run 會從最新 checkpoint 接續。
 
 ---
 

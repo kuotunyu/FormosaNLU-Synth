@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T09:30:00+00:00",
+  "status": "complete_below_target",
+  "generation": {
+    "model": "qwen3.6:27b",
+    "target_rows": 11264,
+    "completed_rows": 11264,
+    "generation_index_range": [
+      0,
+      11263
+    ],
+    "unique_ids": 11264,
+    "wall_seconds": 14663.140890199997,
+    "prompt_tokens": 2860385,
+    "output_tokens": 515170,
+    "api_cost_usd": 0.0,
+    "input": "data/generated/full_unfiltered.jsonl",
+    "input_sha256": "a7956a14c992f922ce321faba9652cf9bd96e39b8029105f2cf52c88d36f9447"
+  },
+  "filtering": {
+    "thresholds": {
+      "synthetic_duplicate_max": 0.999,
+      "seed_too_close_max": 0.995,
+      "seed_outlier_min": 0.65,
+      "contamination_max": 0.99
+    },
+    "f1_json_valid": 11264,
+    "f1_f3_passed": 10065,
+    "f1_f4_passed": 9114,
+    "f1_f6_passed": 3760,
+    "f1_f6_rate": 0.3338068181818182,
+    "rejected": 7504,
+    "reject_reasons": {
+      "F2_LABEL_CONTRACT_INTENT": 7,
+      "F2_LABEL_CONTRACT_SLOTS": 454,
+      "F3_UNGROUNDED_OR_OVERLAPPING_SLOT": 738,
+      "F4_LOCALE_LANGUAGE_RATIO": 300,
+      "F4_LOCALE_SIMPLIFIED": 651,
+      "F5_DUP_SEED": 460,
+      "F5_DUP_SYNTHETIC": 4596,
+      "F5_OUTLIER_SEED": 50,
+      "F6_CONTAM_EVAL": 248
+    },
+    "accepted": "data/filtered/full_f1_f6.jsonl",
+    "accepted_sha256": "e9700b50b85516af01023811bcedb0afb9e6f73a156a39d2d14feca5d5600daf",
+    "semantic_embeddings_sha256": "8a566682d9e7793caf06ba0c68de49dcf2686367fadbc8c76dae20b4857f8494"
+  },
+  "mode_collapse_diagnostic": {
+    "basis": "exact utterance equality among the 9114 F1-F4 survivors",
+    "distinct_utterances": 4044,
+    "repeated_rows_beyond_first_occurrence": 5070,
+    "duplicate_groups": 2126,
+    "top_exact_duplicates": [
+      {
+        "utt": "關閉客廳喇叭",
+        "count": 51
+      },
+      {
+        "utt": "打開客廳喇叭",
+        "count": 34
+      },
+      {
+        "utt": "播放爵士樂",
+        "count": 30
+      }
+    ]
+  },
+  "target_assessment": {
+    "required_minimum": 8000,
+    "met": false,
+    "shortfall": 4240,
+    "thresholds_changed_after_generation": false,
+    "recommended_interpretation": "Preserve the negative result. Do not relax frozen thresholds to manufacture the planned yield."
+  },
+  "spot_check": {
+    "method": "20 evenly spaced accepted rows",
+    "rows_reviewed": 20,
+    "observation": "Most rows were readable and grounded, but some were awkward or underspecified. A production release still needs the planned F7 quality audit."
+  }
+}

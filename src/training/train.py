@@ -85,9 +85,14 @@ def _gpu_environment() -> str:
     return completed.stdout.strip() if completed.returncode == 0 else "unavailable"
 
 
-def _write_run_metadata(output_dir: Path, config: dict[str, Any], group: str) -> None:
+def _write_run_metadata(
+    output_dir: Path,
+    config: dict[str, Any],
+    group: str,
+    seed: int,
+) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    snapshot = {**config, "run": {"group": group}}
+    snapshot = {**config, "run": {"group": group, "seed": seed}}
     (output_dir / "config.snapshot.yaml").write_text(
         yaml.safe_dump(snapshot, sort_keys=False, allow_unicode=True),
         encoding="utf-8",
@@ -120,6 +125,8 @@ def train_group(
     output_dir: Path,
     smoke_test: bool,
     resume: bool,
+    seed: int | None = None,
+    max_steps_override: int | None = None,
 ) -> None:
     """Load heavy ML libraries lazily so CPU-only validation can still run."""
     import torch
@@ -135,12 +142,17 @@ def train_group(
     lora = config["lora"]
     if group not in config["groups"]:
         raise ValueError(f"Unknown training group: {group}")
+    run_seed = int(training["seed"] if seed is None else seed)
+    if max_steps_override is not None and not smoke_test:
+        raise ValueError("max_steps_override is restricted to smoke tests")
+    if max_steps_override is not None and max_steps_override <= 0:
+        raise ValueError("max_steps_override must be positive")
     model_path = REPO_ROOT / model_config["local_path"]
     if not model_path.exists():
         raise FileNotFoundError(f"Local model is missing: {model_path}")
-    _write_run_metadata(output_dir, config, group)
+    _write_run_metadata(output_dir, config, group, run_seed)
 
-    train_examples = group_examples(group)
+    train_examples = group_examples(group, seed=run_seed)
     eval_examples = validation_examples(limit=8 if smoke_test else None)
     if smoke_test:
         train_examples = train_examples[:8]
@@ -173,7 +185,13 @@ def train_group(
         bias=lora["bias"],
         task_type="CAUSAL_LM",
     )
-    max_steps = 1 if smoke_test else training["max_steps"]
+    max_steps = (
+        max_steps_override
+        if max_steps_override is not None
+        else 1
+        if smoke_test
+        else training["max_steps"]
+    )
     sft_config = SFTConfig(
         output_dir=str(output_dir),
         max_steps=max_steps,
@@ -196,7 +214,8 @@ def train_group(
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
-        seed=training["seed"],
+        seed=run_seed,
+        data_seed=run_seed,
         report_to="none",
     )
     trainer = SFTTrainer(
@@ -223,12 +242,19 @@ def train_group(
         "status": "completed",
         "smoke_test": smoke_test,
         "group": group,
+        "seed": run_seed,
+        "train_examples": len(train_examples),
+        "eval_examples": len(eval_examples),
+        "effective_batch_size": training["effective_batch_size"],
+        "max_steps": max_steps,
         "trainable_parameters": trainable_parameters,
         "total_parameters": total_parameters,
         "trainable_percent": 100 * trainable_parameters / total_parameters,
         "peak_gpu_allocated_mib": torch.cuda.max_memory_allocated() / (1024**2),
         "peak_gpu_reserved_mib": torch.cuda.max_memory_reserved() / (1024**2),
         "resumed_from": str(checkpoint) if checkpoint else None,
+        "best_model_checkpoint": trainer.state.best_model_checkpoint,
+        "global_step": trainer.state.global_step,
         "adapter_dir": str(adapter_dir),
         "metrics": training_result.metrics,
     }
@@ -245,6 +271,8 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--smoke-test", action="store_true")
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--seed", type=int)
+    parser.add_argument("--max-steps-override", type=int)
     args = parser.parse_args()
     output_dir = args.output_dir or (
         REPO_ROOT / "runs" / ("smoke" if args.smoke_test else args.group) / "seed_42"
@@ -255,6 +283,8 @@ def main() -> int:
         output_dir=output_dir,
         smoke_test=args.smoke_test,
         resume=args.resume,
+        seed=args.seed,
+        max_steps_override=args.max_steps_override,
     )
     return 0
 

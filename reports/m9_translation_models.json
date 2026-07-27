@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T09:14:46.863325+00:00",
+  "status": "complete",
+  "models": [
+    {
+      "repo_id": "Helsinki-NLP/opus-mt-zh-en",
+      "revision": "cf109095479db38d6df799875e34039d4938aaa6",
+      "license": "CC-BY-4.0",
+      "local_path": "data/models/opus-mt-zh-en",
+      "downloaded_bytes": 315322500,
+      "files": [
+        {
+          "path": "data\\models\\opus-mt-zh-en\\config.json",
+          "bytes": 1394,
+          "sha256": "d84104da12fa90da59acf5f0ed30428e43cc92574ad4b9dfa88f29eeeb2b0eb0"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\generation_config.json",
+          "bytes": 293,
+          "sha256": "81f06422302b9f4666f20c6f20f43b904e38ccce9326a208f82ff97c2c9699e5"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\metadata.json",
+          "bytes": 1477,
+          "sha256": "b412c4bd90f9161deb21e018b9b9bb0d5c1ddcfa528b78a550f82c261b9f8ddc"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\pytorch_model.bin",
+          "bytes": 312087009,
+          "sha256": "9d8ceb91d103ef89400c9d9d62328b4858743cf8924878aee3b8afc594242ce0"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\README.md",
+          "bytes": 3174,
+          "sha256": "7f4b7f90672cd55b85b213bbe21f4b2d0c92327e885734b7e86b019feb145a6b"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\source.spm",
+          "bytes": 804677,
+          "sha256": "e27a3a1b539f4959ec72ea60e453f49156289f95d4e6000b29332efc45616203"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\target.spm",
+          "bytes": 806530,
+          "sha256": "6a881f4717cd7265f53fea54fd3dc689c767c05338fac7a4590f3088cb2d7855"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\tokenizer_config.json",
+          "bytes": 44,
+          "sha256": "53cc7a6f05224f287476af4798d96b1b85da2edae60257e58633f092c7b5b823"
+        },
+        {
+          "path": "data\\models\\opus-mt-zh-en\\vocab.json",
+          "bytes": 1617902,
+          "sha256": "c0f79ee4c413ccb24cd808a0c727eec85b2130f23c82802cc1caeb07b5f0d458"
+        }
+      ]
+    },
+    {
+      "repo_id": "Helsinki-NLP/opus-mt-en-zh",
+      "revision": "408d9bc410a388e1d9aef112a2daba955b945255",
+      "license": "Apache-2.0",
+      "local_path": "data/models/opus-mt-en-zh",
+      "downloaded_bytes": 315321723,
+      "files": [
+        {
+          "path": "data\\models\\opus-mt-en-zh\\config.json",
+          "bytes": 1403,
+          "sha256": "bcae8ed74fed77fb51c58462b62397fee6b1a1a34aece79183a0dd02ad329e71"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\generation_config.json",
+          "bytes": 293,
+          "sha256": "837839ed0534a27084f9b980fc33f47729052dd89cb26cca7ac830765ed30e49"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\metadata.json",
+          "bytes": 1478,
+          "sha256": "5ee2309b77c5b05171d0d22e4113241febe7bccebbe2980801ebb27cf175ae06"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\pytorch_model.bin",
+          "bytes": 312087009,
+          "sha256": "69a1d6ec829cee349360b3b677ac0aa99a7d88822d1a6578370029efffdca3f5"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\README.md",
+          "bytes": 2670,
+          "sha256": "83eee2a6598751f746a057e10d5c9dfd71d6b0cf0146f9e6c1bb3ebd6e90959b"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\source.spm",
+          "bytes": 806435,
+          "sha256": "5775ddc9e3ff2fae91554da56468ad35ff56edaba870fea74447bc7234bfdaa8"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\target.spm",
+          "bytes": 804600,
+          "sha256": "81dc94efa84e4025ef38d25d5d07429fe41e3eb29d44003f1db6fe98487b0052"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\tokenizer_config.json",
+          "bytes": 44,
+          "sha256": "5df181fba586b7cb37d429c13c4f96cb43fb11de7bb6489733d9eded32418179"
+        },
+        {
+          "path": "data\\models\\opus-mt-en-zh\\vocab.json",
+          "bytes": 1617791,
+          "sha256": "f1832ca38f7aa158b9a944ff583e4901e6b37d9d4ad9241f03838e636e9cfb03"
+        }
+      ]
+    }
+  ],
+  "total_downloaded_bytes": 630644223
+}

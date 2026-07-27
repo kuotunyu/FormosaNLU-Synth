@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input": "data\\generated\\full_unfiltered.jsonl",
+  "total": 11264,
+  "f1_json_valid": 11264,
+  "f1_f3_passed": 10065,
+  "f1_f4_passed": 9114,
+  "rejected": 2150,
+  "reject_reasons": {
+    "F2_LABEL_CONTRACT_INTENT": 7,
+    "F2_LABEL_CONTRACT_SLOTS": 454,
+    "F3_UNGROUNDED_OR_OVERLAPPING_SLOT": 738,
+    "F4_LOCALE_LANGUAGE_RATIO": 300,
+    "F4_LOCALE_SIMPLIFIED": 651
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T09:18:16.150949+00:00",
+  "status": "complete",
+  "model": "BAAI/bge-m3",
+  "model_path": "data\\models\\bge-m3",
+  "model_weight_bytes": 2271145830,
+  "model_weight_sha256": "b5e0ce3470abf5ef3831aa1bd5553b486803e83251590ab7ff35a117cf6aad38",
+  "input": "data\\filtered\\full_f1_f4.jsonl",
+  "input_sha256": "e3e90f577c3f0238cd2eca52821aa62001ff78dd7a3028fd20d88e642860bc91",
+  "frozen_references": "data\\embeddings\\m5_pilot_bge_m3.npz",
+  "frozen_references_sha256": "82832e8fc4f95abd6bc3138373a2cfb3fc6f9722056089e61366570b8542b1f4",
+  "output": "data\\embeddings\\m6_full_bge_m3.npz",
+  "output_sha256": "8a566682d9e7793caf06ba0c68de49dcf2686367fadbc8c76dae20b4857f8494",
+  "device": "cuda",
+  "batch_size": 64,
+  "counts": {
+    "synthetic_f1_f4": 9114,
+    "train_seeds": 1176,
+    "validation_and_test": 5007
+  },
+  "timing_seconds": {
+    "model_load": 14.065017799999623,
+    "synthetic_encode": 3.3107182000021567,
+    "archive_write_and_hash": 2.0796821000039927,
+    "total": 19.455418100005772
+  },
+  "peak_gpu_allocated_mib": 2295.46875,
+  "peak_gpu_reserved_mib": 2384.0
+}

@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 12:05 +08:00 |
-| **目前里程碑** | **M6 正式生成 11,264 筆進行中**；M5/M8 已完成 |
-| **下一步動作** | 監控可續跑 checkpoint；完成後依 frozen thresholds 跑 F1–F6 |
-| **球在誰身上** | 本 agent |
-| **累計 GPU 時數** | M8 零樣本 summed generation 1.050 h；另有 M2–M4 0.292 h 與短 smoke |
+| **最後更新** | 2026-07-27 17:30 +08:00 |
+| **目前里程碑** | **M9 啟動準備完成**；M6 全量 F1–F6 完成但未達 8,000 gate |
+| **下一步動作** | 使用者決定：以誠實的 3,760 筆 filtered corpus 跑 M9，或重做 generation design |
+| **球在誰身上** | 使用者（只需做科學決策，不需手動操作電腦） |
+| **累計 GPU 時數** | M6 generation 4.073 h；M8 零樣本 1.050 h；M2–M4 0.292 h；另有 BGE/QLoRA 短測 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | 無；M5 thresholds 已在看圖與 pair review 後凍結 |
-| **今晚範圍** | M0 → M8 零樣本。**M9 訓練批次明確排除**（留給明晚，須先看過 M8 結果） |
-| **阻塞項** | 無；M6 投影 4.028 h，期間不可重疊其他 GPU 模型 |
+| **待決事項** | 3,760 筆照實訓練 vs. 修訂 prompts 後另開一次正式生成；凍結 thresholds 不得放寬 |
+| **今晚範圍** | 使用者已授權睡覺時跑 M9；目前只完成準備，**長批次尚未啟動** |
+| **阻塞項** | 技術上無；長批次只等待上述資料決策與使用者睡前明確開跑 |
 
 ---
 
@@ -97,13 +97,13 @@
 | filtered / unfiltered 雙版本 + 每筆 provenance | schema 驗證：provenance 欄位無缺漏 |
 | pilot 資料的漏斗表 | 各階段刪除數加總 = 生成數 − 最終數（對得起來） |
 
-### M6 · 全量生成 + 過濾 🔄 11,264 筆生成進行中
+### M6 · 全量生成 + 過濾 ⚠️ 完成，但 3,760 筆未達 8,000 gate
 
 | 交付物 | 驗證方法 |
 |---|---|
-| filtered 8,000–10,000 筆 | 實際筆數進報表；不足就分析原因不硬湊 |
-| `reports/generation_report.md` | 漏斗圖 + 總帳（GPU 時數／電費估算／等值 API 成本）＋去汙染稽核 log 摘要 |
-| `data/formosa_synth_v1/{filtered,unfiltered}/` | 抽 20 筆人工目視，記進報告（抽查觀察，非逐筆標註） |
+| filtered 8,000–10,000 筆 | ⚠️ 實得 3,760（33.38%）；主要為 4,596 筆 synthetic duplicates，不調門檻硬湊 |
+| `reports/generation_report.md` | ✅ 11,264-row 生成總帳、F1–F6 漏斗、hash、mode-collapse 分析、M9 影響 |
+| `data/formosa_synth_v1/{filtered,unfiltered}/` | ⚠️ M9 候選檔已完成並抽 20 筆目視；正式 release packaging 與 F7 留到 M12/M13 |
 
 ### M7 · 收尾
 
@@ -130,15 +130,17 @@
 | 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
 | **零樣本 baseline**（未微調 base model 跑真實 Test） | 2,974/2,974；JSON-valid 17.38%、intent accuracy 10.66%、macro-F1 23.12%、slot F1 0%、exact 8.10%；無 constrained decoding |
 
-### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🚫 **無人監督時不得執行**
+### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🟡 **啟動準備完成**
 
-> 5–8 小時的批次要先讓使用者看過 M8 的零樣本結果（那是 R-9 的閘門）才開跑。夜間 agent 做到 M8 就收工。
+> 使用者已看過 M8 並授權睡覺期間使用 GPU。六組資料、Standard Aug、
+> batch resume 與 evaluation dry plan 已驗證；長批次尚未啟動，先處理 M6
+> 只有 3,760 筆通過的科學決策。
 
 | 交付物 | 驗證方法 |
 |---|---|
-| 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | 六份 `config.snapshot.yaml` 逐項比對**完全一致**（只有 group 與 seed 不同，R-10） |
+| 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ dry plan / inputs；實際六份 snapshot 等正式 run 完成後比對 |
 | `real_only` 與最佳 filtered 組補到 3 seeds（合計約 10 runs） | 每個 run 有 `metrics.jsonl`、`adapter/`、`env.json` |
-| 過夜批次（估 5–8 h） | 單組失敗不影響其他組；中斷後可續跑 |
+| 過夜批次（估 5–8 h） | ✅ 1→2 step 跨程序 resume 實測；正式 batch 未啟動 |
 | `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | 在 Colab **實跑一組**（約 1.5h units），結果放 `results/colab/`，與本機同組比對可攜性（不要求逐位元一致，R-14） |
 | `docs/instructions_for_me.md` 的 Colab 章節填實 | 每步有預期耗時與成功確認方式 |
 

@@ -311,4 +311,58 @@ train loss 1.9862、eval loss 2.9560、peak allocated VRAM 20,646 MiB。
 
 ---
 
-<!-- 新決策從 D-012 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-012 — Standard Aug 使用固定 Marian round trip 加 slot-aware EDA
+
+- **日期**：2026-07-27
+- **狀態**：`accepted`
+- **決策**：M9 的 `real_std_aug` 使用 deterministic、slot-protected
+  augmentation。Round-trip translation 固定為
+  `Helsinki-NLP/opus-mt-zh-en` revision
+  `cf109095479db38d6df799875e34039d4938aaa6` 與
+  `Helsinki-NLP/opus-mt-en-zh` revision
+  `408d9bc410a388e1d9aef112a2daba955b945255`；不足部分以 slot-aware EDA
+  與 bounded character noise 補足。增加筆數必須與 filtered synthetic 的
+  N 完全相同。
+
+**考慮過的選項**
+
+1. 線上翻譯 API：拒絕，會引入費用、條款與不可重現的服務版本。
+2. 只做字元 noise：拒絕，控制組太弱，無法代表常見的 standard augmentation。
+3. 未保護 slots 的整句 backtranslation：拒絕，會改壞 literal span labels。
+
+**理由**：兩個模型都能由 Transformers MarianMT 直接本機執行，revision、
+license、必要檔與 SHA-256 已凍結。slot placeholder 先切段、逐段翻譯再還原，
+避免模型改寫 slot value。正式輸出 3,760 筆包含 EDA 2,200、character noise
+514、backtranslation 1,046。
+
+**重新審視的觸發條件**：模型 revision 消失、license 改變、round-trip 造成
+slot span 無法還原，或 M9 發現 Standard Aug 被單一變換方式完全主導。
+
+---
+
+## D-013 — M6 未達 8,000 時保留負面結果，不放寬 frozen thresholds
+
+- **日期**：2026-07-27
+- **狀態**：`accepted`
+- **決策**：11,264-row M6 在 frozen F1–F6 下只通過 3,760 筆，正式記為
+  `complete_below_target`。不為達成 8,000 而更動 threshold、刪改報告或挑選
+  另一套事後規則。M9 equal-N 控制可先以真實 N=3,760 準備，但長批次須讓
+  使用者選擇照實訓練或另開 revised generation run。
+
+**考慮過的選項**
+
+1. 放寬 synthetic duplicate threshold：拒絕，會是看過結果後的 gate hacking。
+2. 把 rejected rows 補到 8,000：拒絕，破壞 filtered 組的定義。
+3. 只報 pilot 75% yield：拒絕，會掩蓋 corpus-scale mode collapse。
+4. 保留結果並用 equal-N 設計比較：採用。
+
+**理由**：F1–F4 survivors 9,114 筆中只有 4,044 個 exact-text distinct
+utterances；F5 合理移除 4,596 筆 synthetic duplicates。索引、ID、embedding
+archive 與漏斗加總均通過，證據指向 generation mode collapse 而非管線 bug。
+
+**重新審視的觸發條件**：只能在發現可重現的程式錯誤、資料讀取錯誤或 frozen
+threshold 實作與 D-010 不一致時重算；單純不喜歡結果不構成推翻理由。
+
+---
+
+<!-- 新決策從 D-014 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->

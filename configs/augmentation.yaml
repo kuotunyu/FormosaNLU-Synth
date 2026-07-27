@@ -1,0 +1,24 @@
+schema_version: 1
+seed: 42
+target:
+  # The generated augmentation count equals the accepted synthetic count.
+  # Every augmented group also contains the same 1,176 frozen real seeds.
+  match_filtered_synthetic_count: true
+methods:
+  backtranslation:
+    source:
+      repo_id: "Helsinki-NLP/opus-mt-zh-en"
+      revision: "cf109095479db38d6df799875e34039d4938aaa6"
+      local_path: "data/models/opus-mt-zh-en"
+      license: "CC-BY-4.0"
+    target:
+      repo_id: "Helsinki-NLP/opus-mt-en-zh"
+      revision: "408d9bc410a388e1d9aef112a2daba955b945255"
+      local_path: "data/models/opus-mt-en-zh"
+      license: "Apache-2.0"
+    batch_size: 32
+    max_length: 256
+  slot_aware_eda:
+    enabled: true
+  character_noise:
+    enabled: true

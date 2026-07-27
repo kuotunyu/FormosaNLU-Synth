@@ -11,19 +11,21 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–12:05 +08:00（含使用者返回後續作） |
-| 完成到 | M0–M5、M7、M8 完成；M6 正式生成 11,264 筆進行中 |
-| 卡住的項目 | 無；M6 投影 4.028 h，期間不可重疊其他 GPU 模型 |
-| GPU 時數 | M8 零樣本 summed generation 1.050 h；另有 M2–M4 0.292 h 與短 smoke |
-| 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 dense 必要檔 2.293GB；另有可刪的舊 venv 複本 |
+| 執行區間 | 2026-07-27 03:14–17:30 +08:00（含使用者返回後續作） |
+| 完成到 | M0–M8；M9 六組資料、Standard Aug、batch/eval 入口與 resume preflight 完成 |
+| 卡住的項目 | 技術上無；M6 只通過 3,760 筆，長 M9 等待資料策略決策 |
+| GPU 時數 | M6 generation 4.073 h；M8 零樣本 1.050 h；另有 M2–M5 與 QLoRA 短測 |
+| 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
 ### 🔴 需要你決定（最重要的放最前面）
 
 <!-- 逐條列出。每條要有：問題、背景、我建議的選項、以及不決定會擋住什麼 -->
 
-目前沒有需要使用者立即操作的 blocker。請在 M6 約四小時執行期間不要從其他
-專案啟動 GPU 模型。Python runtime 已修復，沒有修改系統 PATH、driver 或 DLL。
+M6 全量固定門檻只留下 **3,760 / 11,264（33.38%）**，未達 8,000。
+建議先以這個誠實 N 跑六組 M9：equal-N filtered / unfiltered / Standard Aug
+都已固定為 3,760，仍可做公平比較；另一選項是先改 generation design 並重跑，
+但那會是新的實驗，不能覆蓋這次負面結果。
 
 ### 👀 需要你 review 的產出
 
@@ -33,12 +35,14 @@
 - `reports/pilot_report.md`：500 筆 pilot、過濾漏斗、固定 gate
 - `reports/m8_training_design.md`：Gemma artifact、文字塔 key mapping 與 QLoRA smoke
 - `reports/m8_zeroshot_baseline.md`：完整 2,974-row 嚴格零樣本 baseline
-- `docs/data_card.md`：已由 pilot 證據填入的 M7 草稿
+- `reports/generation_report.md`：M6 正式漏斗、mode collapse 與負面結果
+- `reports/m9_preflight.md`：六組筆數、Standard Aug 與 checkpoint resume 實證
+- `docs/data_card.md`：已填入 full-corpus 結果的 pre-release 草稿
 
 ### ➡️ 明天的建議起點
 
-監控 M6 可續跑 checkpoint。11,264 筆完成後跑相同 F1–F6、產生正式 filtered /
-unfiltered corpus 與漏斗報告；不足 8,000 就如實停下分析，不調門檻。
+記錄「3,760 筆照實訓練」或「另開 revised generation run」的選擇。若採前者，
+等使用者睡前明確說開跑後，執行已加 confirmation guard 的六組 M9 batch。
 
 ---
 
@@ -46,6 +50,17 @@ unfiltered corpus 與漏斗報告；不足 8,000 就如實停下分析，不調�
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-27 17:30 +08:00] M6 → M9 preflight — 完成，等待資料決策
+
+- M6 raw 11,264/11,264；index 0–11,263、ID 唯一、SHA-256 與 cost session 完整
+- frozen F1–F6 最終 3,760（33.38%）；F5 synthetic duplicate 單項移除 4,596
+- 9,114 個 F1–F4 survivors 僅 4,044 個 distinct utterances，確認為 mode collapse
+- Standard Aug 3,760 筆完成：EDA 2,200、char noise 514、backtranslation 1,046
+- 六組 train counts / unique IDs / 60 intents 全通過，三個 equal-N addition 皆為 3,760
+- QLoRA 跨程序 resume smoke 從 `checkpoint-1` 接到 step 2；peak 20,646 MiB
+- 六組 batch 與 trained-adapter evaluation 都有 dry-plan、resume 與 explicit guard
+- 沒有啟動長時間 M9；短 GPU 工作完成後已通知 SafeSynth / DefectForge 解除保留
 
 ### [2026-07-27 12:24 +08:00] M5 → M6 — fixed gate 通過，正式生成啟動
 
@@ -183,11 +198,11 @@ unfiltered corpus 與漏斗報告；不足 8,000 就如實停下分析，不調�
 | M1 資料稽核 + split 凍結 | ✅ 完成且驗證通過 | 2 分 | 8 tests；manifest SHA256 重建一致 | loader、稽核、圖表、manifest |
 | M2 teacher/judge 選型 | ✅ 完成且驗證通過 | 15 分 | teacher 20/20 JSON、18/20 任務有效；judge 一致率 95% | 選型報告、benchmark JSON、D-010 |
 | M3 recipes + schema | ✅ 完成且驗證通過 | 20 分 | 17 tests；20/20 JSON、19/20 契約；兩種 style | schema、labels、4 recipes、版本化 prompts、dry-run 報告 |
-| M4 生成器 + pilot | ⚠️ Pilot 完成，gate 未放行 | 15 分開發 + 14 分 GPU | 500/500；F1 100%、F1–F3 90.8%、judge 98%；F5/F6 未量測 | resumable generator、pilot、報告 |
-| M5 過濾管線 + 測試 | ⚠️ 程式完成，runtime 卡住 | 15 分 | 36 tests；F1–F4 漏斗對齊；BGE thresholds=null | F1–F7 程式、funnel、狀態報告 |
-| M6 全量生成 + 過濾 | 🛑 未獲 gate 放行 | — | 18k 投影 6.44h；F1–F6/8k yield 未證明 | 未執行 |
-| M7 data_card 草稿 | ⚠️ Pilot-backed 草稿完成 | 5 分 | 所有已填數字可追溯；全量欄位留待 M6 | data card |
-| M8 零樣本 baseline | 🛑 管線完成，runtime 卡住 | 18 分 + 下載 | 45 tests；artifact hash/size；torch WinError 1114 | config、trainer、eval、blocked report |
-| M9 訓練批次 | 🚫 今晚不做 | — | — | 明晚，需先看過 M8 結果 |
+| M4 生成器 + pilot | ✅ 完成且 fixed gate 通過 | 15 分開發 + 14 分 GPU | 500/500；F1–F6 375/500；judge 49/50 | resumable generator、pilot、報告 |
+| M5 過濾管線 + 測試 | ✅ 完成且驗證通過 | 約 20 分 + BGE 短測 | thresholds 0.999/0.995/0.650/0.990；漏斗對齊 | F1–F7 程式、BGE archive、funnel |
+| M6 全量生成 + 過濾 | ⚠️ 完成但未達產量 gate | 4.073 h generation | 11,264/11,264；F1–F6 3,760（33.38%） | corpus、generation report、mode-collapse 分析 |
+| M7 data_card 草稿 | ✅ Full-corpus pre-release 草稿 | — | M6 數字與限制均可追溯 | data card |
+| M8 零樣本 baseline | ✅ 完成且驗證通過 | 1.050 h inference + smoke | 2,974/2,974；intent 10.66%；QLoRA peak 20,646 MiB | config、trainer、baseline、adapter smoke |
+| M9 訓練批次 | 🟡 啟動準備完成 | 尚未長跑 | 六組 preflight；1→2 step resume；Standard Aug 3,760 | batch/eval CLI、資料、preflight report |
 
 狀態圖例：⬜ 未開始／🔄 進行中／✅ 完成且驗證通過／⚠️ 完成但有問題／🛑 卡住／🚫 不在範圍

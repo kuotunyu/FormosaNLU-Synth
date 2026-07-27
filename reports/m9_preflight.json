@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T09:30:00+00:00",
+  "status": "ready_pending_dataset_decision",
+  "primary_seed": 42,
+  "groups": {
+    "real_only": 1176,
+    "real_std_aug": 4936,
+    "real_syn_unfiltered_full": 12440,
+    "real_syn_unfiltered_eqn": 4936,
+    "real_syn_filtered": 4936,
+    "full_real": 11514
+  },
+  "fairness": {
+    "filtered_added": 3760,
+    "unfiltered_equal_n_added": 3760,
+    "standard_aug_added": 3760,
+    "equal_n": true
+  },
+  "standard_augmentation": {
+    "rows": 3760,
+    "slot_aware_eda": 2200,
+    "character_noise": 514,
+    "backtranslation": 1046,
+    "output_sha256": "5e83285d95bd70eabf737285d4fb519eca569effc67b106e8196186af955df8e"
+  },
+  "training": {
+    "shared_config_sha256": "2bfd8edd257542ba0a3fefa8506a1a40b1ad24f8ef76b5624df55e4c372490cb",
+    "sequence": [
+      "real_only",
+      "real_std_aug",
+      "real_syn_unfiltered_full",
+      "real_syn_unfiltered_eqn",
+      "real_syn_filtered",
+      "full_real"
+    ],
+    "resume_smoke": {
+      "status": "passed",
+      "first_checkpoint": "checkpoint-1",
+      "resumed_from": "runs/m9_resume_smoke/seed_42/checkpoint-1",
+      "final_global_step": 2,
+      "final_checkpoint": "checkpoint-2",
+      "peak_gpu_allocated_mib": 20646.04248046875,
+      "peak_gpu_reserved_mib": 22434.0
+    },
+    "execution_guard": "--execute --confirm M9-LOCAL-4090",
+    "long_batch_started": false
+  },
+  "evaluation": {
+    "dry_plan_status": "passed",
+    "resumable_adapter_entry": "python -m scripts.eval",
+    "execution_guard": "--execute --confirm M9-EVAL-LOCAL-4090",
+    "started": false
+  },
+  "blocking_decision": "Use the honest 3760-row filtered corpus for M9, or redesign and rerun generation first."
+}

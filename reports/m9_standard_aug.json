@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T09:21:10.528482+00:00",
+  "status": "complete",
+  "seed": 42,
+  "target_filtered_synthetic_count": 3760,
+  "frozen_real_seed_count": 1176,
+  "augmentation_count": 3760,
+  "training_group_count": 4936,
+  "method_counts": {
+    "backtranslation": 1046,
+    "character_noise": 514,
+    "slot_aware_eda": 2200
+  },
+  "backtranslation_grounded_candidates": 1176,
+  "filtered_source_sha256": "e9700b50b85516af01023811bcedb0afb9e6f73a156a39d2d14feca5d5600daf",
+  "output": "data\\training\\standard_aug.jsonl",
+  "output_sha256": "5e83285d95bd70eabf737285d4fb519eca569effc67b106e8196186af955df8e",
+  "timing_seconds": {
+    "backtranslation": 37.83432509999693,
+    "eda_noise_and_write": 0.2226848999998765,
+    "total": 38.05700999999681
+  }
+}
