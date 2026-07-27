@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T10:17:21.418870+00:00",
+  "status": "ready",
+  "output": "outputs\\formosanlu_colab_bundle.zip",
+  "bytes": 3571887,
+  "sha256": "995f55222ea032c58a3209f9ff2877ed5ee6d1cb0c2e2700ed3dcd7c5872fc6c",
+  "source_commit": "10ff0a98d068210ff85349cd24ad670003a6a754",
+  "file_count": 77,
+  "model_included": false,
+  "required_gpu_memory_mib": 22434
+}
