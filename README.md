@@ -203,10 +203,10 @@ python -m scripts.train_all --validate-inputs
 # 5. CPU-only overnight readiness check
 python -m scripts.m9_overnight
 
-# 6. Train all groups locally (overnight batch, guarded and resumable)
+# 6. Train six groups, evaluate them, and build M10 (guarded and resumable)
 python -m scripts.m9_overnight --execute --confirm M9-OVERNIGHT-3760-4090
 
-# 7. Evaluate trained adapters, then build the seven-row report
+# 7. Standalone evaluation recovery, if the overnight pipeline was interrupted
 python -m scripts.eval --execute --confirm M9-EVAL-LOCAL-4090
 python -m scripts.report_results
 

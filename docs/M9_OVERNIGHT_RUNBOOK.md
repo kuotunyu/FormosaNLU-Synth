@@ -1,8 +1,8 @@
 # M9 Overnight Runbook
 
-This runbook covers the six primary Gemma QLoRA training runs only. It does not
-silently start F7 judging, adapter evaluation, publishing, or any sibling
-project.
+This runbook covers the six primary Gemma QLoRA training runs followed by their
+six resumable adapter evaluations and M10 report materialization. It does not
+silently start F7 judging, publishing, or any sibling project.
 
 ## Before sleep
 
@@ -42,27 +42,33 @@ does not claim that the planned 8,000-row gate was met.
 - An incomplete group resumes from the highest valid `checkpoint-*`.
 - The live machine-readable summary is
   `runs/m9_overnight_status.json`.
+- The pipeline phase is recorded in `runs/m9_overnight_pipeline.json`.
 - The batch report is `runs/m9_batch_report.json`.
 - A failed preflight or failed group is reported; thresholds, model, data, and
   training configuration are not changed automatically.
 
-Expected training time remains approximately 5-8 hours. This is an estimate,
-not a deadline.
+Expected training time remains approximately 5-8 hours. Evaluation then adds
+several more hours. The user explicitly allowed the GPU work to continue after
+the nominal eight-hour sleep window because the computer may not be needed
+immediately after waking.
 
-## After training
+## After primary training
 
-Adapter evaluation is intentionally a separate resumable GPU phase. The M8
-full-test baseline took about one hour, so automatically evaluating all six
-adapters could extend GPU use well beyond the user's sleep period.
+The same guarded pipeline automatically starts the six resumable adapter
+evaluations only when all six training runs are complete. The overnight
+confirmation covers this continuation. A failed training stage stops before
+evaluation; a failed evaluation stage stops before claiming a completed M10
+table.
 
-After the six training rows are complete:
+The standalone evaluation command remains available for recovery:
 
 ```powershell
 .\.venv\Scripts\python.exe -m scripts.eval
 ```
 
-This first prints the dry plan. Actual evaluation still requires its separate
-confirmation guard. When all evaluations are complete:
+Without `--execute`, this prints only the dry plan. Actual standalone recovery
+still requires its separate confirmation guard. When all evaluations are
+complete, the overnight pipeline runs the equivalent of:
 
 ```powershell
 .\.venv\Scripts\python.exe -m scripts.report_results
@@ -73,5 +79,6 @@ That fills the seven-row M10 table from raw run and evaluation reports.
 ## Safe interruption
 
 Do not delete a run directory. Stop only the active FormosaNLU training process
-when the user explicitly requests it. The next guarded launch uses `--resume`
-and skips every completed group.
+when the user explicitly requests it. The next guarded launch uses `--resume`,
+skips every completed training group, and resumes evaluation from its JSONL
+checkpoint.

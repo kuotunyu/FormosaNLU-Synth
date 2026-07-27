@@ -6,14 +6,17 @@ import argparse
 from pathlib import Path
 from typing import Any
 
+from src.evaluation.eval_all import DEFAULT_EVAL_BATCH_REPORT
 from src.training.overnight import (
     CONFIRMATION,
+    DEFAULT_PIPELINE_REPORT,
     DEFAULT_STATUS_REPORT,
     collect_status,
+    execute_overnight_pipeline,
     write_status,
 )
 from src.training.train import DEFAULT_CONFIG
-from src.training.train_all import DEFAULT_BATCH_REPORT, execute_primary_runs
+from src.training.train_all import DEFAULT_BATCH_REPORT
 
 
 def _print_status(payload: dict[str, Any]) -> None:
@@ -34,6 +37,16 @@ def main() -> int:
     parser.add_argument("--confirm", help=f"Required with --execute: {CONFIRMATION}")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--batch-report", type=Path, default=DEFAULT_BATCH_REPORT)
+    parser.add_argument(
+        "--evaluation-batch-report",
+        type=Path,
+        default=DEFAULT_EVAL_BATCH_REPORT,
+    )
+    parser.add_argument(
+        "--pipeline-report",
+        type=Path,
+        default=DEFAULT_PIPELINE_REPORT,
+    )
     parser.add_argument("--status-report", type=Path, default=DEFAULT_STATUS_REPORT)
     args = parser.parse_args()
 
@@ -49,12 +62,14 @@ def main() -> int:
     if not status["ready"]:
         raise RuntimeError("M9 overnight preflight failed; training was not started")
 
-    result = execute_primary_runs(
+    result = execute_overnight_pipeline(
         config_path=args.config,
-        batch_report=args.batch_report,
+        training_batch_report=args.batch_report,
+        evaluation_batch_report=args.evaluation_batch_report,
+        pipeline_report=args.pipeline_report,
     )
     final_status = collect_status(args.config)
-    final_status["batch_result"] = result
+    final_status["pipeline_result"] = result
     write_status(final_status, args.status_report)
     return 0 if result["status"] == "complete" else 1
 

@@ -13,10 +13,18 @@ from typing import Any
 
 import yaml
 
-from src.evaluation.eval_all import build_eval_plan, evaluation_is_complete
+from src.evaluation.eval_all import (
+    DEFAULT_EVAL_BATCH_REPORT,
+    build_eval_plan,
+    evaluation_is_complete,
+    execute_evaluations,
+)
+from src.evaluation.report import build_results, render_markdown
 from src.training.train import DEFAULT_CONFIG, REPO_ROOT, latest_checkpoint
 from src.training.train_all import (
+    DEFAULT_BATCH_REPORT,
     build_run_plan,
+    execute_primary_runs,
     run_is_complete,
     shared_config_digest,
     validate_primary_inputs,
@@ -28,6 +36,9 @@ MIN_DISK_FREE_GIB = 20.0
 FILTERED_ADDITIONS = 3_760
 CONFIRMATION = "M9-OVERNIGHT-3760-4090"
 DEFAULT_STATUS_REPORT = REPO_ROOT / "runs" / "m9_overnight_status.json"
+DEFAULT_PIPELINE_REPORT = REPO_ROOT / "runs" / "m9_overnight_pipeline.json"
+DEFAULT_M10_JSON = REPO_ROOT / "reports" / "m10_main_results.json"
+DEFAULT_M10_MARKDOWN = REPO_ROOT / "reports" / "m10_main_results.md"
 
 EXPECTED_RUNTIME_GIT_PATHS = (
     "reports/m9/",
@@ -305,7 +316,8 @@ def collect_status(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "runs": _run_rows(config_path),
         "execution_scope": {
             "training": "six primary seed-42 runs, sequential and resumable",
-            "evaluation": "not started automatically",
+            "evaluation": "six adapter evaluations, sequential and resumable after training",
+            "m10_report": "materialized automatically after complete evaluation",
             "f7_judge": "not started automatically",
         },
     }
@@ -320,3 +332,87 @@ def write_status(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+
+
+def _write_m10_results(
+    payload: dict[str, Any],
+    *,
+    json_path: Path,
+    markdown_path: Path,
+) -> None:
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    markdown_path.write_text(render_markdown(payload), encoding="utf-8")
+
+
+def execute_overnight_pipeline(
+    *,
+    config_path: Path = DEFAULT_CONFIG,
+    training_batch_report: Path = DEFAULT_BATCH_REPORT,
+    evaluation_batch_report: Path = DEFAULT_EVAL_BATCH_REPORT,
+    pipeline_report: Path = DEFAULT_PIPELINE_REPORT,
+    m10_json: Path = DEFAULT_M10_JSON,
+    m10_markdown: Path = DEFAULT_M10_MARKDOWN,
+    python_executable: str = sys.executable,
+) -> dict[str, Any]:
+    """Run training, then resumable evaluation, then materialize the M10 table."""
+    payload: dict[str, Any] = {
+        "schema_version": 1,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "finished_at": None,
+        "status": "training",
+        "training": None,
+        "evaluation": None,
+        "m10": None,
+    }
+    write_status(payload, pipeline_report)
+
+    training = execute_primary_runs(
+        config_path=config_path,
+        batch_report=training_batch_report,
+        python_executable=python_executable,
+    )
+    payload["training"] = training
+    if training["status"] != "complete":
+        payload["status"] = "training_failed"
+        payload["finished_at"] = datetime.now(timezone.utc).isoformat()
+        write_status(payload, pipeline_report)
+        return payload
+
+    payload["status"] = "evaluation"
+    write_status(payload, pipeline_report)
+    evaluation = execute_evaluations(
+        build_eval_plan(config_path),
+        config_path=config_path,
+        batch_report=evaluation_batch_report,
+        python_executable=python_executable,
+    )
+    payload["evaluation"] = evaluation
+    if evaluation["status"] != "complete":
+        payload["status"] = "evaluation_failed"
+        payload["finished_at"] = datetime.now(timezone.utc).isoformat()
+        write_status(payload, pipeline_report)
+        return payload
+
+    results = build_results(repo_root=REPO_ROOT)
+    _write_m10_results(
+        results,
+        json_path=m10_json,
+        markdown_path=m10_markdown,
+    )
+    payload["m10"] = {
+        "status": results["status"],
+        "missing_groups": results["missing_groups"],
+        "json": str(m10_json),
+        "markdown": str(m10_markdown),
+    }
+    payload["status"] = (
+        "complete" if results["status"] == "complete" else "report_incomplete"
+    )
+    payload["finished_at"] = datetime.now(timezone.utc).isoformat()
+    write_status(payload, pipeline_report)
+    return payload
