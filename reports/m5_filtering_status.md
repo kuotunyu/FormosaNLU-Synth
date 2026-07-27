@@ -1,7 +1,7 @@
 # M5 Filtering Status
 
-> 狀態：程式與測試已完成；F1–F4、F7 已在 500 筆 pilot 實跑；F5/F6
-> production calibration 因大型 embedding 權重未獲夜間下載授權而暫停。
+> 狀態：F1–F7 程式、BGE-M3 production calibration、人工 pair review、
+> 四個 frozen thresholds 與 500 筆 pilot 完整漏斗均已完成。
 
 ## 已完成
 
@@ -20,31 +20,38 @@
 - 每筆只寫第一個 reject reason；F1–F4 真實漏斗
   `437 + 63 = 500`。
 
-全專案測試目前 36 passed；每一關都有 pass/fail 案例。Ruff 與
+全專案測試目前 53 passed；每一關都有 pass/fail 案例。Ruff 與
 `git diff --check` 通過。
 
-## 尚未完成：BGE-M3 production calibration
+## BGE-M3 production calibration
 
-D-010 選定 `BAAI/bge-m3`，但其官方 Hugging Face tree 顯示單一 PyTorch
-權重約 2.27GB，整個 repo 約 4.59GB：
-[BAAI/bge-m3 files](https://huggingface.co/BAAI/bge-m3/tree/main)。
+D-010 選定 `BAAI/bge-m3`。使用者返回後核可下載，本機只取 dense inference
+必要檔案，共 2,293,322,213 bytes；主權重 2,271,145,830 bytes，SHA-256：
+`b5e0ce3470abf5ef3831aa1bd5553b486803e83251590ab7ff35a117cf6aad38`。
+backend 全程 `local_files_only=True`。
 
-`docs/AUTONOMOUS_RUN.md` 的夜間預授權模型清單只有 teacher、judge 與 student，
-沒有 embedding model；硬性禁止又要求不得下載清單外模型。因此本輪：
+437 筆 F1–F4 pilot、1,176 train seeds 與 5,007 Validation/Test rows 在 RTX
+4090 上完成 embedding。第二次可重現量測總耗時約 18 秒，peak allocated
+VRAM 約 2.31 GiB。三組分布、完整 quantiles 與權重 hash 在
+`reports/m5_similarity_calibration.json`；圖在
+`assets/m5_similarity_distributions.png`。
 
-- 沒有下載 BGE-M3；
-- `configs/filtering.yaml` 的四個 threshold 保持 `null`；
-- 沒有以 TF-IDF 或小模型數字冒充 BGE-M3；
-- 沒有畫不存在的相似度分布圖；
-- 沒有宣稱 F1–F6 gate 通過。
+在看到 F1–F6 yield **之前**，先人工檢查圖與最高／最低 25 組 pair，凍結：
 
-程式的 `BgeM3Backend` 預設 `local_files_only=True`，所以權重未就緒時會保守
-失敗而不是在背景偷下載。使用者若核可約 2.27GB 的指定權重下載，下一步是：
+| Threshold | Frozen value | Pair-review rationale |
+| --- | ---: | --- |
+| synthetic duplicate | 0.999 | 最高 25/25 都是逐字重複 |
+| seed too close | 0.995 | 涵蓋逐字與只差標點／語尾的 seed 複製 |
+| seed outlier minimum | 0.650 | 只排除明顯過短的「定期」；0.659 起已有合理 domain 句 |
+| Val/Test contamination | 0.990 | 排除逐字與近乎只差功能詞的 eval wording |
 
-1. 安裝並鎖定 `sentence-transformers`／PyTorch runtime；
-2. 只下載 BGE-M3 dense inference 必要檔案；
-3. 對 pilot、1,176 train seeds、validation/test 分批 embedding；
-4. 產出三組 nearest-cosine 分布與圖；
-5. 人工開圖後才把四個 threshold 從 `null` 改成數字；
-6. 重跑 F5/F6，完成最終漏斗與 M4 gate。
+門檻凍結後才重跑 F5/F6。最終接受 375/500（75.0%）；semantic rejects 62：
+synthetic duplicate 16、seed duplicate 33、seed outlier 1、Val/Test
+contamination 12。F6 exclusion log 記錄 sample id、matched eval id、split 與
+similarity。
 
+## M6 fixed gate
+
+75.0% pilot yield 的 Wilson 95% 下界是 71.02%。依實測每筆 1.287466431 秒，
+保守產生 11,264 筆可望留下至少 8,000 筆，投影 4.028 小時；低於固定五小時
+上限 13,980 筆。因此 gate 通過，且沒有為放行而調整 thresholds。

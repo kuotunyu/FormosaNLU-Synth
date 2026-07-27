@@ -157,8 +157,7 @@ async def async_main(args: argparse.Namespace) -> int:
                 }
             )
             print(
-                f"judge pass {pass_index}: JSON "
-                f"{passes[-1]['json_valid_count']}/{len(results)}",
+                f"judge pass {pass_index}: JSON {passes[-1]['json_valid_count']}/{len(results)}",
                 flush=True,
             )
 

@@ -107,8 +107,7 @@ def main() -> int:
         encoding="utf-8",
     )
     print(
-        f"F1-F4 accepted {len(accepted)}/{report['total']}; "
-        f"rejected {len(rejected)}",
+        f"F1-F4 accepted {len(accepted)}/{report['total']}; rejected {len(rejected)}",
         flush=True,
     )
     return 0

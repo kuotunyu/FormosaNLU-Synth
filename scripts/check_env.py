@@ -64,8 +64,25 @@ def _tool_check(name: str, *version_args: str) -> Check:
 def _python_check() -> Check:
     version = sys.version_info
     supported = (3, 10) <= version[:2] < (3, 13)
-    detail = f"{version.major}.{version.minor}.{version.micro}"
-    return Check("python", "pass" if supported else "fail", detail)
+    non_anaconda = (
+        "anaconda" not in sys.base_prefix.lower() and "anaconda" not in sys.version.lower()
+    )
+    detail = (
+        f"{version.major}.{version.minor}.{version.micro}; "
+        f"base={sys.base_prefix}; non-anaconda={non_anaconda}"
+    )
+    return Check("python", "pass" if supported and non_anaconda else "fail", detail)
+
+
+def _torch_check() -> Check:
+    try:
+        import torch
+    except (ImportError, OSError) as exc:
+        return Check("torch_cuda", "fail", f"{type(exc).__name__}: {exc}")
+    available = torch.cuda.is_available()
+    device = torch.cuda.get_device_name(0) if available else "unavailable"
+    detail = f"torch {torch.__version__}; CUDA {torch.version.cuda}; device={device}"
+    return Check("torch_cuda", "pass" if available else "fail", detail)
 
 
 def _gpu_check() -> Check:
@@ -120,6 +137,7 @@ def run_checks() -> list[Check]:
     """Collect all M0 environment checks."""
     return [
         _python_check(),
+        _torch_check(),
         _tool_check("uv", "--version"),
         _tool_check("git", "--version"),
         _tool_check("git", "lfs", "version"),

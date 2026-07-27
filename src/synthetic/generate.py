@@ -69,9 +69,7 @@ async def _model_digest(client: httpx.AsyncClient, model: str) -> str:
 def _contract_reason(candidate: CandidateOutput, plan: RecipePlan) -> str | None:
     if candidate.intent != plan.expected_intent:
         return "F2_INTENT_CONTRACT"
-    if sorted((slot.type, slot.value) for slot in candidate.slots) != sorted(
-        plan.expected_slots
-    ):
+    if sorted((slot.type, slot.value) for slot in candidate.slots) != sorted(plan.expected_slots):
         return "F2_SLOT_CONTRACT"
     if not all(contains_normalized(candidate.utt, slot.value) for slot in candidate.slots):
         return "F3_UNGROUNDED_SLOT"
@@ -166,8 +164,7 @@ async def _generate_one(
         "expected": {
             "intent": plan.expected_intent,
             "slots": [
-                {"type": slot_type, "value": value}
-                for slot_type, value in plan.expected_slots
+                {"type": slot_type, "value": value} for slot_type, value in plan.expected_slots
             ],
         },
         "sample": sample.model_dump(mode="json") if sample else None,
@@ -249,7 +246,9 @@ def _update_cost_log(
 
 
 async def async_main(args: argparse.Namespace) -> int:
-    total = args.pilot if args.pilot is not None else FULL_GENERATION_COUNT
+    total = args.pilot if args.pilot is not None else args.full
+    if total is None:
+        raise ValueError("Either pilot or full generation count is required")
     output = args.output or (
         DEFAULT_PILOT_OUTPUT if args.pilot is not None else DEFAULT_FULL_OUTPUT
     )
@@ -329,12 +328,8 @@ async def async_main(args: argparse.Namespace) -> int:
             wall_seconds=elapsed,
             new_records=len(completed_new),
             complete_records=complete_records,
-            prompt_tokens=sum(
-                record["metrics"]["prompt_eval_count"] for record in completed_new
-            ),
-            output_tokens=sum(
-                record["metrics"]["eval_count"] for record in completed_new
-            ),
+            prompt_tokens=sum(record["metrics"]["prompt_eval_count"] for record in completed_new),
+            output_tokens=sum(record["metrics"]["eval_count"] for record in completed_new),
             status=status,
             error=error,
         )
@@ -350,7 +345,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--pilot", type=int, metavar="N")
-    mode.add_argument("--full", action="store_true")
+    mode.add_argument(
+        "--full",
+        nargs="?",
+        type=int,
+        const=FULL_GENERATION_COUNT,
+        metavar="N",
+        help=f"Generate N full rows (default: {FULL_GENERATION_COUNT}).",
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--max-new", type=int)
     parser.add_argument("--model", default="qwen3.6:27b")
@@ -367,6 +369,8 @@ def main() -> int:
     args = parser.parse_args()
     if args.pilot is not None and args.pilot <= 0:
         parser.error("--pilot must be positive")
+    if args.full is not None and args.full <= 0:
+        parser.error("--full count must be positive")
     if args.max_new is not None and args.max_new <= 0:
         parser.error("--max-new must be positive")
     return asyncio.run(async_main(args))

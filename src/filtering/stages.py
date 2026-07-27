@@ -63,9 +63,7 @@ def check_schema(record: dict[str, Any]) -> tuple[SyntheticSample | None, StageR
         label_errors = [
             error
             for error in errors
-            if error["loc"]
-            and error["loc"][-1] in {"intent", "type"}
-            and "unknown" in error["msg"]
+            if error["loc"] and error["loc"][-1] in {"intent", "type"} and "unknown" in error["msg"]
         ]
         if label_errors and len(label_errors) == len(errors):
             reason = (
@@ -102,9 +100,7 @@ def check_expected_contract(
     if not isinstance(expected_slots, list):
         return StageResult(False, "F1", "F1_SCHEMA_INVALID_EXPECTED")
     expected_pairs = sorted(
-        (slot.get("type"), slot.get("value"))
-        for slot in expected_slots
-        if isinstance(slot, dict)
+        (slot.get("type"), slot.get("value")) for slot in expected_slots if isinstance(slot, dict)
     )
     actual_pairs = sorted((slot.type, slot.value) for slot in sample.slots)
     if len(expected_pairs) != len(expected_slots) or actual_pairs != expected_pairs:

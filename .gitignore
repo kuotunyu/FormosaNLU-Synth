@@ -9,9 +9,10 @@ dist/
 *.egg-info/
 .eggs/
 .venv/
+/.venv-uv311/
+/.venv-anaconda-backup/
 venv/
 env/
-.python-version
 
 # ---- Tooling caches ----
 .pytest_cache/

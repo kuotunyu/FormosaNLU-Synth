@@ -93,4 +93,3 @@ def test_hard_negative_requires_two_seeds_and_pair_id() -> None:
     with pytest.raises(ValidationError):
         Provenance(seed_sample_id="only-one", pair_id=None, **common)
     Provenance(seed_sample_id=["anchor", "target"], pair_id="pair_test", **common)
-

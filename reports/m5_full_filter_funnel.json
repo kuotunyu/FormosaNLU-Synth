@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "total": 500,
+  "f1_json_valid": 500,
+  "f1_f3_passed": 454,
+  "f1_f4_passed": 437,
+  "f1_f6_passed": 375,
+  "f1_f6_rate": 0.75,
+  "rejected": 125,
+  "semantic_rejected": 62,
+  "f6_exclusions": 12,
+  "reject_reasons": {
+    "F2_LABEL_CONTRACT_SLOTS": 21,
+    "F3_UNGROUNDED_OR_OVERLAPPING_SLOT": 25,
+    "F4_LOCALE_LANGUAGE_RATIO": 4,
+    "F4_LOCALE_SIMPLIFIED": 13,
+    "F5_DUP_SEED": 33,
+    "F5_DUP_SYNTHETIC": 16,
+    "F5_OUTLIER_SEED": 1,
+    "F6_CONTAM_EVAL": 12
+  },
+  "thresholds": {
+    "synthetic_duplicate_max": 0.999,
+    "seed_too_close_max": 0.995,
+    "seed_outlier_min": 0.65,
+    "contamination_max": 0.99
+  }
+}

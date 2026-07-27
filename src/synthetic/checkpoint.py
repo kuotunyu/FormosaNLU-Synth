@@ -30,9 +30,7 @@ class JsonlCheckpoint:
                     record = json.loads(line)
                     index = int(record["generation_index"])
                 except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
-                    raise CheckpointError(
-                        f"Invalid checkpoint line {line_number}: {exc}"
-                    ) from exc
+                    raise CheckpointError(f"Invalid checkpoint line {line_number}: {exc}") from exc
                 if index in records:
                     raise CheckpointError(f"Duplicate generation_index {index}")
                 records[index] = record
@@ -62,4 +60,3 @@ class JsonlCheckpoint:
             handle.flush()
             os.fsync(handle.fileno())
         temporary.replace(self.path)
-

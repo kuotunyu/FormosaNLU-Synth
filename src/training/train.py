@@ -7,6 +7,7 @@ import json
 import platform
 import subprocess
 from datetime import datetime, timezone
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ from src.training.data import (
     prompt_completion_rows,
     validation_examples,
 )
+from src.training.model import load_quantized_text_model
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = REPO_ROOT / "configs" / "train.yaml"
@@ -50,6 +52,39 @@ def _git_commit() -> str:
     return completed.stdout.strip() if completed.returncode == 0 else "unknown"
 
 
+def _package_versions() -> dict[str, str]:
+    packages = (
+        "torch",
+        "transformers",
+        "accelerate",
+        "peft",
+        "trl",
+        "bitsandbytes",
+    )
+    resolved: dict[str, str] = {}
+    for package in packages:
+        try:
+            resolved[package] = version(package)
+        except PackageNotFoundError:
+            resolved[package] = "missing"
+    return resolved
+
+
+def _gpu_environment() -> str:
+    completed = subprocess.run(
+        [
+            "nvidia-smi",
+            "--query-gpu=name,driver_version,memory.total",
+            "--format=csv,noheader,nounits",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return completed.stdout.strip() if completed.returncode == 0 else "unavailable"
+
+
 def _write_run_metadata(output_dir: Path, config: dict[str, Any], group: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     snapshot = {**config, "run": {"group": group}}
@@ -62,11 +97,20 @@ def _write_run_metadata(output_dir: Path, config: dict[str, Any], group: str) ->
         "python": platform.python_version(),
         "platform": platform.platform(),
         "commit": _git_commit(),
+        "packages": _package_versions(),
+        "gpu": _gpu_environment(),
     }
     (output_dir / "env.json").write_text(
         json.dumps(environment, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+
+
+def write_metrics_jsonl(output_dir: Path, log_history: list[dict[str, Any]]) -> None:
+    """Persist Trainer history as the machine-readable metric source of truth."""
+    with (output_dir / "metrics.jsonl").open("w", encoding="utf-8", newline="\n") as handle:
+        for entry in log_history:
+            handle.write(json.dumps(entry, ensure_ascii=False, separators=(",", ":")) + "\n")
 
 
 def train_group(
@@ -81,7 +125,7 @@ def train_group(
     import torch
     from datasets import Dataset
     from peft import LoraConfig, prepare_model_for_kbit_training
-    from transformers import AutoTokenizer, BitsAndBytesConfig, Gemma4ForCausalLM
+    from transformers import AutoTokenizer, BitsAndBytesConfig
     from trl import SFTConfig, SFTTrainer
 
     config = load_train_config(config_path)
@@ -89,6 +133,8 @@ def train_group(
     training = config["training"]
     quantization = config["quantization"]
     lora = config["lora"]
+    if group not in config["groups"]:
+        raise ValueError(f"Unknown training group: {group}")
     model_path = REPO_ROOT / model_config["local_path"]
     if not model_path.exists():
         raise FileNotFoundError(f"Local model is missing: {model_path}")
@@ -109,11 +155,11 @@ def train_group(
         bnb_4bit_use_double_quant=quantization["double_quant"],
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
-    model = Gemma4ForCausalLM.from_pretrained(
+    torch.cuda.reset_peak_memory_stats()
+    model = load_quantized_text_model(
         model_path,
         quantization_config=quantization_config,
         dtype=torch.bfloat16,
-        device_map={"": 0},
     )
     model = prepare_model_for_kbit_training(
         model,
@@ -135,7 +181,7 @@ def train_group(
         gradient_accumulation_steps=training["gradient_accumulation_steps"],
         learning_rate=training["learning_rate"],
         lr_scheduler_type=training["scheduler"],
-        warmup_ratio=training["warmup_ratio"],
+        warmup_steps=training["warmup_steps"],
         max_length=training["max_length"],
         bf16=training["bf16"],
         optim=training["optimizer"],
@@ -162,13 +208,39 @@ def train_group(
         peft_config=peft_config,
     )
     checkpoint = latest_checkpoint(output_dir) if resume else None
-    trainer.train(resume_from_checkpoint=str(checkpoint) if checkpoint else None)
-    trainer.save_model(output_dir / "adapter")
+    trainable_parameters = sum(
+        parameter.numel() for parameter in trainer.model.parameters() if parameter.requires_grad
+    )
+    total_parameters = sum(parameter.numel() for parameter in trainer.model.parameters())
+    training_result = trainer.train(resume_from_checkpoint=str(checkpoint) if checkpoint else None)
+    adapter_dir = output_dir / "adapter"
+    trainer.save_model(adapter_dir)
+    trainer.save_state()
+    write_metrics_jsonl(output_dir, trainer.state.log_history)
+    torch.cuda.synchronize()
+    run_report = {
+        "schema_version": 1,
+        "status": "completed",
+        "smoke_test": smoke_test,
+        "group": group,
+        "trainable_parameters": trainable_parameters,
+        "total_parameters": total_parameters,
+        "trainable_percent": 100 * trainable_parameters / total_parameters,
+        "peak_gpu_allocated_mib": torch.cuda.max_memory_allocated() / (1024**2),
+        "peak_gpu_reserved_mib": torch.cuda.max_memory_reserved() / (1024**2),
+        "resumed_from": str(checkpoint) if checkpoint else None,
+        "adapter_dir": str(adapter_dir),
+        "metrics": training_result.metrics,
+    }
+    (output_dir / "run_report.json").write_text(
+        json.dumps(run_report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--group", choices=["real_only", "full_real"], required=True)
+    parser.add_argument("--group", required=True)
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--smoke-test", action="store_true")

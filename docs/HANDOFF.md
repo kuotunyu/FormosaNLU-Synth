@@ -11,23 +11,19 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–04:44 +08:00 |
-| 完成到 | M0–M3 完成；M4 pilot 完成；M5/M7/M8 可離線完成部分已完成 |
-| 卡住的項目 | BGE-M3 未獲下載授權；Windows PyTorch `c10.dll` WinError 1114 |
-| GPU 時數 | 0.292 h（M2–M4 measured work；M8 未使用 GPU） |
-| 磁碟增加 | 約 19 GiB；含 Gemma 4 14.924 GiB snapshot |
+| 執行區間 | 2026-07-27 03:14–12:05 +08:00（含使用者返回後續作） |
+| 完成到 | M0–M5、M7、M8 完成；M6 正式生成 11,264 筆進行中 |
+| 卡住的項目 | 無；M6 投影 4.028 h，期間不可重疊其他 GPU 模型 |
+| GPU 時數 | M8 零樣本 summed generation 1.050 h；另有 M2–M4 0.292 h 與短 smoke |
+| 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 dense 必要檔 2.293GB；另有可刪的舊 venv 複本 |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
 ### 🔴 需要你決定（最重要的放最前面）
 
 <!-- 逐條列出。每條要有：問題、背景、我建議的選項、以及不決定會擋住什麼 -->
 
-1. **核可 BGE-M3 權重下載。** 官方單一權重約 2.27GB；核可後才能量測
-   F5/F6、確認最終 yield，並決定 ≤13,980 筆的 M6 生成量。建議核可。
-2. **處理 Windows PyTorch DLL。** 專案內 PyPI torch 2.13 與官方 CUDA 12.8
-   torch 2.11 都在載入 `c10.dll` 時報 WinError 1114。建議你在場時先檢查
-   Visual C++ runtime；或核可我用乾淨的 uv-managed Python 重建，不要再疊在
-   目前 Anaconda Python 上。這會擋住 Gemma one-step smoke 與零樣本 baseline。
+目前沒有需要使用者立即操作的 blocker。請在 M6 約四小時執行期間不要從其他
+專案啟動 GPU 模型。Python runtime 已修復，沒有修改系統 PATH、driver 或 DLL。
 
 ### 👀 需要你 review 的產出
 
@@ -35,14 +31,14 @@
 
 - `docs/teacher_choice.md`：teacher/judge 定案與完整 benchmark
 - `reports/pilot_report.md`：500 筆 pilot、過濾漏斗、固定 gate
-- `reports/m8_training_design.md`：Gemma artifact、QLoRA 設計與 runtime blocker
-- `reports/m8_zeroshot_baseline.md`：誠實的 blocked baseline（沒有假數字）
+- `reports/m8_training_design.md`：Gemma artifact、文字塔 key mapping 與 QLoRA smoke
+- `reports/m8_zeroshot_baseline.md`：完整 2,974-row 嚴格零樣本 baseline
 - `docs/data_card.md`：已由 pilot 證據填入的 M7 草稿
 
 ### ➡️ 明天的建議起點
 
-先修 PyTorch DLL 並跑 one-step `real_only` smoke；同時核可 BGE-M3。完成
-F5/F6 後重算 gate，只有在真實 yield 與五小時限制同時成立時才啟動 M6。
+監控 M6 可續跑 checkpoint。11,264 筆完成後跑相同 F1–F6、產生正式 filtered /
+unfiltered corpus 與漏斗報告；不足 8,000 就如實停下分析，不調門檻。
 
 ---
 
@@ -50,6 +46,34 @@ F5/F6 後重算 gate，只有在真實 yield 與五小時限制同時成立時�
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-27 12:24 +08:00] M5 → M6 — fixed gate 通過，正式生成啟動
+
+- BGE-M3 dense 必要檔 2,293,322,213 bytes，主權重 SHA-256 已記錄；
+  local-only CUDA calibration 約 18 秒，peak allocated 2.31 GiB
+- 人工看過分布圖與 top/bottom 25 pairs 後凍結 thresholds：
+  synthetic 0.999、seed copy 0.995、outlier 0.650、Val/Test 0.990
+- F1–F6 pilot：375/500（75.0%）；semantic rejects 62，含 F6 exclusions 12
+- Wilson 95% yield 下界 71.02%；保守生成 11,264 筆可望留下至少 8,000；
+  投影 4.028 h，小於 5 h / 13,980 筆固定上限
+- `qwen3.6:27b` 正式生成已啟動；checkpoint 每筆 fsync、每 25 筆回報，
+  可中斷續跑
+
+### [2026-07-27 12:05 +08:00] M8 — runtime 修復、QLoRA smoke 與完整 baseline 完成
+
+- uv-managed CPython 3.11.15 排除 Anaconda 舊 Visual C++ runtime 衝突；
+  PyTorch 2.11.0+cu128、CUDA、RTX 4090 全部通過
+- E4B multimodal 權重的 `model.language_model.*` 明確 remap 至文字模型
+  `model.*`；665 個語言權重載入，vision/audio 權重刻意忽略
+- one-step `real_only` QLoRA smoke：train loss 1.9862、eval loss 2.9560、
+  peak allocated VRAM 20,646 MiB；adapter 與 checkpoint 均寫出且已 hash
+- 零樣本 Test 2,974/2,974：JSON-valid 17.38%、intent accuracy 10.66%、
+  macro-F1 23.12%、slot F1 0%、exact 8.10%；所有 invalid row 都留在分母
+- 517 筆 strict-valid output 中 317 筆 intent 正確（61.32%），僅列為診斷；
+  未修補輸出、未 constrained decode、未依 Test 調 prompt
+- batch 4→8 只做吞吐工程；checkpoint 0–2,973 連續、可中斷續跑
+- BGE-M3 dense 必要檔 2,293,322,213 bytes 已下載；因 SafeSynth 正佔滿 GPU，
+  暫不與它同時載入
 
 ### [2026-07-27 04:44 +08:00] M7/M8 — 草稿與管線完成，model runtime 卡住
 

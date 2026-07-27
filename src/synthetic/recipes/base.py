@@ -60,4 +60,3 @@ def stable_pair_id(*sample_ids: str) -> str:
 
 def slot_pairs(seed: dict[str, Any]) -> tuple[tuple[str, str], ...]:
     return tuple((slot["type"], slot["value"]) for slot in seed["slots"])
-

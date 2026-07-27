@@ -7,6 +7,7 @@ from src.filtering.similarity import (
     SimilarityThresholds,
     apply_similarity_filters,
     l2_normalize,
+    nearest_nonself_distribution,
     nearest_similarity_distribution,
 )
 
@@ -26,6 +27,11 @@ def test_l2_normalize_and_nearest_distribution() -> None:
         np.array([[0.0, 1.0], [1.0, 0.0]]),
     )
     assert nearest.tolist() == pytest.approx([1.0])
+
+
+def test_nearest_nonself_distribution_excludes_diagonal() -> None:
+    nearest = nearest_nonself_distribution(np.array([[1.0, 0.0], [0.8, 0.6], [0.0, 1.0]]))
+    assert nearest.tolist() == pytest.approx([0.8, 0.8, 0.6])
 
 
 def test_f5_rejects_prior_duplicate() -> None:
@@ -81,4 +87,3 @@ def test_thresholds_reject_invalid_order() -> None:
             seed_outlier_min=0.3,
             contamination_max=0.9,
         )
-

@@ -31,4 +31,3 @@ def test_checkpoint_rejects_malformed_line(tmp_path: Path) -> None:
     path.write_text('{"generation_index":0}\nnot-json\n', encoding="utf-8")
     with pytest.raises(CheckpointError, match="line 2"):
         JsonlCheckpoint(path).load()
-

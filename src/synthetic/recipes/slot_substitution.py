@@ -71,4 +71,3 @@ def build_slot_substitution(
         expected_slots=slot_pairs(draft),
         seed_sample_id=seed["id"],
     )
-

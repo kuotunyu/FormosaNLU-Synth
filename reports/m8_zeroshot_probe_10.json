@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T02:54:48.523678+00:00",
+  "status": "completed_probe",
+  "model": "google/gemma-4-E4B-it",
+  "text_only_class": "Gemma4ForCausalLM",
+  "prompt_template_version": "formosanlu_nlu.v1",
+  "constrained_decoding": false,
+  "completed": 10,
+  "target": 10,
+  "wall_seconds": 20.43638829998963,
+  "output_tokens": 279,
+  "output_tokens_per_second": 13.652118755256845,
+  "peak_gpu_memory_mib": 11421.0,
+  "metrics": {
+    "samples": 10.0,
+    "json_valid_rate": 0.3,
+    "intent_accuracy": 0.2,
+    "intent_macro_f1": 0.03333333333333333,
+    "slot_micro_f1": 0.0,
+    "exact_match": 0.2
+  },
+  "note": "Frozen before batching changes; no prompt or decoding change was made from this Test probe."
+}

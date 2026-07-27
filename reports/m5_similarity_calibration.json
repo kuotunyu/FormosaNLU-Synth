@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-27T04:22:17.062849+00:00",
+  "status": "calibrated_and_frozen",
+  "model": "BAAI/bge-m3",
+  "model_path": "data\\models\\bge-m3",
+  "weight_bytes": 2271145830,
+  "weight_sha256": "b5e0ce3470abf5ef3831aa1bd5553b486803e83251590ab7ff35a117cf6aad38",
+  "device": "cuda",
+  "counts": {
+    "pilot_f1_f4": 437,
+    "train_seeds": 1176,
+    "validation_and_test": 5007
+  },
+  "timing_seconds": {
+    "model_load": 6.155199599998014,
+    "pilot_encode": 0.38538030000199797,
+    "seed_encode": 0.5005759000050602,
+    "eval_encode": 1.813372899996466,
+    "distribution_and_report": 3.035862199998519,
+    "total": 11.890390900000057
+  },
+  "peak_gpu_allocated_mib": 2312.00830078125,
+  "peak_gpu_reserved_mib": 2446.0,
+  "distributions": {
+    "nearest_other_synthetic": {
+      "p0": 0.4746095836162567,
+      "p1": 0.5626468086242675,
+      "p5": 0.6723438024520874,
+      "p25": 0.8076066374778748,
+      "p50": 0.8922622799873352,
+      "p75": 0.9525331258773804,
+      "p90": 0.9938739180564881,
+      "p95": 1.0,
+      "p99": 1.000000238418579,
+      "p100": 1.0000003576278687
+    },
+    "nearest_seed": {
+      "p0": 0.6291777491569519,
+      "p1": 0.6898086738586425,
+      "p5": 0.7600439071655274,
+      "p25": 0.8772175908088684,
+      "p50": 0.9337857365608215,
+      "p75": 0.9710129499435425,
+      "p90": 0.9922201871871948,
+      "p95": 0.9969139814376831,
+      "p99": 1.0000001192092896,
+      "p100": 1.000000238418579
+    },
+    "nearest_eval": {
+      "p0": 0.5278394222259521,
+      "p1": 0.6363470077514648,
+      "p5": 0.6963689804077149,
+      "p25": 0.7963528633117676,
+      "p50": 0.8738148212432861,
+      "p75": 0.9305895566940308,
+      "p90": 0.9601407408714294,
+      "p95": 0.9804540157318116,
+      "p99": 1.0000000762939454,
+      "p100": 1.000000238418579
+    }
+  },
+  "thresholds": {
+    "synthetic_duplicate_max": 0.999,
+    "seed_too_close_max": 0.995,
+    "seed_outlier_min": 0.65,
+    "contamination_max": 0.99
+  },
+  "threshold_review": {
+    "reviewed_figure": true,
+    "reviewed_top_and_bottom_pairs": true,
+    "local_pair_review": "data\\embeddings\\m5_top_similarity_pairs.json",
+    "rationale": {
+      "synthetic_duplicate_max": "Top 25/25 reviewed pairs were exact text duplicates; 0.999 isolates the exact-duplicate tail.",
+      "seed_too_close_max": "0.995 captures exact seed copies and punctuation or discourse-particle-only changes.",
+      "seed_outlier_min": "Only the terse fragment 定期 fell below 0.65; valid in-domain cooking and venue-time queries began at 0.659.",
+      "contamination_max": "0.99 removes exact and near-exact Validation/Test wording, including minor function-word variants."
+    },
+    "frozen_before_f1_f6_yield_observed": true
+  },
+  "figure": "assets\\m5_similarity_distributions.png",
+  "embeddings": "data\\embeddings\\m5_pilot_bge_m3.npz"
+}

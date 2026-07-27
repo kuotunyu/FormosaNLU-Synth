@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "created_at_local": "2026-07-27T10:53:00+08:00",
+  "status": "passed",
+  "group": "real_only",
+  "smoke_steps": 1,
+  "python": "3.11.15 uv-managed CPython",
+  "torch": "2.11.0+cu128",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "model": "google/gemma-4-E4B-it",
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "text_only_class": "Gemma4ForCausalLM",
+  "checkpoint_key_mapping": {
+    "^model\\.language_model\\.": "model."
+  },
+  "trainable_parameters": 38879232,
+  "total_parameters": 5515496448,
+  "trainable_percent": 0.7049090207300955,
+  "peak_gpu_allocated_mib": 20646.04248046875,
+  "peak_gpu_reserved_mib": 22280.0,
+  "train_runtime_seconds": 5.4064,
+  "train_samples_per_second": 2.959,
+  "train_steps_per_second": 0.185,
+  "train_loss": 1.9862167835235596,
+  "eval_loss": 2.9560346603393555,
+  "epoch": 1.0,
+  "checkpoint_written": true,
+  "adapter_written": true,
+  "adapter_bytes": 155609536,
+  "adapter_sha256": "e86dbc63a03ca09632c34b969e177458fda615de609af1f9c0add266704c50fe"
+}

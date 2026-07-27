@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
-from src.training.train import latest_checkpoint, load_train_config
+from src.training.train import latest_checkpoint, load_train_config, write_metrics_jsonl
 from src.training.train_all import build_run_plan
 
 
@@ -19,6 +20,7 @@ def test_training_contract_is_compute_matched_and_qlora() -> None:
         "compute_dtype": "bfloat16",
     }
     assert config["lora"]["target_modules"] == "all-linear"
+    assert training["warmup_steps"] == 15
     assert len(config["groups"]) == 6
 
 
@@ -34,3 +36,13 @@ def test_latest_checkpoint_selects_highest_numeric_step(tmp_path: Path) -> None:
     (tmp_path / "checkpoint-10").mkdir()
     (tmp_path / "checkpoint-bad").mkdir()
     assert latest_checkpoint(tmp_path) == tmp_path / "checkpoint-10"
+
+
+def test_metrics_jsonl_preserves_trainer_history(tmp_path: Path) -> None:
+    history = [{"loss": 1.2, "step": 1}, {"eval_loss": 0.8, "step": 2}]
+    write_metrics_jsonl(tmp_path, history)
+    rows = [
+        json.loads(line)
+        for line in (tmp_path / "metrics.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+    assert rows == history

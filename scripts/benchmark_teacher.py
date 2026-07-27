@@ -58,9 +58,7 @@ def _load_seeds(manifest_path: Path, data_dir: Path) -> list[dict[str, Any]]:
                 "id": example["id"],
                 "utt": example["utt"],
                 "intent": example["intent"],
-                "slots": [
-                    {"type": slot_type, "value": value} for slot_type, value in parsed.slots
-                ],
+                "slots": [{"type": slot_type, "value": value} for slot_type, value in parsed.slots],
             }
         )
     return seeds
@@ -127,9 +125,7 @@ async def _generate(
         expected_slots = sorted((slot["type"], slot["value"]) for slot in seed["slots"])
         actual_slots = sorted((slot.type, slot.value) for slot in parsed.slots)
         grounded = all(contains_normalized(parsed.utt, slot.value) for slot in parsed.slots)
-        task_valid = (
-            parsed.intent == seed["intent"] and actual_slots == expected_slots and grounded
-        )
+        task_valid = parsed.intent == seed["intent"] and actual_slots == expected_slots and grounded
 
     return {
         "seed_id": seed["id"],
@@ -225,9 +221,7 @@ async def _run_concurrency(
     stop = asyncio.Event()
     monitor = asyncio.create_task(_monitor_memory(client, stop, model))
     started = time.perf_counter()
-    results = await asyncio.gather(
-        *(guarded(index, seed) for index, seed in enumerate(seeds))
-    )
+    results = await asyncio.gather(*(guarded(index, seed) for index, seed in enumerate(seeds)))
     wall_seconds = time.perf_counter() - started
     stop.set()
     memory = await monitor

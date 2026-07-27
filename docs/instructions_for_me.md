@@ -84,5 +84,5 @@
 | M0 | 是否 pull Ollama teacher/judge 模型（19GB / 14GB）；`OLLAMA_MODELS` 是否改指 D: 槽 |
 | M2 | teacher / judge 選型定案，要你點頭 |
 | M4 | pilot 報告，要你點頭才跑全量 |
-| M8 | 已下載 `google/gemma-4-E4B-it`（14.924 GiB）；零樣本 baseline 目前被 Windows PyTorch DLL 阻塞 |
+| M8 | 已完成 Gemma 4 one-step QLoRA smoke 與完整 2,974-row 零樣本 baseline；runtime 已修復 |
 | 任何時候 | 需要花錢（例如升級到雲端 API）一律先問 |

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -15,6 +16,7 @@ class BgeM3Backend:
     def __init__(
         self,
         *,
+        model_path: Path | None = None,
         local_files_only: bool = True,
         device: str = "cuda",
         batch_size: int = 64,
@@ -25,8 +27,9 @@ class BgeM3Backend:
             raise RuntimeError(
                 "sentence-transformers is not installed; install the locked M5 dependency"
             ) from exc
+        source = str(model_path) if model_path is not None else self.model_name
         self._model: Any = SentenceTransformer(
-            self.model_name,
+            source,
             device=device,
             local_files_only=local_files_only,
         )
@@ -41,4 +44,3 @@ class BgeM3Backend:
             convert_to_numpy=True,
         )
         return np.asarray(vectors, dtype=np.float32)
-

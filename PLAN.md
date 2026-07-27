@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 04:44 +08:00 |
-| **目前里程碑** | **M8 訓練骨架 + 零樣本 baseline**（管線完成；PyTorch DLL 阻塞） |
-| **下一步動作** | 使用者在場時修復 `c10.dll` WinError 1114，先跑 one-step smoke |
-| **球在誰身上** | 夜間 agent |
-| **累計 GPU 時數** | 0.292 h（M2 + M3 + M4 teacher pilot + 兩輪 judge；不含未計時 warmup） |
+| **最後更新** | 2026-07-27 12:05 +08:00 |
+| **目前里程碑** | **M6 正式生成 11,264 筆進行中**；M5/M8 已完成 |
+| **下一步動作** | 監控可續跑 checkpoint；完成後依 frozen thresholds 跑 F1–F6 |
+| **球在誰身上** | 本 agent |
+| **累計 GPU 時數** | M8 零樣本 summed generation 1.050 h；另有 M2–M4 0.292 h 與短 smoke |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | 核可 BGE-M3 約 2.27GB 權重；修復 Windows PyTorch DLL runtime |
+| **待決事項** | 無；M5 thresholds 已在看圖與 pair review 後凍結 |
 | **今晚範圍** | M0 → M8 零樣本。**M9 訓練批次明確排除**（留給明晚，須先看過 M8 結果） |
-| **阻塞項** | M4 gate #3/#6 缺 F5/F6；18k 投影 6.44h；M8 baseline 未能執行 |
+| **阻塞項** | 無；M6 投影 4.028 h，期間不可重疊其他 GPU 模型 |
 
 ---
 
@@ -88,7 +88,7 @@
 | `reports/pilot_report.md` | 含：prompt/output tokens、吞吐、GPU 時數、JSON 合格率、filter 接受率、每筆 accepted 的 GPU 秒數、**全量時數預估**、品質抽樣觀察 |
 | **自動放行判定** | 依 `docs/AUTONOMOUS_RUN.md` §4 的**六道門檻**，全部達標才進 M6 全量；任一項不達標就停下、寫 `docs/HANDOFF.md`、改做 M5 或 M8。**門檻不准為了放行而調降** |
 
-### M5 · 品質過濾 ⚠️ 程式／測試完成，BGE-M3 production calibration 待核可
+### M5 · 品質過濾 ✅ BGE-M3 校準、F1–F6 pilot 與 fixed gate 完成
 
 | 交付物 | 驗證方法 |
 |---|---|
@@ -97,7 +97,7 @@
 | filtered / unfiltered 雙版本 + 每筆 provenance | schema 驗證：provenance 欄位無缺漏 |
 | pilot 資料的漏斗表 | 各階段刪除數加總 = 生成數 − 最終數（對得起來） |
 
-### M6 · 全量生成 + 過濾
+### M6 · 全量生成 + 過濾 🔄 11,264 筆生成進行中
 
 | 交付物 | 驗證方法 |
 |---|---|
@@ -120,7 +120,7 @@
 > 技術設計在 **`docs/DESIGN_PHASE2.md`**。原始 Phase 2 prompt 與本專案鐵律有四處矛盾，全部在該文件 §0 記載了「prompt 說什麼、我們採用什麼、為什麼」。
 > Student = `google/gemma-4-E4B-it`（D-007）；訓練以**本機 4090** 為主（D-006）。
 
-### M8 · 訓練管線 + 零樣本 baseline 🛑 管線完成，runtime 阻塞
+### M8 · 訓練管線 + 零樣本 baseline ✅ 完成
 
 | 交付物 | 驗證方法 |
 |---|---|
@@ -128,7 +128,7 @@
 | `src/training/train.py` + `prompt_template.py`（帶版本號） | 1-step smoke test 在本機跑通；訓練與推論兩端用**完全相同**的模板 |
 | `src/training/train_all.py` / `scripts/train_all.py` 批次入口 | 故意中斷後 `resume_from_checkpoint` 能正確續跑（**開跑前必須先驗過**，R-13） |
 | 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
-| **零樣本 baseline**（未微調 base model 跑真實 Test） | harness 與 blocked report 已完成；PyTorch `c10.dll` WinError 1114，metrics=`null`，沒有假造結果或偷換模型 |
+| **零樣本 baseline**（未微調 base model 跑真實 Test） | 2,974/2,974；JSON-valid 17.38%、intent accuracy 10.66%、macro-F1 23.12%、slot F1 0%、exact 8.10%；無 constrained decoding |
 
 ### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🚫 **無人監督時不得執行**
 

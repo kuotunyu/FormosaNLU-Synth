@@ -14,8 +14,14 @@ import yaml
 
 from src.data.load_massive import decode_example, load_massive_split
 from src.data.normalize import parse_annotated_utterance
-from src.evaluation.metrics import aggregate_metrics
+from src.evaluation.metrics import (
+    aggregate_metrics,
+    conditional_valid_diagnostics,
+    diagnostic_counts,
+    per_intent_accuracy,
+)
 from src.synthetic.checkpoint import JsonlCheckpoint
+from src.training.model import load_quantized_text_model
 from src.training.prompt_template import TEMPLATE_VERSION, build_prompt_messages
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -57,6 +63,7 @@ def _write_report(
     records: list[dict[str, Any]],
     *,
     target_count: int,
+    max_new_tokens: int,
     report_json: Path,
     report_markdown: Path,
 ) -> None:
@@ -64,8 +71,17 @@ def _write_report(
         [record["raw_prediction"] for record in records],
         [record["expected"] for record in records],
     )
+    raw_predictions = [record["raw_prediction"] for record in records]
+    expected_rows = [record["expected"] for record in records]
+    conditional_valid = conditional_valid_diagnostics(raw_predictions, expected_rows)
     wall_seconds = sum(record["wall_seconds"] for record in records)
     output_tokens = sum(record["output_tokens"] for record in records)
+    sorted_token_counts = sorted(record["output_tokens"] for record in records)
+
+    def percentile(fraction: float) -> int:
+        index = round(fraction * (len(sorted_token_counts) - 1))
+        return sorted_token_counts[index]
+
     payload = {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -78,9 +94,18 @@ def _write_report(
         "completed": len(records),
         "target": target_count,
         "wall_seconds": wall_seconds,
+        "timing_basis": "sum of model.generate batch elapsed; excludes model loading",
         "output_tokens": output_tokens,
         "output_tokens_per_second": output_tokens / wall_seconds if wall_seconds else 0.0,
-        "peak_gpu_memory_mib": max(
+        "output_token_distribution": {
+            "p50": percentile(0.50),
+            "p95": percentile(0.95),
+            "p99": percentile(0.99),
+            "maximum": sorted_token_counts[-1],
+            "max_new_tokens": max_new_tokens,
+            "at_generation_limit": sum(count >= max_new_tokens for count in sorted_token_counts),
+        },
+        "peak_device_wide_gpu_memory_mib": max(
             (
                 record["gpu_memory_mib"]
                 for record in records
@@ -88,7 +113,13 @@ def _write_report(
             ),
             default=None,
         ),
+        "gpu_memory_measurement": (
+            "nvidia-smi device-wide memory; concurrent project workloads may contribute"
+        ),
         "metrics": metrics,
+        "parser_outcomes": diagnostic_counts(raw_predictions),
+        "conditional_on_strict_valid_json": conditional_valid,
+        "per_intent": per_intent_accuracy(raw_predictions, expected_rows),
     }
     report_json.parent.mkdir(parents=True, exist_ok=True)
     report_json.write_text(
@@ -110,7 +141,17 @@ def _write_report(
                 f"- Intent macro-F1: {metrics['intent_macro_f1']:.2%}",
                 f"- Slot micro-F1: {metrics['slot_micro_f1']:.2%}",
                 f"- Exact match: {metrics['exact_match']:.2%}",
-                f"- Wall-clock: {wall_seconds:.2f} s",
+                f"- Parser outcomes: {diagnostic_counts(raw_predictions)}",
+                "- Diagnostic intent accuracy among strict-valid rows only: "
+                f"{conditional_valid['intent_accuracy']:.2%} "
+                f"({conditional_valid['intent_correct']}/{conditional_valid['valid_rows']}); "
+                "this is not a primary metric",
+                "- Output tokens: "
+                f"P50 {percentile(0.50)}, P95 {percentile(0.95)}, "
+                f"P99 {percentile(0.99)}, max {sorted_token_counts[-1]}; "
+                f"{sum(count >= max_new_tokens for count in sorted_token_counts)} "
+                "rows reached the generation limit",
+                f"- Summed generation time (model load excluded): {wall_seconds:.2f} s",
                 "",
                 "> JSON-invalid rows remain in every denominator.",
                 "",
@@ -122,18 +163,33 @@ def _write_report(
 
 def run(args: argparse.Namespace) -> None:
     """Import torch/Transformers lazily; the current Windows blocker stays isolated."""
-    import torch
-    from transformers import AutoTokenizer, BitsAndBytesConfig, Gemma4ForCausalLM
-
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    model_path = REPO_ROOT / config["model"]["local_path"]
-    quant = config["quantization"]
-    inference = config["inference"]
     dataset = load_massive_split("test", download=False)
     target_count = len(dataset) if args.limit is None else min(args.limit, len(dataset))
     checkpoint = JsonlCheckpoint(args.output)
     existing = checkpoint.load()
     missing = [index for index in range(target_count) if index not in existing]
+    if args.report_only:
+        if missing:
+            raise RuntimeError(
+                f"Cannot report incomplete checkpoint: {len(existing)}/{target_count}"
+            )
+        records = [existing[index] for index in range(target_count)]
+        _write_report(
+            records,
+            target_count=target_count,
+            max_new_tokens=int(config["inference"]["max_new_tokens"]),
+            report_json=args.report_json,
+            report_markdown=args.report_markdown,
+        )
+        return
+
+    import torch
+    from transformers import AutoTokenizer, BitsAndBytesConfig
+
+    model_path = REPO_ROOT / config["model"]["local_path"]
+    quant = config["quantization"]
+    inference = config["inference"]
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     quantization_config = BitsAndBytesConfig(
@@ -142,20 +198,26 @@ def run(args: argparse.Namespace) -> None:
         bnb_4bit_use_double_quant=quant["double_quant"],
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
-    model = Gemma4ForCausalLM.from_pretrained(
+    model = load_quantized_text_model(
         model_path,
         quantization_config=quantization_config,
         dtype=torch.bfloat16,
-        device_map={"": 0},
     )
     model.eval()
 
-    for completed_offset, index in enumerate(missing, start=1):
-        expected = _expected(decode_example(dataset, index))
-        messages = build_prompt_messages(expected["utt"], zero_shot=True)
+    tokenizer.padding_side = "left"
+    batch_size = int(inference["batch_size"])
+    gpu_memory_mib: float | None = None
+    for batch_number, batch_start in enumerate(range(0, len(missing), batch_size)):
+        indices = missing[batch_start : batch_start + batch_size]
+        expected_batch = [_expected(decode_example(dataset, index)) for index in indices]
+        conversations = [
+            build_prompt_messages(expected["utt"], zero_shot=True) for expected in expected_batch
+        ]
         inputs = tokenizer.apply_chat_template(
-            messages,
+            conversations,
             tokenize=True,
+            padding=True,
             add_generation_prompt=True,
             enable_thinking=False,
             return_dict=True,
@@ -170,26 +232,32 @@ def run(args: argparse.Namespace) -> None:
                 do_sample=False,
             )
         elapsed = time.perf_counter() - started
-        generated = outputs[0][input_length:]
-        raw_prediction = tokenizer.decode(generated, skip_special_tokens=True)
-        checkpoint.append(
-            {
-                "generation_index": index,
-                "expected": expected,
-                "raw_prediction": raw_prediction,
-                "wall_seconds": elapsed,
-                "output_tokens": int(generated.shape[-1]),
-                "gpu_memory_mib": _gpu_used_mib(),
-            }
-        )
-        completed_count = len(existing) + completed_offset
-        if completed_count % 50 == 0:
+        if gpu_memory_mib is None or batch_number % 25 == 0:
+            gpu_memory_mib = _gpu_used_mib()
+        per_record_elapsed = elapsed / len(indices)
+        for index, expected, output in zip(indices, expected_batch, outputs, strict=True):
+            generated = output[input_length:]
+            raw_prediction = tokenizer.decode(generated, skip_special_tokens=True)
+            output_tokens = int(generated.ne(tokenizer.pad_token_id).sum().detach().cpu())
+            checkpoint.append(
+                {
+                    "generation_index": index,
+                    "expected": expected,
+                    "raw_prediction": raw_prediction,
+                    "wall_seconds": per_record_elapsed,
+                    "output_tokens": output_tokens,
+                    "gpu_memory_mib": gpu_memory_mib,
+                }
+            )
+        completed_count = len(existing) + batch_start + len(indices)
+        if completed_count % 50 == 0 or completed_count == target_count:
             print(f"checkpointed {completed_count}/{target_count}")
     checkpoint.compact()
     records = [checkpoint.load()[index] for index in range(target_count)]
     _write_report(
         records,
         target_count=target_count,
+        max_new_tokens=int(inference["max_new_tokens"]),
         report_json=args.report_json,
         report_markdown=args.report_markdown,
     )
@@ -202,6 +270,7 @@ def main() -> int:
     parser.add_argument("--report-json", type=Path, default=DEFAULT_REPORT_JSON)
     parser.add_argument("--report-markdown", type=Path, default=DEFAULT_REPORT_MD)
     parser.add_argument("--limit", type=int)
+    parser.add_argument("--report-only", action="store_true")
     args = parser.parse_args()
     run(args)
     return 0

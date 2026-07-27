@@ -22,7 +22,7 @@ lora:
 training:
   learning_rate: 0.0002
   scheduler: "cosine"
-  warmup_ratio: 0.03
+  warmup_steps: 15
   max_length: 512
   max_steps: 500
   per_device_train_batch_size: 2
@@ -40,7 +40,7 @@ training:
 inference:
   max_new_tokens: 128
   do_sample: false
-  batch_size: 1
+  batch_size: 8
   include_label_catalog_for_zero_shot: true
 
 groups:

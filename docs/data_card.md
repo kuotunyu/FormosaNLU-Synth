@@ -92,10 +92,12 @@ remained. Rejections were 21 label-contract violations, 25 ungrounded or
 overlapping slots, 13 simplified-Chinese violations, and 4 language-ratio
 violations. The independent judge accepted 49/50 sampled rows.
 
-F5 embedding similarity and F6 Val/Test decontamination are implemented but not
-calibrated because the BGE-M3 weight download requires user approval. Therefore
-there is no final filtered pilot count and no claim that the production gate has
-passed.
+F5/F6 use local-only BGE-M3 dense embeddings. Thresholds were frozen only after
+the similarity distributions, figure, and top/bottom pairs were reviewed:
+0.999 synthetic duplicate, 0.995 seed copy, 0.650 seed outlier minimum, and
+0.990 Val/Test contamination. The final pilot retained 375/500 (75.0%);
+semantic rejects were 16 synthetic duplicates, 33 seed copies, 1 outlier, and
+12 Val/Test near-duplicates. The Wilson 95% lower yield bound is 71.02%.
 
 ### Annotations
 
@@ -124,8 +126,9 @@ Human involvement was limited to spot-checking 20 samples for observation.
 - No per-recipe ablation was run (see `docs/DECISIONS.md` D-004).
 - The pilot's cheap filters rejected 63/500 rows; one additional incomplete
   request escaped those filters and was rejected by the independent judge.
-- The current 18,000-row generation plan projects to 6.44 GPU hours, above the
-  fixed five-hour unattended limit. Production generation was not released.
+- The original 18,000-row plan projected to 6.44 GPU hours and was rejected.
+  The frozen-yield calculation instead released 11,264 rows, projected at 4.028
+  hours and conservatively sized to retain at least 8,000 rows.
 
 ## Licensing
 
@@ -181,6 +184,6 @@ equivalents are not reported because no defensible measurement was made.
 - 驗證／測試一律使用**未經修改的真實 MASSIVE 資料**；生成端從未接觸 Test
 - 限制與任何負面結果一律照實記載，不做選擇性報告
 
-目前完成的是 500 筆 pilot；F1–F4 通過 437 筆，F5/F6 尚待 BGE-M3 校準，
-因此尚未形成可發佈的 filtered 全量資料。現行 18,000 筆規劃推估需 6.44 小時，
-未通過夜間五小時門檻，故沒有擅自啟動 M6。
+500 筆 pilot 的 F1–F4 通過 437 筆；BGE-M3 F5/F6 後通過 375 筆
+（75.0%）。依 Wilson 95% 下界 71.02% 保守估算，正式生成量凍結為 11,264
+筆，投影 4.028 小時並預期至少留下 8,000 筆；M6 已在通過固定 gate 後啟動。

@@ -44,8 +44,7 @@ def _seed_from_example(example: dict[str, Any]) -> dict[str, Any]:
         "utt": example["utt"],
         "intent": example["intent"],
         "slots": [
-            {"type": slot_type, "value": slot_value}
-            for slot_type, slot_value in parsed.slots
+            {"type": slot_type, "value": slot_value} for slot_type, slot_value in parsed.slots
         ],
     }
 
@@ -110,9 +109,7 @@ def _substitution_candidates(
                 None,
             )
             if replacement is not None:
-                candidates.append(
-                    (seed, (slot["type"], old_value, replacement))
-                )
+                candidates.append((seed, (slot["type"], old_value, replacement)))
                 break
     if not candidates:
         raise ValueError("No grounded slot-substitution candidates")

@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from src.evaluation.metrics import aggregate_metrics
+from src.evaluation.metrics import (
+    aggregate_metrics,
+    conditional_valid_diagnostics,
+    diagnostic_counts,
+    per_intent_accuracy,
+)
 from src.evaluation.parse import parse_prediction
 
 
@@ -32,3 +37,38 @@ def test_metrics_keep_json_invalid_in_denominator() -> None:
     assert metrics["exact_match"] == pytest.approx(0.5)
     assert metrics["slot_micro_f1"] == pytest.approx(1.0)
     assert metrics["intent_macro_f1"] == pytest.approx(1 / 60)
+
+
+def test_diagnostics_do_not_repair_invalid_predictions() -> None:
+    predictions = [
+        '{"intent":"general_greet","slots":[]}',
+        "not json",
+        '{"intent":"made_up","slots":[]}',
+        '{"intent":"general_greet","slots":[{"slot":"person","value":"小明"}]}',
+    ]
+    assert diagnostic_counts(predictions) == {
+        "json_decode_error": 1,
+        "schema_validation_error": 1,
+        "unknown_intent": 1,
+        "valid": 1,
+    }
+    per_intent = per_intent_accuracy(
+        predictions[:2],
+        [
+            {"intent": "general_greet", "slots": []},
+            {"intent": "alarm_set", "slots": []},
+        ],
+    )
+    assert per_intent["general_greet"]["accuracy"] == 1.0
+    assert per_intent["alarm_set"]["accuracy"] == 0.0
+    assert conditional_valid_diagnostics(
+        predictions[:2],
+        [
+            {"intent": "general_greet", "slots": []},
+            {"intent": "alarm_set", "slots": []},
+        ],
+    ) == {
+        "valid_rows": 1,
+        "intent_correct": 1,
+        "intent_accuracy": 1.0,
+    }

@@ -29,9 +29,7 @@ def _sample(
             "model": "qwen3.6:27b",
             "model_digest": "sha256:test",
             "prompt_version": f"{recipe}.v1",
-            "seed_sample_id": (
-                ["anchor", "target"] if recipe == "hard_negative" else "seed"
-            ),
+            "seed_sample_id": (["anchor", "target"] if recipe == "hard_negative" else "seed"),
             "gen_params": {
                 "temperature": 0.2,
                 "top_p": 0.9,
@@ -56,18 +54,12 @@ def test_f1_schema_pass_and_fail() -> None:
 
 def test_f2_unknown_intent_and_slot_are_classified_as_labels() -> None:
     unknown_intent = _sample("測試", intent="not_real")
-    assert (
-        run_cheap_filters({"sample": unknown_intent}).reject_reason
-        == "F2_LABEL_UNKNOWN_INTENT"
-    )
+    assert run_cheap_filters({"sample": unknown_intent}).reject_reason == "F2_LABEL_UNKNOWN_INTENT"
     unknown_slot = _sample(
         "設定七點",
         slots=[{"type": "not_real", "value": "七點"}],
     )
-    assert (
-        run_cheap_filters({"sample": unknown_slot}).reject_reason
-        == "F2_LABEL_UNKNOWN_SLOT"
-    )
+    assert run_cheap_filters({"sample": unknown_slot}).reject_reason == "F2_LABEL_UNKNOWN_SLOT"
 
 
 def test_f2_recomputes_generation_plan_contract() -> None:
@@ -81,10 +73,7 @@ def test_f2_recomputes_generation_plan_contract() -> None:
             "slots": [{"type": "time", "value": "晚上九點"}],
         },
     }
-    assert (
-        run_cheap_filters(record).reject_reason
-        == "F2_LABEL_CONTRACT_SLOTS"
-    )
+    assert run_cheap_filters(record).reject_reason == "F2_LABEL_CONTRACT_SLOTS"
 
 
 def test_f3_groundedness_pass_fail_and_overlap() -> None:
@@ -114,10 +103,7 @@ def test_f3_groundedness_pass_fail_and_overlap() -> None:
             ],
         )
     )
-    assert (
-        check_groundedness(overlapping).reject_reason
-        == "F3_UNGROUNDED_OR_OVERLAPPING_SLOT"
-    )
+    assert check_groundedness(overlapping).reject_reason == "F3_UNGROUNDED_OR_OVERLAPPING_SLOT"
 
 
 def test_f4_locale_pass_and_fail_cases() -> None:

@@ -16,12 +16,10 @@ def test_pilot_plan_has_exact_recipe_mix_and_is_deterministic() -> None:
         "hard_negative": 75,
     }
     signature_a = [
-        (plan.recipe, plan.prompt_version, plan.style, plan.seed_sample_id)
-        for plan in plans_a
+        (plan.recipe, plan.prompt_version, plan.style, plan.seed_sample_id) for plan in plans_a
     ]
     signature_b = [
-        (plan.recipe, plan.prompt_version, plan.style, plan.seed_sample_id)
-        for plan in plans_b
+        (plan.recipe, plan.prompt_version, plan.style, plan.seed_sample_id) for plan in plans_b
     ]
     assert signature_a == signature_b
 
@@ -35,4 +33,3 @@ def test_noise_plans_are_colloquial_and_hard_negatives_have_pairs() -> None:
             assert isinstance(plan.seed_sample_id, list)
             assert len(plan.seed_sample_id) == 2
             assert plan.pair_id is not None
-

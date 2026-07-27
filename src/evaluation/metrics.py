@@ -101,3 +101,67 @@ def aggregate_metrics(
         "slot_micro_f1": (2 * true_positive / slot_denominator if slot_denominator else 1.0),
         "exact_match": sum(row.exact_match for row in scored) / total,
     }
+
+
+def diagnostic_counts(raw_predictions: list[str]) -> dict[str, int]:
+    """Group strict-parser outcomes without repairing any model output."""
+    counts: Counter[str] = Counter()
+    for raw in raw_predictions:
+        prediction, error = parse_prediction(raw)
+        if prediction is not None:
+            counts["valid"] += 1
+        elif error is not None and error.startswith("JSONDecodeError"):
+            counts["json_decode_error"] += 1
+        elif error is not None and "unknown intent" in error:
+            counts["unknown_intent"] += 1
+        elif error is not None and "unknown slot type" in error:
+            counts["unknown_slot_type"] += 1
+        else:
+            counts["schema_validation_error"] += 1
+    return dict(sorted(counts.items()))
+
+
+def per_intent_accuracy(
+    raw_predictions: list[str],
+    expected_rows: list[dict[str, Any]],
+) -> dict[str, dict[str, int | float]]:
+    if len(raw_predictions) != len(expected_rows):
+        raise ValueError("Predictions and expected rows must have equal length")
+    correct: Counter[str] = Counter()
+    totals: Counter[str] = Counter()
+    for raw, expected in zip(raw_predictions, expected_rows, strict=True):
+        intent = expected["intent"]
+        totals[intent] += 1
+        prediction, _ = parse_prediction(raw)
+        if prediction is not None and prediction.intent == intent:
+            correct[intent] += 1
+    return {
+        intent: {
+            "correct": correct[intent],
+            "total": totals[intent],
+            "accuracy": correct[intent] / totals[intent] if totals[intent] else 0.0,
+        }
+        for intent in INTENTS
+    }
+
+
+def conditional_valid_diagnostics(
+    raw_predictions: list[str],
+    expected_rows: list[dict[str, Any]],
+) -> dict[str, int | float]:
+    """Report intent quality only among strict-valid rows as a non-primary diagnostic."""
+    if len(raw_predictions) != len(expected_rows):
+        raise ValueError("Predictions and expected rows must have equal length")
+    valid = 0
+    intent_correct = 0
+    for raw, expected in zip(raw_predictions, expected_rows, strict=True):
+        prediction, _ = parse_prediction(raw)
+        if prediction is None:
+            continue
+        valid += 1
+        intent_correct += int(prediction.intent == expected["intent"])
+    return {
+        "valid_rows": valid,
+        "intent_correct": intent_correct,
+        "intent_accuracy": intent_correct / valid if valid else 0.0,
+    }

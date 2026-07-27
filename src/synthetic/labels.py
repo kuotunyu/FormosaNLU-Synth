@@ -158,4 +158,3 @@ def verify_manifest_labels(path: Path = DEFAULT_MANIFEST) -> str:
     if digest != LABELS_SHA256:
         raise ValueError(f"Label digest mismatch: {digest}")
     return digest
-

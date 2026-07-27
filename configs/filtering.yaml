@@ -3,12 +3,13 @@ embedding:
   dense_only: true
   local_files_only: true
 
-# Must remain null until M5 pilot distributions are generated and inspected.
+# Frozen after BGE-M3 distribution, figure, and top/bottom pair review on the
+# 500-row pilot. Do not tune these values against the M6 yield gate.
 thresholds:
-  synthetic_duplicate_max: null
-  seed_too_close_max: null
-  seed_outlier_min: null
-  contamination_max: null
+  synthetic_duplicate_max: 0.999
+  seed_too_close_max: 0.995
+  seed_outlier_min: 0.650
+  contamination_max: 0.990
 
 locale:
   latin_ratio_default_max: 0.30

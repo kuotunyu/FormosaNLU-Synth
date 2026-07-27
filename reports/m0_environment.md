@@ -45,3 +45,17 @@ by M0 was 0 hours; model download and environment setup used no paid API.
   execution safety policy, so it was left intact; it is reproducible and never
   enters Git. The production loader uses only the three targeted `zh-TW`
   Parquet files under `data/raw/massive`.
+
+## Runtime repair addendum
+
+Rechecked on 2026-07-27 after the original Anaconda-based environment exposed an
+old Visual C++ runtime and PyTorch failed at `c10.dll`. The default project
+`.venv` now uses uv-managed CPython 3.11.15. Verified values:
+
+- PyTorch `2.11.0+cu128`, CUDA 12.8, RTX 4090 detected.
+- `uv lock --check` passes with 122 locked packages.
+- Ollama 0.32.0 remains reachable.
+- 148.9 GiB free after the Gemma 4 and BGE-M3 artifacts.
+- `../.env` remains present and its contents were not read.
+
+No system PATH, driver, or machine-wide runtime was changed.

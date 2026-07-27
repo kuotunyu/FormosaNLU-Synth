@@ -13,4 +13,3 @@ __all__ = [
     "build_paraphrase",
     "build_slot_substitution",
 ]
-

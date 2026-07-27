@@ -46,8 +46,7 @@ def _seed_from_example(example: dict[str, Any]) -> dict[str, Any]:
         "utt": example["utt"],
         "intent": example["intent"],
         "slots": [
-            {"type": slot_type, "value": slot_value}
-            for slot_type, slot_value in parsed.slots
+            {"type": slot_type, "value": slot_value} for slot_type, slot_value in parsed.slots
         ],
     }
 
@@ -58,9 +57,7 @@ def _load_seed_pool(
 ) -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     selected = manifest["splits"]["train_20shot_by_intent"]
-    selected_ids = {
-        sample_id for intent_ids in selected.values() for sample_id in intent_ids
-    }
+    selected_ids = {sample_id for intent_ids in selected.values() for sample_id in intent_ids}
     dataset = load_massive_split("train", data_dir, download=False)
     index_by_id = {sample_id: index for index, sample_id in enumerate(dataset["id"])}
 
@@ -257,8 +254,7 @@ async def _generate_one(
         "style": plan.style,
         "expected_intent": plan.expected_intent,
         "expected_slots": [
-            {"type": slot_type, "value": value}
-            for slot_type, value in plan.expected_slots
+            {"type": slot_type, "value": value} for slot_type, value in plan.expected_slots
         ],
         "seed_sample_id": plan.seed_sample_id,
         "pair_id": plan.pair_id,
@@ -320,8 +316,7 @@ def _render_markdown(
                 "| target-label 指令修正 hard-negative；唯一失敗是原 seed 的 "
                 "`星期二的` 被改成 `星期二` |",
                 "",
-                "第一輪完整原始輸出保留在 "
-                "`reports/m3_recipe_samples_v1.{json,md}`，沒有用第二輪",
+                "第一輪完整原始輸出保留在 `reports/m3_recipe_samples_v1.{json,md}`，沒有用第二輪",
                 "覆蓋失敗證據。`slot_substitution.v1` 第一輪即為 5/5，因此沒有為了增加"
                 "版本號而改動。",
                 "",

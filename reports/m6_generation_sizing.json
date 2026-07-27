@@ -1,0 +1,11 @@
+{
+  "pilot_accepted": 375,
+  "pilot_total": 500,
+  "point_acceptance_rate": 0.75,
+  "wilson_lower_acceptance_rate": 0.7102355648988187,
+  "minimum_filtered_rows": 8000,
+  "recommended_generation_rows": 11264,
+  "max_generation_rows": 13980,
+  "projected_hours": 4.028339410773333,
+  "gate_passed": true
+}

@@ -127,3 +127,12 @@ def nearest_similarity_distribution(
     references = l2_normalize(reference_embeddings)
     return np.max(queries @ references.T, axis=1)
 
+
+def nearest_nonself_distribution(embeddings: np.ndarray) -> np.ndarray:
+    """Return each row's nearest different row for duplicate calibration."""
+    vectors = l2_normalize(embeddings)
+    if len(vectors) < 2:
+        raise ValueError("At least two embeddings are required")
+    similarities = vectors @ vectors.T
+    np.fill_diagonal(similarities, -np.inf)
+    return np.max(similarities, axis=1)

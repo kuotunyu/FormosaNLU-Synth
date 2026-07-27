@@ -271,10 +271,10 @@ Gemini API Terms（effective **2026-03-23**）明文：
 
 ---
 
-## D-011 — Gemma 4 使用文字塔 QLoRA，M8 runtime 驗證暫停
+## D-011 — Gemma 4 使用文字塔 QLoRA，M8 runtime 驗證通過
 
 - **日期**：2026-07-27
-- **狀態**：`accepted`（設計）／`pending`（runtime 驗證）
+- **狀態**：`accepted`
 - **決策**：FormosaNLU 只載入 `google/gemma-4-E4B-it` 的
   `Gemma4ForCausalLM` 文字塔；採 NF4 double-quant QLoRA、LoRA
   rank/alpha `16/32`、`all-linear` targets、500 steps、effective batch 16、
@@ -288,17 +288,26 @@ Gemini API Terms（effective **2026-03-23**）明文：
 3. 11,514 筆真實訓練樣本的 prompt+target 實測最大 183 tokens，512 不會截斷。
 4. 六組實驗共用同一 config digest，避免組間偷偷改超參數。
 
-**未通過的 runtime 驗證**
+**Runtime 驗證**
 
-PyPI PyTorch 2.13 與官方 CUDA 12.8 PyTorch 2.11 兩個 project-local 環境都在
-匯入 `torch\lib\c10.dll` 時得到 WinError 1114。因此沒有跑 one-step smoke、
-零樣本 Test 或 M9 訓練，也沒有填入任何虛構數字。詳細證據在
-`reports/m8_training_design.md` 與 `reports/m8_zeroshot_baseline.md`。
+原 Anaconda-based environment 在匯入 `torch\lib\c10.dll` 時得到 WinError
+1114。改用 uv-managed CPython 3.11.15 後，PyTorch 2.11.0+cu128、CUDA 與
+RTX 4090 均通過。由於 E4B multimodal checkpoint 的文字權重位於
+`model.language_model.*`，loader 明確把它映射到 text-only
+`Gemma4ForCausalLM` 的 `model.*`；665 個語言權重全部載入，vision/audio
+權重則刻意忽略。
 
-**重新審視的觸發條件**：使用者在場時完成 Windows PyTorch DLL 診斷，或核可用
-乾淨的 uv-managed Python／其他隔離 runtime 重建環境；先跑 one-step
-`real_only` smoke，確認 loss、adapter、VRAM 與 checkpoint 後才能接受 runtime
-部分。
+One-step `real_only` QLoRA smoke 已產生 adapter 與 `checkpoint-1`：
+train loss 1.9862、eval loss 2.9560、peak allocated VRAM 20,646 MiB。
+機器可讀證據與 adapter hash 在 `reports/m8_smoke_test.json`。
+
+完整零樣本 Test 的嚴格 intent accuracy 為 10.66%，約為 60 類隨機基準
+1.67% 的 6.4 倍；517 筆 strict-valid output 中 61.32% intent 正確。
+因此通過 R-9 的「不是接近亂猜」閘門，維持 Gemma 並進入 SFT。JSON-valid
+17.38% 與 slot F1 0% 同時證明 schema 遵循很弱，後續訓練與評測不得掩飾。
+
+**重新審視的觸發條件**：text-only key mapping 在 Transformers 升級後失效、
+語言權重出現 missing keys，或正式訓練超過 24GB VRAM。
 
 ---
 

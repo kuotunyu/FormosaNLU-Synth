@@ -42,9 +42,7 @@ def compute_audit(data_dir: Path = DEFAULT_DATA_DIR) -> dict[str, Any]:
             total_rows += 1
             intent_counts[example["intent"]] += 1
             rows_with_utt_whitespace += int(any(char.isspace() for char in example["utt"]))
-            rows_with_annot_whitespace += int(
-                any(char.isspace() for char in example["annot_utt"])
-            )
+            rows_with_annot_whitespace += int(any(char.isspace() for char in example["annot_utt"]))
             parsed = parse_annotated_utterance(example["annot_utt"])
             annotation_reconstruction_matches += int(
                 normalize_text(parsed.utterance) == normalize_text(example["utt"])
@@ -57,9 +55,7 @@ def compute_audit(data_dir: Path = DEFAULT_DATA_DIR) -> dict[str, Any]:
                 raw_grounded_slots += int(value in example["utt"])
                 normalized_grounded_slots += int(contains_normalized(example["utt"], value))
 
-    train_intent_counts = Counter(
-        example["intent"] for example in iter_decoded(datasets["train"])
-    )
+    train_intent_counts = Counter(example["intent"] for example in iter_decoded(datasets["train"]))
     values = list(train_intent_counts.values())
     return {
         "source_split_counts": split_counts,

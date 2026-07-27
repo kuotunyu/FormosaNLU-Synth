@@ -39,4 +39,3 @@ def test_decontamination_log_rejects_unknown_split(tmp_path: Path) -> None:
             ],
             tmp_path / "excluded.jsonl",
         )
-

@@ -49,9 +49,7 @@ def select_audit_records(
         raise ValueError(f"Need {count} records, only {len(records)} available")
     rng = random.Random(seed)
     hard = [
-        record
-        for record in records
-        if record["sample"]["provenance"]["recipe"] == "hard_negative"
+        record for record in records if record["sample"]["provenance"]["recipe"] == "hard_negative"
     ]
     rng.shuffle(hard)
     selected = hard[: min(25, count)]
@@ -200,8 +198,7 @@ async def async_main(args: argparse.Namespace) -> int:
         )
     elapsed = time.perf_counter() - started
     accepted = sum(
-        isinstance(result["verdict"], dict) and result["verdict"]["accepted"]
-        for result in results
+        isinstance(result["verdict"], dict) and result["verdict"]["accepted"] for result in results
     )
     payload = {
         "schema_version": 1,

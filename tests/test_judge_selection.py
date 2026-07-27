@@ -26,8 +26,6 @@ def test_judge_selection_is_deterministic_unique_and_hard_weighted() -> None:
     assert ids_a == [record["sample"]["id"] for record in selected_b]
     assert len(ids_a) == len(set(ids_a)) == 50
     hard_count = sum(
-        record["sample"]["provenance"]["recipe"] == "hard_negative"
-        for record in selected_a
+        record["sample"]["provenance"]["recipe"] == "hard_negative" for record in selected_a
     )
     assert hard_count >= 25
-

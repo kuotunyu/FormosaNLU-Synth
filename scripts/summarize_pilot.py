@@ -23,9 +23,7 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
 def summarize(input_path: Path, cost_path: Path) -> dict[str, Any]:
     records = _load_jsonl(input_path)
     indices = [record["generation_index"] for record in records]
-    sample_ids = [
-        record["sample"]["id"] for record in records if record["sample"] is not None
-    ]
+    sample_ids = [record["sample"]["id"] for record in records if record["sample"] is not None]
     if sorted(indices) != list(range(len(records))):
         raise ValueError("Pilot generation indices are not contiguous from zero")
     if len(indices) != len(set(indices)):
@@ -70,17 +68,14 @@ def summarize(input_path: Path, cost_path: Path) -> dict[str, Any]:
         "style_counts": dict(
             sorted(
                 Counter(
-                    record["sample"]["style"]
-                    for record in records
-                    if record["sample"] is not None
+                    record["sample"]["style"] for record in records if record["sample"] is not None
                 ).items()
             )
         ),
         "generation_contract_reasons": dict(
             sorted(
                 Counter(
-                    record["generation_contract_reason"] or "PASS"
-                    for record in records
+                    record["generation_contract_reason"] or "PASS" for record in records
                 ).items()
             )
         ),
