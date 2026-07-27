@@ -42,11 +42,6 @@ hashed in `reports/m9_translation_models.json`.
 - The adapter-evaluation entry is also resumable and has a separate execution
   confirmation guard.
 
-The long batch requires the exact execution guard:
-
-```powershell
-.\.venv\Scripts\python.exe -m scripts.train_all --execute --confirm M9-LOCAL-4090
-```
-
-Do not run that command until the M6 dataset decision is recorded. The current
-filtered corpus has 3,760 rows, not the planned 8,000–10,000.
+For the overnight batch, use the stricter CPU preflight and launch guard in
+`docs/M9_OVERNIGHT_RUNBOOK.md`. Its confirmation text explicitly records use
+of the honest 3,760-row filtered corpus. The planned 8,000-row gate was not met.

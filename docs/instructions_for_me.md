@@ -25,10 +25,13 @@
 準備狀態：六組資料、Standard Aug、dry plan、checkpoint 續跑與 evaluation
 入口均已驗證。技術報告在 `reports/m9_preflight.md`。
 
+睡前不需要自己開終端機；在對話中說「開始跑 M9」即可。完整安全檢查與
+中斷續跑方式在 `docs/M9_OVERNIGHT_RUNBOOK.md`。
+
 若真的需要手動啟動，請在專案根目錄使用：
 
 ```powershell
-.\.venv\Scripts\python.exe -m scripts.train_all --execute --confirm M9-LOCAL-4090
+.\.venv\Scripts\python.exe -m scripts.m9_overnight --execute --confirm M9-OVERNIGHT-3760-4090
 ```
 
 正常情況不需要你做這一步；由我協調其他專案並啟動較安全。中斷後重跑同一命令

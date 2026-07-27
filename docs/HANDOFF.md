@@ -37,6 +37,7 @@ M6 全量固定門檻只留下 **3,760 / 11,264（33.38%）**，未達 8,000。
 - `reports/m8_zeroshot_baseline.md`：完整 2,974-row 嚴格零樣本 baseline
 - `reports/generation_report.md`：M6 正式漏斗、mode collapse 與負面結果
 - `reports/m9_preflight.md`：六組筆數、Standard Aug 與 checkpoint resume 實證
+- `docs/M9_OVERNIGHT_RUNBOOK.md`：睡前一鍵 preflight、3,760 明示 guard、續跑與停損
 - `reports/m6_f7_audit_plan.json`：376-row judge selection，GPU 尚未啟動
 - `reports/m10_main_results.md`：七行表骨架，zero-shot 已填、trained rows pending
 - `reports/m10_probe_manifest.json`：8,922-row evaluation-only robustness probe
@@ -44,8 +45,9 @@ M6 全量固定門檻只留下 **3,760 / 11,264（33.38%）**，未達 8,000。
 
 ### ➡️ 明天的建議起點
 
-記錄「3,760 筆照實訓練」或「另開 revised generation run」的選擇。若採前者，
-等使用者睡前明確說開跑後，執行已加 confirmation guard 的六組 M9 batch。
+使用者睡前若明確說「開始跑 M9」，先執行 CPU-only readiness gate；全綠後
+以 `M9-OVERNIGHT-3760-4090` guard 啟動六組。評估另列下一階段，避免 GPU
+使用時間超出睡眠時段。
 
 ---
 
@@ -53,6 +55,17 @@ M6 全量固定門檻只留下 **3,760 / 11,264（33.38%）**，未達 8,000。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-27 21:15 +08:00] M9 過夜總控 — 完成，不占 GPU
+
+- 新增單一 CPU readiness/status 入口，檢查 contributors、工作樹、六組資料、
+  Gemma 檔案大小、resume smoke、GPU baseline 與至少 20 GiB 磁碟
+- 啟動 guard 固定為 `M9-OVERNIGHT-3760-4090`，避免把 3,760 誤寫成達成
+  8,000 gate；六組仍依序執行、完整組跳過、未完整組由 checkpoint 續跑
+- 動態狀態寫入 ignored `runs/m9_overnight_status.json`，不污染 Git provenance
+- adapter evaluation 保留獨立 guard；M8 全測約一小時，六組評估不自動綁入
+  5–8 小時訓練，以免超過使用者睡眠時段
+- 修正 `reports/m9_preflight.md` 既有的 UTF-8 破損文字
 
 ### [2026-07-27 18:12 +08:00] M9/M10 CPU 交付物 — 完成，不占 GPU
 

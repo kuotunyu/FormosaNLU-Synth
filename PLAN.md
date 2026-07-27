@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 18:12 +08:00 |
-| **目前里程碑** | **M9/M10 CPU 準備完成**；M6 全量 F1–F6 完成但未達 8,000 gate |
-| **下一步動作** | 使用者決定：以誠實的 3,760 筆 filtered corpus 跑 M9，或重做 generation design |
+| **最後更新** | 2026-07-27 21:15 +08:00 |
+| **目前里程碑** | **M9 過夜安全入口完成**；M6 全量 F1–F6 完成但未達 8,000 gate |
+| **下一步動作** | 使用者睡前若說「開始跑 M9」，以明示 3,760 的 guard 啟動六組續跑批次 |
 | **球在誰身上** | 使用者（只需做科學決策，不需手動操作電腦） |
 | **累計 GPU 時數** | M6 generation 4.073 h；M8 零樣本 1.050 h；M2–M4 0.292 h；另有 BGE/QLoRA 短測 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
 | **待決事項** | 3,760 筆照實訓練 vs. 修訂 prompts 後另開一次正式生成；凍結 thresholds 不得放寬 |
-| **今晚範圍** | 使用者已授權睡覺時跑 M9；目前只完成準備，**長批次尚未啟動** |
-| **阻塞項** | 技術上無；長批次只等待上述資料決策與使用者睡前明確開跑 |
+| **今晚範圍** | 使用者已授權睡覺時跑 M9；preflight / status / resume 均已包成單一入口，**長批次尚未啟動** |
+| **阻塞項** | 技術上無；只等待使用者睡前明確說「開始跑 M9」 |
 
 ---
 
@@ -140,7 +140,7 @@
 |---|---|
 | 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ dry plan / inputs；實際六份 snapshot 等正式 run 完成後比對 |
 | `real_only` 與最佳 filtered 組補到 3 seeds（合計約 10 runs） | 每個 run 有 `metrics.jsonl`、`adapter/`、`env.json` |
-| 過夜批次（估 5–8 h） | ✅ 1→2 step 跨程序 resume 實測；正式 batch 未啟動 |
+| 過夜批次（估 5–8 h） | ✅ contributor / worktree / data / model / GPU / disk gate 與 1→2 step resume；正式 batch 未啟動 |
 | `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | ✅ notebook / bundle / 120 秒 Drive sync / resume preflight；Colab 實跑一組仍待使用者操作 |
 | `docs/instructions_for_me.md` 的 Colab 章節填實 | ✅ 上傳檔、GPU 門檻、Secrets、續跑、下載與成功確認皆已填實 |
 
