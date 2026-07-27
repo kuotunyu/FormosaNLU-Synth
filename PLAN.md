@@ -7,8 +7,8 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 17:30 +08:00 |
-| **目前里程碑** | **M9 啟動準備完成**；M6 全量 F1–F6 完成但未達 8,000 gate |
+| **最後更新** | 2026-07-27 18:12 +08:00 |
+| **目前里程碑** | **M9/M10 CPU 準備完成**；M6 全量 F1–F6 完成但未達 8,000 gate |
 | **下一步動作** | 使用者決定：以誠實的 3,760 筆 filtered corpus 跑 M9，或重做 generation design |
 | **球在誰身上** | 使用者（只需做科學決策，不需手動操作電腦） |
 | **累計 GPU 時數** | M6 generation 4.073 h；M8 零樣本 1.050 h；M2–M4 0.292 h；另有 BGE/QLoRA 短測 |
@@ -103,7 +103,7 @@
 |---|---|
 | filtered 8,000–10,000 筆 | ⚠️ 實得 3,760（33.38%）；主要為 4,596 筆 synthetic duplicates，不調門檻硬湊 |
 | `reports/generation_report.md` | ✅ 11,264-row 生成總帳、F1–F6 漏斗、hash、mode-collapse 分析、M9 影響 |
-| `data/formosa_synth_v1/{filtered,unfiltered}/` | ⚠️ M9 候選檔已完成並抽 20 筆目視；正式 release packaging 與 F7 留到 M12/M13 |
+| `data/formosa_synth_v1/{filtered,unfiltered}/` | ⚠️ M9 候選檔與 376-row F7 audit manifest 已完成；judge GPU 執行與 release packaging 待後續 |
 
 ### M7 · 收尾
 
@@ -141,18 +141,18 @@
 | 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ dry plan / inputs；實際六份 snapshot 等正式 run 完成後比對 |
 | `real_only` 與最佳 filtered 組補到 3 seeds（合計約 10 runs） | 每個 run 有 `metrics.jsonl`、`adapter/`、`env.json` |
 | 過夜批次（估 5–8 h） | ✅ 1→2 step 跨程序 resume 實測；正式 batch 未啟動 |
-| `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | 在 Colab **實跑一組**（約 1.5h units），結果放 `results/colab/`，與本機同組比對可攜性（不要求逐位元一致，R-14） |
-| `docs/instructions_for_me.md` 的 Colab 章節填實 | 每步有預期耗時與成功確認方式 |
+| `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | ✅ notebook / bundle / 120 秒 Drive sync / resume preflight；Colab 實跑一組仍待使用者操作 |
+| `docs/instructions_for_me.md` 的 Colab 章節填實 | ✅ 上傳檔、GPU 門檻、Secrets、續跑、下載與成功確認皆已填實 |
 
 ### M10 · 評測
 
 | 交付物 | 驗證方法 |
 |---|---|
-| `src/evaluation/`（`run_inference` / `parse` / `metrics` / `probe` / `report`）+ `scripts/eval.py` CLI | `metrics.py` 的正規化**必須 import `src/data/normalize.py`**（與過濾 F3 同一份）；`tests/` 有指標的已知答案案例 |
-| **主表七行**（零樣本 + 六組）× 全指標 | 含每組的「最佳 checkpoint step／epoch／真實樣本曝光次數」；**JSON-invalid 樣本計為全錯，不得剔除出分母** |
+| `src/evaluation/`（`run_adapter` / `parse` / `metrics` / `probe` / `report`）+ `scripts/eval.py` CLI | ✅ CPU 程式與測試完成；trained adapter GPU inference 待 M9 |
+| **主表七行**（零樣本 + 六組）× 全指標 | 🟡 產生器已完成，zero-shot 列已回填；六個 trained rows 等 M9/M10 |
 | 差距補回率 | 同時報絕對差值；分母過小時標註「此比率不可靠」（R-11） |
 | per-intent 進步排序 | 最進步與**退步最多**都要列（退步的通常最能說明失敗模式） |
-| Robustness 探測集 | 由 `src/synthetic/recipes/noise.py` 施加於真實 Test；標明**輔助分析非主指標**；**不回流訓練** |
+| Robustness 探測集 | ✅ 2,974 Test × 3 種 slot-safe 擾動＝8,922 筆；manifest/hash 完成，明確 evaluation-only |
 | 效能表 | tokens/s、VRAM 峰值、單筆 latency |
 | **不使用 constrained decoding** | code review 確認：JSON-valid rate 是要量的指標，強制合法會讓它恆等 100% |
 

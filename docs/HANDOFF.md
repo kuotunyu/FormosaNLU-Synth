@@ -12,7 +12,7 @@
 | 項目 | 內容 |
 |---|---|
 | 執行區間 | 2026-07-27 03:14–17:30 +08:00（含使用者返回後續作） |
-| 完成到 | M0–M8；M9 六組資料、Standard Aug、batch/eval 入口與 resume preflight 完成 |
+| 完成到 | M0–M8；M9/M10 的資料、batch/eval、Colab、F7 manifest、probe 與 report 入口完成 |
 | 卡住的項目 | 技術上無；M6 只通過 3,760 筆，長 M9 等待資料策略決策 |
 | GPU 時數 | M6 generation 4.073 h；M8 零樣本 1.050 h；另有 M2–M5 與 QLoRA 短測 |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
@@ -37,6 +37,9 @@ M6 全量固定門檻只留下 **3,760 / 11,264（33.38%）**，未達 8,000。
 - `reports/m8_zeroshot_baseline.md`：完整 2,974-row 嚴格零樣本 baseline
 - `reports/generation_report.md`：M6 正式漏斗、mode collapse 與負面結果
 - `reports/m9_preflight.md`：六組筆數、Standard Aug 與 checkpoint resume 實證
+- `reports/m6_f7_audit_plan.json`：376-row judge selection，GPU 尚未啟動
+- `reports/m10_main_results.md`：七行表骨架，zero-shot 已填、trained rows pending
+- `reports/m10_probe_manifest.json`：8,922-row evaluation-only robustness probe
 - `docs/data_card.md`：已填入 full-corpus 結果的 pre-release 草稿
 
 ### ➡️ 明天的建議起點
@@ -50,6 +53,19 @@ M6 全量固定門檻只留下 **3,760 / 11,264（33.38%）**，未達 8,000。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-27 18:12 +08:00] M9/M10 CPU 交付物 — 完成，不占 GPU
+
+- 建立 `notebooks/01_sft_student.ipynb`：同一份 `train.py`、22.5 GiB
+  preflight、HF Secret、每 120 秒 Drive checkpoint sync、斷線續跑與成功驗證
+- deterministic Colab bundle 約 3.5 MB，不含 15.9 GB Gemma 權重；hash/report
+  由 clean source commit 產生
+- F7 manifest 376/3,760：hard-negative 275 全納入、boundary 51、random 50；
+  `judge_full.py` dry plan 顯示 checkpoint 0/376，未載入 gpt-oss
+- M10 七行主表產生器完成；目前 zero-shot 列已填，六組 trained rows 正確標 pending
+- robustness probe 8,922 筆：2,974 Test × colloquial / lexical / ASR-noise，
+  2,974 個 source 皆有三個不同且 slot-grounded 的版本
+- README 已先填 M6 漏斗、mode-collapse 負面結果、已知 GPU 時數與正確 CLI
 
 ### [2026-07-27 17:30 +08:00] M6 → M9 preflight — 完成，等待資料決策
 

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "manifest_ready_gpu_not_started",
+  "source": "data\\filtered\\full_f1_f6.jsonl",
+  "source_count": 3760,
+  "selection_fraction": 0.1,
+  "selection_seed": 42,
+  "selected_count": 376,
+  "selected_rate": 0.1,
+  "strata": {
+    "boundary_conflict": 51,
+    "hard_negative": 275,
+    "random": 50
+  },
+  "recipes": {
+    "hard_negative": 275,
+    "noise_codeswitch": 56,
+    "paraphrase": 29,
+    "slot_substitution": 16
+  },
+  "styles": {
+    "massive_like": 143,
+    "tw_colloquial": 233
+  },
+  "gpu_execution_started": false,
+  "created_at": "2026-07-27T10:07:50.915611+00:00",
+  "manifest": "data\\filtered\\full_f7_audit_manifest.jsonl",
+  "manifest_sha256": "ae7afeb10e75ac25c59cad0050bcea37c98a03b4a3f5301af340afb011201b2a"
+}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import subprocess
 from datetime import datetime, timezone
@@ -49,7 +50,9 @@ def _git_commit() -> str:
         text=True,
         encoding="utf-8",
     )
-    return completed.stdout.strip() if completed.returncode == 0 else "unknown"
+    if completed.returncode == 0:
+        return completed.stdout.strip()
+    return os.environ.get("FORMOSANLU_SOURCE_COMMIT", "unknown")
 
 
 def _package_versions() -> dict[str, str]:

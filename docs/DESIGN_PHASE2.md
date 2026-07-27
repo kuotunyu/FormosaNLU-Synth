@@ -144,12 +144,15 @@ Colab 端仍遵守既有鐵則：資料解壓到 `/content/data` 再訓練、che
 
 ```
 src/evaluation/
-├── run_inference.py    # 批次推論（transformers，左側 padding，greedy）
+├── run_adapter.py      # 可續跑 adapter 推論（transformers，左側 padding，greedy）
+├── eval_all.py         # 六組序列評測 plan / resume / batch report
 ├── parse.py            # 解析模型輸出 → SyntheticSample schema；解析失敗即 JSON-invalid
 ├── metrics.py          # 指標實作，正規化沿用 src/data/normalize.py（與過濾 F3 同一份）
 ├── probe.py            # robustness 探測集建構
 └── report.py           # 主表、per-intent 排序、圖表
-scripts/eval.py         # 薄 CLI 入口（--group / --all-groups / --probe）
+scripts/eval.py         # 薄 CLI 入口（單組或預設六組；明確 confirmation guard）
+scripts/report_results.py
+                        # 七行主表、gap-closed、per-intent movement
 ```
 
 **關鍵一致性要求**：`metrics.py` 的字串正規化**必須 import `src/data/normalize.py`**，與過濾管線的 F3 groundedness 檢查用同一份程式。兩邊各寫一份遲早會不一致，然後某個指標就悄悄錯了。

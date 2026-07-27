@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：骨架。** 每次需要你動手時，我會把對應章節填實並在對話裡指給你看。
+> **狀態：M9 本機與 Colab 操作已填實；M13 發佈章節仍待最終結果。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -42,33 +42,52 @@
 
 ### A-1. 上傳
 
-1. 把 `notebooks/` 整個資料夾複製到 Google Drive 的 `MyDrive/sdg-portfolio/03-formosanlu-sdg/`
-2. 一併複製 `<FILL AT M9: 需要的資料檔清單與大小>`
+1. 在 Google Drive 建立 `MyDrive/sdg-portfolio/03-formosanlu-sdg/`
+2. 上傳 `notebooks/01_sft_student.ipynb`
+3. 上傳 `outputs/formosanlu_colab_bundle.zip`，改名或解壓都不需要
+
+bundle 約 3.5 MB，已包含程式碼、lockfile、三個 MASSIVE `zh-TW` Parquet
+shards，以及六組訓練所需的 synthetic / Standard Aug 資料；**不含**
+15.9 GB Gemma 權重。notebook 會用 `HF_TOKEN` 直接下載固定 base model。
+實際 byte size、SHA-256 與 source commit 記在 `reports/m9_colab_bundle.json`。
 
 ### A-2. 開啟與設定
 
 1. 在 Drive 裡對 `01_sft_student.ipynb` 按右鍵 →「開啟工具」→ Google Colaboratory（**從 Drive 開啟**，不要另外上傳一份，否則存檔會存錯地方）
-2. Runtime → Change runtime type → **`<FILL AT M9: 建議 runtime 與 fallback 規則>`**
+2. Runtime → Change runtime type → 選 **至少 22.5 GiB 可用顯存**的 GPU。
+   L4-class 24 GB 或 A100 可通過；T4 16 GB 會被 notebook preflight 主動拒絕。
 3. 左側鑰匙圖示 → Secrets → 確認有 `HF_TOKEN`（並打開該 notebook 的存取開關）
 4. **不要**把任何 token 貼進 notebook 儲存格
 
 ### A-3. 執行
 
-- 預估時數：`<FILL AT M9>`
-- 預估 compute units：`<FILL AT M9>`
-- 中途斷線怎麼辦：`<FILL AT M9: resume 步驟>`
+- 環境與 15.9 GB 模型下載：視 Colab 網路約 15–40 分鐘
+- `real_only` seed-42 portability run：預留約 1–1.5 GPU 小時
+- compute units：依 Colab 當下方案與硬體費率變動；以介面顯示值為準並截圖留存
+- 每 120 秒把 checkpoint 同步到 Drive
+- 中途斷線：重新從第一格執行；notebook 會從 Drive 還原
+  `runs/real_only/seed_42/checkpoint-*`，同一條 `train.py --resume` 自動續跑
 
 ### A-4. 跑完要下載回來的東西
 
 | 檔案 | 放到本機哪裡 |
 |---|---|
-| `<FILL AT M9>` | `results/colab/<group>/` |
+| Drive 的 `runs/real_only/seed_42/` 整個資料夾 | `results/colab/real_only/seed_42/` |
 
 下載的檔案會落在 Windows 的 `Downloads`。直接跟我說「檔案在 `C:\Users\3Hml\Downloads\xxx.zip`，幫我歸位」，我會自己搬。
 
 ### A-5. 怎麼確認成功
 
-`<FILL AT M9: 例如「metrics.jsonl 的最後一行 Val exact match 與本機同組相差在 X 以內」>`
+最後一格必須顯示 `PORTABILITY RUN PASSED`，且 Drive 目錄同時包含：
+
+- `run_report.json`：`status=completed`、`group=real_only`、`seed=42`
+- `adapter/`
+- `metrics.jsonl`
+- `env.json`
+- `config.snapshot.yaml`
+
+下載回本機後會比對 shared config、資料筆數、完成 step 與 validation loss
+trajectory；可攜性驗證不要求不同 GPU 的浮點結果逐位元一致。
 
 ---
 

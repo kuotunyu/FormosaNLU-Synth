@@ -84,9 +84,24 @@ Three groups isolate quality from quantity:
 
 ### Filter funnel
 
-<!-- FILL AT M6/M12: generated -> F1 schema -> F2 labels -> F3 groundedness ->
-     F4 locale -> F5 dedup -> F6 decontamination -> F7 judge -> final count.
-     Include the count removed at each gate. -->
+The pre-registered 8,000–10,000 filtered target was **not met**. Frozen F1–F6
+retained 3,760 / 11,264 rows (33.38%); thresholds were not relaxed after seeing
+the result.
+
+| Stage | Removed | Remaining |
+| --- | ---: | ---: |
+| Generated / F1 schema | 0 | 11,264 |
+| F2 label contract | 461 | 10,803 |
+| F3 grounded slots | 738 | 10,065 |
+| F4 Taiwan locale/language | 951 | 9,114 |
+| F5 seed copy / synthetic duplicate / outlier | 5,106 | 4,008 |
+| F6 Val/Test contamination exclusion | 248 | **3,760** |
+| F7 independent judge audit | pending | pending |
+
+The dominant loss was 4,596 synthetic near-duplicates. Among the 9,114 F1–F4
+survivors, only 4,044 utterances were exact-text distinct. This corpus-scale
+mode collapse was not visible at the same rate in the 500-row pilot and is
+reported as a negative result, not hidden.
 
 ### Judge-reported miss rate
 
@@ -107,9 +122,10 @@ native Windows**. No WSL. No API spend.
 
 | Phase | GPU wall-clock | Notes |
 | --- | --- | --- |
-| Synthetic generation | | local teacher via Ollama |
+| Synthetic generation | **4.073 h** | 11,264 rows; local teacher via Ollama |
 | Training (10 runs) | | six groups + 3-seed reruns |
-| Evaluation | | |
+| Zero-shot evaluation | **1.050 h** | 2,974 untouched real Test rows |
+| Trained evaluation | | pending M9 adapters |
 | **API spend** | — | **$0** |
 
 ---
@@ -162,27 +178,43 @@ python -m scripts.check_env
 python -m src.data.freeze_split
 python -m src.data.freeze_split --verify
 
-# 3. Generate synthetic data (local teacher, no API keys needed)
+# 3. Generate the frozen corpus (local teacher, no API keys needed)
 python -m src.synthetic.generate --pilot 500
-python -m src.synthetic.generate --full
+python -m src.synthetic.generate --full 11264
 
-# 4. Filter
-python -m src.filtering.run
-python -m src.filtering.decontaminate
+# 4. Apply the frozen F1-F6 pipeline, then validate M9 artifacts
+python -m src.filtering.run \
+  --input data/generated/full_unfiltered.jsonl \
+  --accepted data/filtered/full_f1_f4.jsonl \
+  --rejected data/filtered/full_rejected_f1_f4.jsonl \
+  --report reports/m6_cheap_filter_funnel.json
+python -m src.filtering.embed_full --batch-size 64
+python -m src.filtering.apply_semantic \
+  --input data/filtered/full_f1_f4.jsonl \
+  --cheap-report reports/m6_cheap_filter_funnel.json \
+  --embeddings data/embeddings/m6_full_bge_m3.npz \
+  --accepted data/filtered/full_f1_f6.jsonl \
+  --rejected data/filtered/full_rejected_f5_f6.jsonl \
+  --exclusions data/filtered/full_f6_exclusions.jsonl \
+  --report reports/m6_full_filter_funnel.json
+python -m scripts.prepare_m9_data
+python -m scripts.train_all --validate-inputs
 
 # 5. Train all groups locally (overnight batch, resumable)
-python -m scripts.train_all
+python -m scripts.train_all --execute --confirm M9-LOCAL-4090
 
-# 6. Evaluate
-python -m scripts.eval --all-groups
-python -m scripts.eval --probe
+# 6. Evaluate trained adapters, then build the seven-row report
+python -m scripts.eval --execute --confirm M9-EVAL-LOCAL-4090
+python -m scripts.report_results
 
 # 7. Verify every number in this README recomputes from raw artifacts
 python -m scripts.verify_readme
 ```
 
 A Colab notebook (`notebooks/01_sft_student.ipynb`) wraps the same training code
-for portability; one group was actually run there to prove it works.
+for portability. Its model-free bundle, GPU-memory preflight, two-minute Drive
+checkpoint sync, and resume path are prepared; the one-group Colab evidence run
+is still pending.
 
 MASSIVE is loaded from the three targeted
 `refs/convert/parquet/zh-TW/<split>/0000.parquet` shards. This avoids the
@@ -220,7 +252,9 @@ removed upstream loading script and prevents the converted repository's
 - Synthetic data inherits the teacher's biases and Taiwan-specific knowledge gaps.
 - Seeds come from a 20-shot sample, so coverage of rare intents and rare slot
   types is thin.
-- `<FILL AT M12>`
+- The full run retained only 3,760 / 11,264 rows. F5 removed 4,596 synthetic
+  near-duplicates, showing substantial generator mode collapse and invalidating
+  the pilot-derived expectation of at least 8,000 accepted rows.
 
 ---
 
