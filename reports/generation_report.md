@@ -72,13 +72,27 @@ This is consistent with F5 removing 4,596 synthetic near-duplicates. It also
 explains why a 500-row pilot overstated full-corpus yield: collapse became much
 more visible as the generation plan exhausted common phrasings.
 
-## Spot check and release caveat
+## Spot check and F7 release audit
 
 Twenty evenly spaced accepted rows were reviewed. Most were readable and their
 recorded slots were literal spans, but a few were awkward or underspecified
 (for example, generic location or email requests with little context).
 F1–F6 therefore defines the M9 filtered training candidate, not a final public
-release. The planned F7 quality audit remains required before M13 publishing.
+release.
+
+The preregistered F7 audit judged 376 stratified rows with `gpt-oss:20b`:
+370 accepted and 6 rejected. The 50-row random stratum is the only unbiased
+rate estimator; 3 rows were rejected, giving an observed F1–F6 miss rate of
+**6.0%** with a Wilson 95% interval of **2.06%–16.22%**. The targeted
+hard-negative (272/275 accepted) and boundary-conflict (51/51 accepted) strata
+must not be used as corpus-wide rate estimates.
+
+The six known rejected sample IDs were removed from the release-only artifact,
+leaving **3,754 rows** at
+`data/filtered/full_f1_f7_release.jsonl`, SHA-256
+`0da52fa1e8f63e615d0a950274586cd1696ae613c2734a922b6b59bc9821ecf2`.
+The frozen M9 training corpus remains the original 3,760-row F1–F6 file so that
+completed experiments and their preregistered contract are not rewritten.
 
 ## M9 implication
 

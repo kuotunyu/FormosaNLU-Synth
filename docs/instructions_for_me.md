@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：本機 M9/M10、M11 mock、M12 與 Colab portability 已完成；M13 外部操作待辦。**
+> **狀態：本機 M9/M10、F7、M11 mock、M12 與 Colab portability 已完成；M13 外部操作待辦。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -11,8 +11,8 @@
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
 **目前不需要你操作。** 本機 primary 六組訓練、六組評估、M10、M11
-介面、M12 報告與 Colab `real_only` portability run 都已完成。Codex 正在
-等待安全 GPU 時段，再跑 F7 與四個 extra-seed runs。
+介面、M12 報告、F7 與 Colab `real_only` portability run 都已完成。Codex
+正在等待下一次安全 GPU gate，再跑 M11 real evidence 與四個 extra-seed runs。
 
 ---
 
@@ -120,7 +120,7 @@ Repository 已於使用者明確同意後建立：
 - [x] 先建為 **Private**
 - [x] Description 與 README 以正體中文（台灣，`zh-TW`）為主
 - [x] 首次 push；remote commits 與 GitHub Contributors 都只有 `kuotunyu`
-- [ ] 完成 F7、extra seeds、robustness、Colab 與發佈前總驗收
+- [ ] 完成 extra seeds、robustness、真模型證據與發佈前總驗收
 - [ ] **使用者過目後才轉 Public**
 
 > 提醒：commit 一律不帶 `Co-Authored-By` trailer，GitHub Contributors 只會有 `kuotunyu`。

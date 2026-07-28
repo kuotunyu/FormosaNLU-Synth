@@ -76,6 +76,28 @@
   "spot_check": {
     "method": "20 evenly spaced accepted rows",
     "rows_reviewed": 20,
-    "observation": "Most rows were readable and grounded, but some were awkward or underspecified. A production release still needs the planned F7 quality audit."
+    "observation": "Most rows were readable and grounded, but some were awkward or underspecified. The subsequent F7 audit rejected 6 of 376 stratified rows."
+  },
+  "f7_audit": {
+    "status": "complete",
+    "model": "gpt-oss:20b",
+    "samples": 376,
+    "accepted": 370,
+    "rejected": 6,
+    "random_stratum": {
+      "samples": 50,
+      "rejected": 3,
+      "observed_miss_rate": 0.06,
+      "wilson_95_percent_interval": [
+        0.02061497034897396,
+        0.1621709168883817
+      ],
+      "is_unbiased_rate_estimator": true
+    },
+    "targeted_strata_are_not_unbiased_rate_estimators": true,
+    "judge_results_sha256": "c3dfb06b8cae439a876ef28dcfe0fe28488fc22a6c14ebf0abbe37036b142d55",
+    "release_rows": 3754,
+    "release_sha256": "0da52fa1e8f63e615d0a950274586cd1696ae613c2734a922b6b59bc9821ecf2",
+    "training_contract_unchanged": true
   }
 }

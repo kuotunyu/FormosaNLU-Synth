@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-28T19:31:04.589585+00:00",
+  "status": "complete",
+  "model": "gpt-oss:20b",
+  "model_digest": "17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+  "samples": 376,
+  "json_valid": 376,
+  "accepted": 370,
+  "rejected": 6,
+  "accepted_rate": 0.9840425531914894,
+  "selection_strata": {
+    "boundary_conflict": {
+      "samples": 51,
+      "accepted": 51,
+      "rejected": 0,
+      "accepted_rate": 1.0
+    },
+    "hard_negative": {
+      "samples": 275,
+      "accepted": 272,
+      "rejected": 3,
+      "accepted_rate": 0.9890909090909091
+    },
+    "random": {
+      "samples": 50,
+      "accepted": 47,
+      "rejected": 3,
+      "accepted_rate": 0.94
+    }
+  },
+  "recipe_counts": {
+    "hard_negative": 275,
+    "noise_codeswitch": 56,
+    "paraphrase": 29,
+    "slot_substitution": 16
+  },
+  "wall_seconds_sum": 2720.5601442000043,
+  "output_tokens": 15659,
+  "random_stratum_is_rate_estimator": true,
+  "targeted_strata_are_not_unbiased_rate_estimators": true,
+  "rejected_sample_ids": [
+    "syn_1ca4c8e059421f6a83f2",
+    "syn_5e87b623ed5cc49532d6",
+    "syn_5d7220f8b3e6380a83db",
+    "syn_284b5b94e68787cd61d8",
+    "syn_719f9de167b11a299ef0",
+    "syn_fcb3d82bf6e93d6f105b"
+  ]
+}

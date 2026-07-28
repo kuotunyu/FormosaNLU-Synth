@@ -1,8 +1,8 @@
 # FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
 
 > **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、M10 評估、
-> M11 比較介面、M12 報告產物與 Colab portability 均已完成。F7
-> independent judge audit、seeds 43/44、robustness inference 與正式發佈
+> M11 比較介面、M12 報告產物、Colab portability 與 F7 independent
+> judge audit 均已完成。seeds 43/44、robustness inference 與正式發佈
 > 仍在進行。
 
 在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
@@ -101,7 +101,7 @@ Synthetic data 並未改善所有 intents，因此進步與退步都必須呈現
 | F4 Taiwan locale/language | 951 | 9,114 |
 | F5 seed copy / synthetic duplicate / outlier | 5,106 | 4,008 |
 | F6 Val/Test contamination exclusion | 248 | **3,760** |
-| F7 independent judge audit | 進行中 | checkpoint 64 / 376 |
+| F7 sampled judge exclusions（376-row audit） | 6 | **3,754 release rows** |
 
 ![F1–F6 filter funnel](assets/m12_filter_funnel.png)
 
@@ -110,8 +110,12 @@ Synthetic data 並未改善所有 intents，因此進步與退步都必須呈現
 mode collapse 在 500-row pilot 中並不明顯，因此被保留為重要的 negative
 result，而不是隱藏或事後調整門檻。
 
-F7 已固定抽樣 376 筆；目前安全 checkpoint 為 64/376。完成前不報告 judge
-miss rate。
+F7 依事先固定的 strata 稽核 376 筆，370 筆通過、6 筆拒絕。只有 50 筆
+random stratum 可用來估計 F1–F6 漏檢率：其中 3 筆被拒絕，觀察值為
+**6.0%**（Wilson 95% interval：2.06%–16.22%）；hard-negative 與
+boundary-conflict 是刻意加權的 targeted strata，不能當作全 corpus 的
+無偏估計。6 筆已由 release-only corpus 排除，留下 3,754 筆；M9 的
+frozen 3,760-row training contract 不回溯修改。
 
 ## 成本與可重現性
 
@@ -229,7 +233,8 @@ python -m scripts.report_results
 python -m scripts.build_m12_artifacts
 python -m scripts.verify_readme
 
-# 7. 查看尚未完成的 F7 與 three-seed plans（CPU-only）
+# 7. 重建 F7 release-only corpus，並查看 three-seed plan（CPU-only）
+python -m scripts.finalize_f7_release
 python -m scripts.judge_full
 python -m scripts.m9_replicates
 
@@ -265,7 +270,8 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 - M9 headline table 目前只有 seed 42。Seeds 43/44 完成前不提供 variance、
   confidence interval 或 significance claim。
-- F7 independent judge audit 目前為 64/376；robustness inference 尚未完成。
+- F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
+  為 6.0%，但樣本僅 50 筆，95% interval 很寬。Robustness inference 尚未完成。
 - 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。
 - MASSIVE `zh-TW` 翻譯自 English SLURP，未必涵蓋自然台灣口語的完整分布。
 - Synthetic data 會繼承 teacher 的 biases 與台灣在地知識缺口。
@@ -284,8 +290,8 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## Roadmap
 
-近期工作是完成 extra-seed uncertainty、F7 audit、robustness probe、真模型
-demo evidence 與 clean-environment M13 release audit。後續可將同一 pipeline
+近期工作是完成 extra-seed uncertainty、robustness probe、真模型 demo
+evidence 與 clean-environment M13 release audit。後續可將同一 pipeline
 延伸至台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval` 等工具評估。
 
 ## 專案文件

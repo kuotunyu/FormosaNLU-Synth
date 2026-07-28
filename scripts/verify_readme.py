@@ -74,6 +74,17 @@ def verify_readme(
                 f"{generation['filtering']['f1_f6_passed']:,}" in readme,
             ),
             (
+                "F7 release row count",
+                f"{generation['f7_audit']['release_rows']:,}" in readme,
+            ),
+            (
+                "F7 random-stratum miss rate",
+                (
+                    f"{generation['f7_audit']['random_stratum']['observed_miss_rate']:.1%}"
+                    in readme
+                ),
+            ),
+            (
                 "training hours",
                 f"{resources['phases']['primary_training_seed_42']['wall_hours']:.3f} h"
                 in readme,

@@ -11,9 +11,9 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 00:25 +08:00（跨多次使用者回來後續作） |
-| 完成到 | M9/M10 primary seed-42、M11 demo、M12 README／圖表／資源帳本與 Colab portability 完成 |
-| 卡住的項目 | 技術上無；額外 seeds、F7、robustness 與真模型 demo 只等待安全 GPU 時段 |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 03:37 +08:00（跨多次使用者回來後續作） |
+| 完成到 | F7、M9/M10 primary seed-42、M11 demo、M12 README／圖表／資源帳本與 Colab portability 完成 |
+| 卡住的項目 | 技術上無；額外 seeds、robustness 與真模型 demo 只等待各階段的安全 GPU gate |
 | GPU 時數 | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、訓練 6.540、trained eval 2.777 |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
@@ -37,7 +37,8 @@ Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thres
 - `reports/generation_report.md`：M6 正式漏斗、mode collapse 與負面結果
 - `reports/m9_preflight.md`：六組筆數、Standard Aug 與 checkpoint resume 實證
 - `docs/M9_OVERNIGHT_RUNBOOK.md`：睡前一鍵 preflight、3,760 明示 guard、續跑與停損
-- `reports/m6_f7_audit_plan.json`：376-row judge selection，GPU 尚未啟動
+- `reports/m6_f7_judge.json`：376-row independent judge 完整結果
+- `reports/m6_f7_release.json`：6 筆排除與 3,754-row release-only corpus hash
 - `reports/m10_main_results.md`：zero-shot + 六組 trained 的完整七行 primary 主表
 - `reports/m12_resource_ledger.json`：14.440 h 可追溯 primary GPU 資源帳本
 - `assets/m12_*.png`：主表、filter 比較、漏斗、per-intent 與方法圖
@@ -47,9 +48,9 @@ Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thres
 
 ### ➡️ 接下來的建議起點
 
-先完成全 repo tests、Ruff、README 與 contributor audit。確認 DefectForge、
-SafeSynth 程序都消失且 GPU 空閒後，可依 frozen 設定先跑 F7 judge audit，
-再補 `real_only` / `real_syn_filtered` 的 seeds 43/44。額外 seeds 完成前，
+先完成 F7 的全 repo tests、Ruff、README 與 contributor audit。確認 DefectForge、
+SafeSynth 程序都消失且 GPU 空閒後，先擷取 M11 real evidence，再補
+`real_only` / `real_syn_filtered` 的 seeds 43/44。額外 seeds 完成前，
 README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
 ---
@@ -58,6 +59,20 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 03:37 +08:00] F7 independent judge — 完成
+
+- 從 checkpoint 64/376 依原命令安全續跑，完成 376/376；JSON、index、
+  sample ID 與 manifest 全部一一對齊
+- `gpt-oss:20b` 接受 370、拒絕 6；random stratum 拒絕 3/50，觀察漏檢率
+  6.0%，Wilson 95% interval 2.06%–16.22%
+- hard-negative 272/275、boundary-conflict 51/51 通過；這兩個 targeted
+  strata 不是全 corpus 的無偏估計
+- 6 筆已知不合格列已從 release-only corpus 排除，留下 3,754 筆；
+  frozen 3,760-row M9 training input 不回溯修改
+- 完整 judge result SHA-256
+  `c3dfb06b8cae439a876ef28dcfe0fe28488fc22a6c14ebf0abbe37036b142d55`
+- Ruff、98 tests、README 22 項 artifact 對照與 contributor audit 全綠
 
 ### [2026-07-29 00:25 +08:00] Colab portability — 完成並匯入
 

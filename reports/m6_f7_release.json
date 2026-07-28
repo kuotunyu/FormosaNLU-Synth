@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-28T19:36:34.296098+00:00",
+  "status": "complete",
+  "source": "data/filtered/full_f1_f6.jsonl",
+  "source_rows": 3760,
+  "source_sha256": "e9700b50b85516af01023811bcedb0afb9e6f73a156a39d2d14feca5d5600daf",
+  "judge_results": "data/filtered/full_f7_judge_results.jsonl",
+  "judge_rows": 376,
+  "judge_results_sha256": "c3dfb06b8cae439a876ef28dcfe0fe28488fc22a6c14ebf0abbe37036b142d55",
+  "excluded_rows": 6,
+  "excluded_sample_ids": [
+    "syn_1ca4c8e059421f6a83f2",
+    "syn_284b5b94e68787cd61d8",
+    "syn_5d7220f8b3e6380a83db",
+    "syn_5e87b623ed5cc49532d6",
+    "syn_719f9de167b11a299ef0",
+    "syn_fcb3d82bf6e93d6f105b"
+  ],
+  "release_output": "data/filtered/full_f1_f7_release.jsonl",
+  "release_rows": 3754,
+  "release_sha256": "0da52fa1e8f63e615d0a950274586cd1696ae613c2734a922b6b59bc9821ecf2",
+  "random_stratum": {
+    "samples": 50,
+    "rejected": 3,
+    "observed_miss_rate": 0.06,
+    "wilson_95_percent_interval": [
+      0.02061497034897396,
+      0.1621709168883817
+    ],
+    "is_unbiased_rate_estimator": true
+  },
+  "targeted_strata_are_not_unbiased_rate_estimators": true,
+  "training_contract_unchanged": true,
+  "training_source_remains": "data/filtered/full_f1_f6.jsonl"
+}

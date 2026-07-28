@@ -137,6 +137,12 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
             "376-row independent judge audit complete",
         ),
         Check(
+            "f7_release_corpus",
+            _json_status(REPO_ROOT / "reports" / "m6_f7_release.json") == "complete",
+            _json_status(REPO_ROOT / "reports" / "m6_f7_release.json"),
+            "judge-rejected sampled rows excluded from release-only corpus",
+        ),
+        Check(
             "three_seed_uncertainty",
             _json_status(REPO_ROOT / "reports" / "m9_replicate_summary.json")
             == "complete",

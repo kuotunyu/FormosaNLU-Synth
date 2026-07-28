@@ -7,13 +7,13 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 00:25 +08:00 |
-| **目前里程碑** | **M11/M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
-| **下一步動作** | 完成文件／測試總驗收；確認 sibling 與 GPU 空閒後，依序安排 F7 judge audit 與 seeds 43/44 四組補跑 |
+| **最後更新** | 2026-07-29 03:39 +08:00 |
+| **目前里程碑** | **F7、M11/M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
+| **下一步動作** | F7 的 98 tests、Ruff、README 22-check 與 contributor audit 已全綠；重新通過 GPU safety gate 後，依序執行 M11 real evidence、seeds 43/44 四組補跑與 robustness |
 | **球在誰身上** | Codex；只在最終發佈 review 時再需使用者操作 |
 | **累計 GPU 時數** | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、六組訓練 6.540、六組評估 2.777 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | primary seed-42 結果為 provisional；額外 seeds、F7、robustness 與真模型 demo 證據尚未完成；凍結 thresholds 不得放寬 |
+| **待決事項** | primary seed-42 結果為 provisional；額外 seeds、robustness 與真模型 demo 證據尚未完成；凍結 thresholds 不得放寬 |
 | **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；Private GitHub repo 與正體中文 README 已首次 push，不啟動 Public 發佈或重生成 |
 | **阻塞項** | 技術上無；GPU 工作只在 sibling workloads 消失且顯卡安全空閒時啟動 |
 
@@ -103,7 +103,7 @@
 |---|---|
 | filtered 8,000–10,000 筆 | ⚠️ 實得 3,760（33.38%）；主要為 4,596 筆 synthetic duplicates，不調門檻硬湊 |
 | `reports/generation_report.md` | ✅ 11,264-row 生成總帳、F1–F6 漏斗、hash、mode-collapse 分析、M9 影響 |
-| `data/formosa_synth_v1/{filtered,unfiltered}/` | ⚠️ M9 候選檔與 376-row F7 audit manifest 已完成；judge GPU 執行與 release packaging 待後續 |
+| `data/formosa_synth_v1/{filtered,unfiltered}/` | ✅ F7 完成 376/376；6 筆已知不合格列由 release-only corpus 排除，3,754 筆；M9 frozen training corpus 仍為 3,760 筆 |
 
 ### M7 · 收尾
 
