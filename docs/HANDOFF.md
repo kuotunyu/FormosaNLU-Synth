@@ -14,7 +14,7 @@
 | 執行區間 | 2026-07-27 03:14–2026-07-29 04:06 +08:00（跨多次使用者回來後續作） |
 | 完成到 | F7、M9/M10 primary seed-42、M11 real evidence、M12 README／圖表／資源帳本與 Colab portability 完成 |
 | 卡住的項目 | 技術上無；額外 seeds 與 robustness 只等待各階段的安全 GPU gate |
-| GPU 時數 | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、訓練 6.540、trained eval 2.777 |
+| GPU 時數 | primary core 14.440 h；F7 + M11 auxiliary 0.766 h；目前可追溯 local total 15.205 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
 

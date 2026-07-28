@@ -524,9 +524,9 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
         Check(
             "m12_resource_ledger",
             _json_status(REPO_ROOT / "reports" / "m12_resource_ledger.json")
-            == "complete_primary_seed_42",
+            in {"complete_primary_seed_42", "complete_all_local_gpu"},
             _json_status(REPO_ROOT / "reports" / "m12_resource_ledger.json"),
-            "traceable primary GPU ledger complete",
+            "traceable primary or all-local GPU ledger complete",
         ),
         Check(
             "f7_judge",

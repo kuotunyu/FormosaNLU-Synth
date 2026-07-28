@@ -128,11 +128,15 @@ Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
 | Trained evaluation，seed 42 | **2.777 h** | `results/m9_eval_batch_report.json` 的六個 runs |
 | Zero-shot evaluation | **1.050 h** | M8 report 的 generation timing |
 | **Measured primary core total** | **14.440 h** | 不含 extra seeds、F7 與 robustness |
+| F7 independent judge（auxiliary） | **0.756 h** | 376 筆逐列 model latency 加總 |
+| M11 real demo（auxiliary） | **0.010 h** | 10 次 generation latency 加總 |
+| **目前可追溯 local total** | **15.205 h** | primary core + 已完成 auxiliary |
 | **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
-若以 RTX 4090 的 450 W TDP 計算，14.440 小時對應 6.498 kWh 的保守
-GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以 TDP
-運作。
+若以 RTX 4090 的 450 W TDP 計算，primary core 14.440 小時對應
+6.498 kWh、目前可追溯 local total 15.205 小時對應 6.842 kWh 的保守
+GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以
+TDP 運作。
 
 資源帳本位於
 [`reports/m12_resource_ledger.json`](reports/m12_resource_ledger.json)，

@@ -219,9 +219,11 @@ Windows. **No API spend.** The traceable primary core totals **14.440 GPU
 wall-clock hours**: generation 4.073 h, zero-shot evaluation 1.050 h, six
 seed-42 training runs 6.540 h, and six trained evaluations 2.777 h. At the
 GPU's 450 W TDP this is a conservative GPU-only upper-bound envelope of 6.498
-kWh, not a wall-socket measurement. The completed F7 audit, extra seeds, and
-robustness inference are outside this primary-core subtotal until the final
-resource ledger is rebuilt. See `reports/m12_resource_ledger.json`.
+kWh, not a wall-socket measurement. The completed F7 judge (0.756 h) and M11
+real demo generation (0.010 h) are recorded separately as auxiliary time,
+bringing the currently traceable local total to 15.205 h. Extra seeds and
+robustness inference remain pending and will be added by the same resource-ledger
+builder. See `reports/m12_resource_ledger.json`.
 
 ---
 

@@ -20,6 +20,13 @@ GENERATION_REPORT = REPO_ROOT / "reports" / "generation_report.json"
 TRAINING_REPORT = REPO_ROOT / "runs" / "m9_batch_report.json"
 EVALUATION_REPORT = REPO_ROOT / "results" / "m9_eval_batch_report.json"
 ZERO_SHOT_REPORT = REPO_ROOT / "reports" / "m8_zeroshot_baseline.json"
+F7_REPORT = REPO_ROOT / "reports" / "m6_f7_judge.json"
+M11_REPORT = REPO_ROOT / "reports" / "m11_demo_evidence.json"
+REPLICATE_TRAINING_REPORT = REPO_ROOT / "runs" / "m9_replicates_batch_report.json"
+REPLICATE_EVALUATION_REPORT = (
+    REPO_ROOT / "results" / "m9_replicates_eval_batch_report.json"
+)
+ROBUSTNESS_BATCH_REPORT = REPO_ROOT / "results" / "m10_robustness_batch.json"
 RESOURCE_REPORT = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 ASSET_DIR = REPO_ROOT / "assets"
 
@@ -38,6 +45,10 @@ def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_optional(path: Path) -> dict[str, Any] | None:
+    return _load(path) if path.is_file() else None
+
+
 def _elapsed_hours(started_at: str, finished_at: str) -> float:
     started = datetime.fromisoformat(started_at)
     finished = datetime.fromisoformat(finished_at)
@@ -50,6 +61,11 @@ def build_resource_ledger(
     training: dict[str, Any],
     evaluation: dict[str, Any],
     zero_shot: dict[str, Any],
+    f7: dict[str, Any] | None = None,
+    m11: dict[str, Any] | None = None,
+    replicate_training: dict[str, Any] | None = None,
+    replicate_evaluation: dict[str, Any] | None = None,
+    robustness: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Summarize measured wall times without converting them into cloud costs."""
     generation_hours = float(generation["generation"]["wall_seconds"]) / 3600
@@ -59,44 +75,136 @@ def build_resource_ledger(
     measured_gpu_hours = (
         generation_hours + training_hours + evaluation_hours + zero_shot_hours
     )
+    phases: dict[str, Any] = {
+        "synthetic_generation": {
+            "wall_hours": generation_hours,
+            "basis": "reports/generation_report.json generation.wall_seconds",
+        },
+        "primary_training_seed_42": {
+            "wall_hours": training_hours,
+            "runs": len(training["runs"]),
+            "basis": "runs/m9_batch_report.json started_at to finished_at",
+        },
+        "trained_evaluation_seed_42": {
+            "wall_hours": evaluation_hours,
+            "runs": len(evaluation["runs"]),
+            "basis": "results/m9_eval_batch_report.json started_at to finished_at",
+        },
+        "zero_shot_evaluation": {
+            "wall_hours": zero_shot_hours,
+            "basis": "reports/m8_zeroshot_baseline.json summed generation wall_seconds",
+        },
+    }
+    pending = []
+    auxiliary_hours = 0.0
+
+    if f7 is not None and f7.get("status") == "complete":
+        hours = float(f7["wall_seconds_sum"]) / 3600
+        auxiliary_hours += hours
+        phases["f7_independent_judge"] = {
+            "wall_hours": hours,
+            "rows": int(f7["samples"]),
+            "basis": "reports/m6_f7_judge.json summed per-row model latency",
+        }
+    else:
+        pending.append("F7 independent judge audit")
+
+    if m11 is not None and m11.get("status") == "complete":
+        comparisons = m11["comparisons"]
+        latency_ms = sum(
+            float(row[side]["latency_ms"])
+            for row in comparisons
+            for side in ("base", "adapted")
+        )
+        hours = latency_ms / 3_600_000
+        auxiliary_hours += hours
+        phases["m11_real_demo_evidence"] = {
+            "wall_hours": hours,
+            "generations": len(comparisons) * 2,
+            "basis": "reports/m11_demo_evidence.json summed generation latency_ms",
+        }
+    else:
+        pending.append("M11 real demo evidence")
+
+    if (
+        replicate_training is not None
+        and replicate_training.get("status") == "complete"
+    ):
+        hours = _elapsed_hours(
+            replicate_training["started_at"],
+            replicate_training["finished_at"],
+        )
+        auxiliary_hours += hours
+        phases["replicate_training_seeds_43_44"] = {
+            "wall_hours": hours,
+            "runs": len(replicate_training["runs"]),
+            "basis": (
+                "runs/m9_replicates_batch_report.json "
+                "started_at to finished_at"
+            ),
+        }
+    else:
+        pending.append("real_only and real_syn_filtered training seeds 43 and 44")
+
+    if (
+        replicate_evaluation is not None
+        and replicate_evaluation.get("status") == "complete"
+    ):
+        hours = _elapsed_hours(
+            replicate_evaluation["started_at"],
+            replicate_evaluation["finished_at"],
+        )
+        auxiliary_hours += hours
+        phases["replicate_evaluation_seeds_43_44"] = {
+            "wall_hours": hours,
+            "runs": len(replicate_evaluation["runs"]),
+            "basis": (
+                "results/m9_replicates_eval_batch_report.json "
+                "started_at to finished_at"
+            ),
+        }
+    else:
+        pending.append("four 2,974-row replicate evaluations")
+
+    if robustness is not None and robustness.get("status") == "complete":
+        hours = _elapsed_hours(
+            robustness["started_at"],
+            robustness["finished_at"],
+        )
+        auxiliary_hours += hours
+        phases["robustness_probe_inference"] = {
+            "wall_hours": hours,
+            "runs": len(robustness["runs"]),
+            "basis": (
+                "results/m10_robustness_batch.json "
+                "started_at to finished_at"
+            ),
+        }
+    else:
+        pending.append("two 8,922-row robustness probe evaluations")
+
+    total_hours = measured_gpu_hours + auxiliary_hours
     return {
         "schema_version": 1,
-        "status": "complete_primary_seed_42",
+        "status": (
+            "complete_all_local_gpu" if not pending else "complete_primary_seed_42"
+        ),
         "hardware": "NVIDIA GeForce RTX 4090 24 GB",
         "api_spend_usd": 0.0,
-        "phases": {
-            "synthetic_generation": {
-                "wall_hours": generation_hours,
-                "basis": "reports/generation_report.json generation.wall_seconds",
-            },
-            "primary_training_seed_42": {
-                "wall_hours": training_hours,
-                "runs": len(training["runs"]),
-                "basis": "runs/m9_batch_report.json started_at to finished_at",
-            },
-            "trained_evaluation_seed_42": {
-                "wall_hours": evaluation_hours,
-                "runs": len(evaluation["runs"]),
-                "basis": "results/m9_eval_batch_report.json started_at to finished_at",
-            },
-            "zero_shot_evaluation": {
-                "wall_hours": zero_shot_hours,
-                "basis": "reports/m8_zeroshot_baseline.json summed generation wall_seconds",
-            },
-        },
+        "phases": phases,
         "measured_core_gpu_hours": measured_gpu_hours,
+        "measured_auxiliary_gpu_hours": auxiliary_hours,
+        "measured_total_local_gpu_hours": total_hours,
         "gpu_tdp_watts": 450,
         "gpu_tdp_energy_upper_bound_kwh": measured_gpu_hours * 0.45,
+        "gpu_tdp_total_energy_upper_bound_kwh": total_hours * 0.45,
         "energy_note": (
             "Upper-bound GPU-only envelope using the RTX 4090 450 W TDP; "
-            "not a wall-socket measurement and excludes extra-seed reruns."
+            "not a wall-socket measurement. The core field remains the frozen "
+            "primary comparison; total includes every completed local auxiliary "
+            "phase whose timing artifact is available."
         ),
-        "pending": [
-            "real_only seeds 43 and 44",
-            "real_syn_filtered seeds 43 and 44",
-            "F7 independent judge audit",
-            "robustness probe inference",
-        ],
+        "pending": pending,
     }
 
 
@@ -344,11 +452,21 @@ def main() -> int:
     training = _load(TRAINING_REPORT)
     evaluation = _load(EVALUATION_REPORT)
     zero_shot = _load(ZERO_SHOT_REPORT)
+    f7 = _load_optional(F7_REPORT)
+    m11 = _load_optional(M11_REPORT)
+    replicate_training = _load_optional(REPLICATE_TRAINING_REPORT)
+    replicate_evaluation = _load_optional(REPLICATE_EVALUATION_REPORT)
+    robustness = _load_optional(ROBUSTNESS_BATCH_REPORT)
     ledger = build_resource_ledger(
         generation=generation,
         training=training,
         evaluation=evaluation,
         zero_shot=zero_shot,
+        f7=f7,
+        m11=m11,
+        replicate_training=replicate_training,
+        replicate_evaluation=replicate_evaluation,
+        robustness=robustness,
     )
     args.resource_report.write_text(
         json.dumps(ledger, ensure_ascii=False, indent=2) + "\n",

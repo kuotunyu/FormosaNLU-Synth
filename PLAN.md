@@ -11,7 +11,7 @@
 | **目前里程碑** | **F7、M11 real evidence、M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
 | **下一步動作** | M11 五句 real-runtime evidence 已驗證並推送；兩次 GPU safety gate 後執行 seeds 43/44 四組補跑，再做 robustness |
 | **球在誰身上** | Codex；只在最終發佈 review 時再需使用者操作 |
-| **累計 GPU 時數** | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、六組訓練 6.540、六組評估 2.777 |
+| **累計 GPU 時數** | primary core 14.440 h；另有 F7 + M11 auxiliary 0.766 h，目前可追溯 local total 15.205 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
 | **待決事項** | primary seed-42 結果為 provisional；額外 seeds 與 robustness 尚未完成；凍結 thresholds 不得放寬 |
 | **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；Private GitHub repo 與正體中文 README 已首次 push，不啟動 Public 發佈或重生成 |

@@ -23,6 +23,64 @@ def test_resource_ledger_uses_measured_phase_times() -> None:
     assert ledger["measured_core_gpu_hours"] == 4.0
     assert ledger["gpu_tdp_energy_upper_bound_kwh"] == 1.8
     assert ledger["phases"]["primary_training_seed_42"]["runs"] == 2
+    assert ledger["pending"] == [
+        "F7 independent judge audit",
+        "M11 real demo evidence",
+        "real_only and real_syn_filtered training seeds 43 and 44",
+        "four 2,974-row replicate evaluations",
+        "two 8,922-row robustness probe evaluations",
+    ]
+
+
+def test_resource_ledger_adds_completed_auxiliary_phases() -> None:
+    ledger = build_resource_ledger(
+        generation={"generation": {"wall_seconds": 3600}},
+        training={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T01:00:00+00:00",
+            "runs": [{}, {}],
+        },
+        evaluation={
+            "started_at": "2026-01-01T01:00:00+00:00",
+            "finished_at": "2026-01-01T02:00:00+00:00",
+            "runs": [{}, {}],
+        },
+        zero_shot={"wall_seconds": 3600},
+        f7={"status": "complete", "wall_seconds_sum": 1800, "samples": 376},
+        m11={
+            "status": "complete",
+            "comparisons": [
+                {
+                    "base": {"latency_ms": 900_000},
+                    "adapted": {"latency_ms": 900_000},
+                }
+            ],
+        },
+        replicate_training={
+            "status": "complete",
+            "started_at": "2026-01-01T02:00:00+00:00",
+            "finished_at": "2026-01-01T03:00:00+00:00",
+            "runs": [{}, {}, {}, {}],
+        },
+        replicate_evaluation={
+            "status": "complete",
+            "started_at": "2026-01-01T03:00:00+00:00",
+            "finished_at": "2026-01-01T04:00:00+00:00",
+            "runs": [{}, {}, {}, {}],
+        },
+        robustness={
+            "status": "complete",
+            "started_at": "2026-01-01T04:00:00+00:00",
+            "finished_at": "2026-01-01T05:00:00+00:00",
+            "runs": [{}, {}],
+        },
+    )
+    assert ledger["status"] == "complete_all_local_gpu"
+    assert ledger["pending"] == []
+    assert ledger["measured_core_gpu_hours"] == 4.0
+    assert ledger["measured_auxiliary_gpu_hours"] == 4.0
+    assert ledger["measured_total_local_gpu_hours"] == 8.0
+    assert ledger["gpu_tdp_total_energy_upper_bound_kwh"] == 3.6
 
 
 def test_expected_readme_row_is_formatted_from_metrics() -> None:
