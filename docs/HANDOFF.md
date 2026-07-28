@@ -59,6 +59,14 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
+### [2026-07-28 18:45 +08:00] GitHub repository — Private 首次 push 完成
+
+- 建立 `kuotunyu/03-formosanlu-sdg`，Visibility 為 Private，default branch `main`
+- Description 與 README 已改為正體中文（台灣，`zh-TW`）為主，專有名詞保留原文
+- README 20 項 artifact 重算、95 tests、Ruff 與 contributor audit 全綠後 push
+- GitHub remote commit authors 與 Contributors API 都只回傳 `kuotunyu`
+- 尚未轉 Public；必須等剩餘 GPU 工作、Colab 與 M13 review 完成並取得使用者核可
+
 ### [2026-07-28 18:29 +08:00] 剩餘 GPU queue — F7 安全暫停
 
 - F7 在兩次 gate 全綠後啟動，完成並 fsync checkpoint **64/376**

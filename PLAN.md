@@ -14,7 +14,7 @@
 | **累計 GPU 時數** | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、六組訓練 6.540、六組評估 2.777 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
 | **待決事項** | primary seed-42 結果為 provisional；額外 seeds、F7、robustness 與真模型 demo 證據尚未完成；凍結 thresholds 不得放寬 |
-| **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；不啟動發佈或重生成 |
+| **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；Private GitHub repo 與正體中文 README 已首次 push，不啟動 Public 發佈或重生成 |
 | **阻塞項** | 技術上無；GPU 工作只在 sibling workloads 消失且顯卡安全空閒時啟動 |
 
 ---

@@ -17,6 +17,7 @@ DEFAULT_JSON = REPO_ROOT / "runs" / "m13_release_preflight.json"
 DEFAULT_MARKDOWN = REPO_ROOT / "logs" / "m13_release_preflight.md"
 EXPECTED_NAME = "kuotunyu"
 EXPECTED_EMAIL = "61350295+kuotunyu@users.noreply.github.com"
+EXPECTED_ORIGIN = "https://github.com/kuotunyu/03-formosanlu-sdg.git"
 
 
 @dataclass(frozen=True)
@@ -79,7 +80,8 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
         [sys.executable, str(REPO_ROOT / "scripts" / "verify_contributors.py")]
     )
     worktree = _git("status", "--porcelain=v1").stdout.strip()
-    remotes = _git("remote").stdout.splitlines()
+    origin = _git("remote", "get-url", "origin")
+    origin_url = origin.stdout.strip() if origin.returncode == 0 else "missing"
     large = _tracked_large_files()
     secret_count = _secret_pattern_count()
 
@@ -179,11 +181,10 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
             "one user-operated Colab portability run complete",
         ),
         Check(
-            "remote_not_created_early",
-            not remotes,
-            "none" if not remotes else ", ".join(remotes),
-            "no GitHub remote before user approval",
-            blocking=False,
+            "github_origin",
+            origin_url == EXPECTED_ORIGIN,
+            origin_url,
+            f"user-approved Private repository: {EXPECTED_ORIGIN}",
         ),
     ]
     if run_slow_checks:

@@ -107,13 +107,14 @@ trajectory；可攜性驗證不要求不同 GPU 的浮點結果逐位元一致�
 
 ## C. GitHub 發佈（M13）
 
-<!-- FILL AT M13 -->
+Repository 已於使用者明確同意後建立：
 
-依 D-005，整個 Phase 1 + Phase 2 都不建 remote，到這一步才建：
-
-- [ ] repo 名稱：`kuotunyu/03-formosanlu-sdg`（先建 **private**）
-- [ ] 通過發佈前總驗收
-- [ ] **你過目後才轉 public**
+- [x] repo：`kuotunyu/03-formosanlu-sdg`
+- [x] 先建為 **Private**
+- [x] Description 與 README 以正體中文（台灣，`zh-TW`）為主
+- [x] 首次 push；remote commits 與 GitHub Contributors 都只有 `kuotunyu`
+- [ ] 完成 F7、extra seeds、robustness、Colab 與發佈前總驗收
+- [ ] **使用者過目後才轉 Public**
 
 > 提醒：commit 一律不帶 `Co-Authored-By` trailer，GitHub Contributors 只會有 `kuotunyu`。
 > push 前先跑 `python scripts/verify_contributors.py`；任何非 `kuotunyu`
