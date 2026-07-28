@@ -1,9 +1,10 @@
 # Dataset Card — FormosaNLU Synthetic (`formosa_synth_v1`)
 
-> **Status: M7 evidence-backed pre-release draft; full-corpus F1–F6 populated.**
-> Finalize at **M13** after the remaining quality audit and release review. Every number
-> here must be traceable to a file under `reports/`. Bilingual: English first,
-> 繁體中文 summary at the end.
+> **Status: M12 evidence-backed pre-release draft.** Full-corpus F1–F6 and the
+> primary seed-42 utility experiment are populated. Finalize at **M13** after
+> F7, extra-seed uncertainty, robustness, and release review. Every number here
+> is traceable to a file under `reports/`. Bilingual: English first, 繁體中文
+> summary at the end.
 
 ---
 
@@ -114,6 +115,19 @@ produced *procedurally* (slot values are substituted by program before the model
 rewrites the sentence), so the ground truth does not depend on the model at all.
 Human involvement was limited to spot-checking 20 samples for observation.
 
+### Primary downstream utility evidence
+
+The primary seed-42 Gemma 4 QLoRA comparison evaluates all 2,974 untouched real
+MASSIVE `zh-TW` Test rows. Adding the 3,760 filtered synthetic rows to the
+20-shot real baseline changed exact match from 49.06% to 52.12% (+3.06 points)
+and slot micro-F1 from 62.14% to 66.54% (+4.40 points). That closes 26.4% of the
+exact-match gap and 46.6% of the slot-F1 gap to full-real training.
+
+The filtered group also outperformed the equal-N unfiltered control by 1.11
+exact-match points and 2.17 slot-F1 points. These are single-seed primary
+results, not confidence intervals. Seeds 43 and 44 for `real_only` and
+`real_syn_filtered` are preregistered and pending.
+
 ## Considerations for Using the Data
 
 ### Contamination and leakage
@@ -173,15 +187,24 @@ the published adapter, not this dataset.
 
 ## Citation
 
-<!-- FILL AT M12 -->
+No archival citation or DOI exists while the dataset remains pre-release. Until
+M13, cite the repository commit plus MASSIVE:
+
+```text
+FormosaNLU contributors. FormosaNLU Synthetic Data Distillation for
+Traditional Chinese (Taiwan) NLU. Pre-release software and dataset card.
+Upstream seed data: FitzGerald et al., MASSIVE (CC BY 4.0).
+```
 
 ## Cost and reproducibility
 
-Generated entirely on a single RTX 4090 (24 GB) on native Windows. **No API
-spend.** Full generation used 14,663.14 seconds (4.073 h), 2,860,385 prompt
-tokens, and 515,170 output tokens. The completed M2–M4 measured work used
-0.292 GPU hours. Electricity and commercial-API equivalents are not reported
-because no defensible measurement was made.
+Generated, trained, and evaluated on a single RTX 4090 (24 GB) on native
+Windows. **No API spend.** The traceable primary core totals **14.440 GPU
+wall-clock hours**: generation 4.073 h, zero-shot evaluation 1.050 h, six
+seed-42 training runs 6.540 h, and six trained evaluations 2.777 h. At the
+GPU's 450 W TDP this is a conservative GPU-only upper-bound envelope of 6.498
+kWh, not a wall-socket measurement. Extra seeds, F7, and robustness inference
+are excluded until complete. See `reports/m12_resource_ledger.json`.
 
 ---
 
@@ -199,3 +222,8 @@ because no defensible measurement was made.
 下只留下 3,760 筆（33.38%）。主因是 corpus-scale mode collapse：F1–F4
 通過的 9,114 筆中只有 4,044 個 exact-text distinct utterances。專案保留這個
 負面結果，不放寬門檻硬湊 8,000；公開發佈前仍需完成 F7 品質稽核。
+
+seed 42 的下游實驗顯示，filtered synthetic 相較 20-shot real baseline：
+exact match 從 49.06% 提升到 52.12%（+3.06 個百分點），slot F1 從
+62.14% 提升到 66.54%（+4.40 個百分點）。但 seeds 43/44 尚未完成，
+所以目前不宣稱統計顯著性或跨 seed 穩定性。

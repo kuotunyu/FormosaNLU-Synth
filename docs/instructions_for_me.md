@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：M9 本機與 Colab 操作已填實；M13 發佈章節仍待最終結果。**
+> **狀態：本機 M9/M10、M11 mock 驗證與 M12 已完成；Colab 與 M13 外部操作待辦。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -10,33 +10,32 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**不用操作電腦，但需要做一個決定：**
+**目前不需要你操作。** 本機 primary 六組訓練、六組評估、M10、M11
+介面與 M12 報告都已完成。Codex 正在等待 sibling GPU workload 安全結束，
+再跑 F7 與四個 extra-seed runs。
 
-1. 建議：用固定門檻實得的 3,760 筆 filtered corpus 照實跑 M9；
-2. 或先修訂 generation design，再另開一次正式生成（會延後 M9，且本次結果仍保留）。
-
-選好後，睡前只要在對話裡說「開始跑 M9」；我會先檢查另外兩個專案與 GPU，
-再啟動可續跑的六組批次。你不需要自己輸入 PowerShell 指令。
+你方便時仍可做一件非阻塞工作：依下方 A 節跑一次 Colab `real_only`
+可攜性驗證。若現在不想處理，不會阻塞本機工作。
 
 ---
 
 ## 0. 本機 M9 過夜批次
 
-準備狀態：六組資料、Standard Aug、dry plan、checkpoint 續跑與 evaluation
-入口均已驗證。技術報告在 `reports/m9_preflight.md`。
+狀態：**primary seed-42 已完成。** 六組訓練 6.540 h，六組全 Test 評估
+2.777 h；M10 七行主表已產生。技術報告在 `reports/m9_preflight.md` 與
+`reports/m10_main_results.md`。
 
-睡前不需要自己開終端機；在對話中說「開始跑 M9」即可。完整安全檢查與
-中斷續跑方式在 `docs/M9_OVERNIGHT_RUNBOOK.md`。六組訓練完成後會自動
-接六組可續跑評估並更新 M10 主表；即使超過八小時也可以繼續。
+原 primary 入口保留作重現與續跑；正常情況不需再啟動。額外 seeds 使用
+新的獨立入口，會先驗證訓練資料 SHA-256 與 sibling/GPU safety gate：
 
 若真的需要手動啟動，請在專案根目錄使用：
 
 ```powershell
-.\.venv\Scripts\python.exe -m scripts.m9_overnight --execute --confirm M9-OVERNIGHT-3760-4090
+.\.venv\Scripts\python.exe -m scripts.m9_replicates
 ```
 
-正常情況不需要你做這一步；由我協調其他專案並啟動較安全。中斷後重跑同一命令
-會跳過完整 run，未完成 run 會從最新 checkpoint 接續。
+這是 CPU-only 狀態檢查，不會啟動 GPU。實際 `--execute` 由 Codex 在安全
+gate 全綠時處理；中斷後會跳過完整 run，未完成 run 從最新 checkpoint 續跑。
 
 ---
 
