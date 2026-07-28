@@ -19,6 +19,13 @@ DEFAULT_MARKDOWN = REPO_ROOT / "logs" / "m13_release_preflight.md"
 EXPECTED_NAME = "kuotunyu"
 EXPECTED_EMAIL = "61350295+kuotunyu@users.noreply.github.com"
 EXPECTED_ORIGIN = "https://github.com/kuotunyu/FormosaNLU-Synth.git"
+EXPECTED_DEMO_UTTERANCES = (
+    "播放周杰倫",
+    "搜尋周杰倫的歌",
+    "明天早上七點叫我起床",
+    "台北明天會不會下雨",
+    "幫我寄信給小美說會晚到",
+)
 
 
 @dataclass(frozen=True)
@@ -67,6 +74,16 @@ def _jsonl_count(path: Path) -> int:
         return sum(bool(line.strip()) for line in handle)
 
 
+def _tree_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    for child in sorted(file for file in path.rglob("*") if file.is_file()):
+        digest.update(str(child.relative_to(path)).replace("\\", "/").encode())
+        with child.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+    return digest.hexdigest()
+
+
 def _f7_release_status(
     report_path: Path,
     *,
@@ -94,6 +111,59 @@ def _f7_release_status(
                 return f"{path_key}_row_mismatch"
             if _sha256(path) != str(report[sha_key]):
                 return f"{path_key}_sha256_mismatch"
+    except (KeyError, OSError, TypeError, ValueError):
+        return "invalid"
+    return "complete"
+
+
+def _m11_evidence_status(
+    report_path: Path,
+    *,
+    repo_root: Path = REPO_ROOT,
+) -> str:
+    if not report_path.is_file():
+        return "missing"
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return "invalid"
+    if report.get("status") != "complete":
+        return str(report.get("status"))
+    if report.get("runtime_mode") != "real":
+        return "runtime_not_real"
+    if report.get("model") != "google/gemma-4-E4B-it":
+        return "model_mismatch"
+    if report.get("unconstrained_decoding") is not True:
+        return "decoding_contract_mismatch"
+    comparisons = report.get("comparisons")
+    if not isinstance(comparisons, list):
+        return "comparisons_invalid"
+    if tuple(row.get("utterance") for row in comparisons) != EXPECTED_DEMO_UTTERANCES:
+        return "utterance_contract_mismatch"
+    for row in comparisons:
+        for side in ("base", "adapted"):
+            prediction = row.get(side)
+            if not isinstance(prediction, dict):
+                return "prediction_invalid"
+            if not isinstance(prediction.get("raw"), str):
+                return "prediction_invalid"
+            if not isinstance(prediction.get("intent"), str):
+                return "prediction_invalid"
+            if not isinstance(prediction.get("slots"), list):
+                return "prediction_invalid"
+            if not isinstance(prediction.get("valid"), bool):
+                return "prediction_invalid"
+            latency = prediction.get("latency_ms")
+            if not isinstance(latency, (int, float)) or latency < 0:
+                return "prediction_invalid"
+    try:
+        adapter_dir = Path(str(report["adapter_dir"])).resolve()
+        root = repo_root.resolve()
+        adapter_dir.relative_to(root)
+        if not adapter_dir.is_dir():
+            return "adapter_missing"
+        if _tree_sha256(adapter_dir) != str(report["adapter_tree_sha256"]):
+            return "adapter_sha256_mismatch"
     except (KeyError, OSError, TypeError, ValueError):
         return "invalid"
     return "complete"
@@ -132,6 +202,9 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
     secret_count = _secret_pattern_count()
     f7_release = _f7_release_status(
         REPO_ROOT / "reports" / "m6_f7_release.json"
+    )
+    m11_evidence = _m11_evidence_status(
+        REPO_ROOT / "reports" / "m11_demo_evidence.json"
     )
 
     checks = [
@@ -207,10 +280,9 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
         ),
         Check(
             "real_demo_evidence",
-            _json_status(REPO_ROOT / "reports" / "m11_demo_evidence.json")
-            == "complete",
-            _json_status(REPO_ROOT / "reports" / "m11_demo_evidence.json"),
-            "real base-versus-adapter demo evidence captured",
+            m11_evidence == "complete",
+            m11_evidence,
+            "five real base-versus-adapter rows and adapter hash match",
         ),
         Check(
             "colab_portability",

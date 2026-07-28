@@ -3,9 +3,12 @@ from __future__ import annotations
 import json
 
 from scripts.release_preflight import (
+    EXPECTED_DEMO_UTTERANCES,
     _f7_release_status,
     _json_status,
+    _m11_evidence_status,
     _sha256,
+    _tree_sha256,
     render_markdown,
 )
 
@@ -72,3 +75,43 @@ def test_f7_release_status_recomputes_rows_and_hashes(tmp_path) -> None:
         _f7_release_status(report, repo_root=tmp_path)
         == "release_output_sha256_mismatch"
     )
+
+
+def test_m11_evidence_status_validates_real_rows_and_adapter(tmp_path) -> None:
+    adapter = tmp_path / "runs" / "real_syn_filtered" / "seed_42" / "adapter"
+    adapter.mkdir(parents=True)
+    (adapter / "adapter.bin").write_bytes(b"adapter")
+    prediction = {
+        "raw": '{"intent":"play_music","slots":[]}',
+        "intent": "play_music",
+        "slots": [],
+        "valid": True,
+        "error": None,
+        "latency_ms": 12.5,
+    }
+    report = tmp_path / "m11.json"
+    report.write_text(
+        json.dumps(
+            {
+                "status": "complete",
+                "runtime_mode": "real",
+                "model": "google/gemma-4-E4B-it",
+                "adapter_dir": str(adapter),
+                "adapter_tree_sha256": _tree_sha256(adapter),
+                "unconstrained_decoding": True,
+                "comparisons": [
+                    {
+                        "utterance": utterance,
+                        "base": prediction,
+                        "adapted": prediction,
+                    }
+                    for utterance in EXPECTED_DEMO_UTTERANCES
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert _m11_evidence_status(report, repo_root=tmp_path) == "complete"
+
+    (adapter / "adapter.bin").write_bytes(b"changed")
+    assert _m11_evidence_status(report, repo_root=tmp_path) == "adapter_sha256_mismatch"
