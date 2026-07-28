@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "pending",
+  "groups": [
+    "real_only",
+    "real_syn_filtered"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "missing": [
+    {
+      "group": "real_only",
+      "seed": 43,
+      "path": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\reports\\m9\\real_only_seed_43.json"
+    },
+    {
+      "group": "real_only",
+      "seed": 44,
+      "path": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\reports\\m9\\real_only_seed_44.json"
+    },
+    {
+      "group": "real_syn_filtered",
+      "seed": 43,
+      "path": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\reports\\m9\\real_syn_filtered_seed_43.json"
+    },
+    {
+      "group": "real_syn_filtered",
+      "seed": 44,
+      "path": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\reports\\m9\\real_syn_filtered_seed_44.json"
+    }
+  ],
+  "metrics": {},
+  "paired_filtered_minus_real_only": {},
+  "interpretation_note": "n=3 per group; 95% intervals use Student's t with df=2 and are descriptive uncertainty estimates, not a broad generalization claim."
+}

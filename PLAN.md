@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-27 21:15 +08:00 |
-| **目前里程碑** | **M9 過夜安全入口完成**；M6 全量 F1–F6 完成但未達 8,000 gate |
-| **下一步動作** | 使用者睡前若說「開始跑 M9」，以明示 3,760 的 guard 啟動六組訓練→六組評估→M10 |
-| **球在誰身上** | 使用者（只需做科學決策，不需手動操作電腦） |
-| **累計 GPU 時數** | M6 generation 4.073 h；M8 零樣本 1.050 h；M2–M4 0.292 h；另有 BGE/QLoRA 短測 |
+| **最後更新** | 2026-07-28 18:10 +08:00 |
+| **目前里程碑** | **M11/M12 primary 交付完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
+| **下一步動作** | 完成文件／測試總驗收；確認 sibling 與 GPU 空閒後，依序安排 F7 judge audit 與 seeds 43/44 四組補跑 |
+| **球在誰身上** | Codex；Colab 一組可攜性實跑與最終發佈之後才需使用者操作 |
+| **累計 GPU 時數** | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、六組訓練 6.540、六組評估 2.777 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | 3,760 筆照實訓練 vs. 修訂 prompts 後另開一次正式生成；凍結 thresholds 不得放寬 |
-| **今晚範圍** | 使用者允許超過八小時繼續；preflight / training / evaluation / M10 / resume 已包成單一入口，**長批次尚未啟動** |
-| **阻塞項** | 技術上無；只等待使用者睡前明確說「開始跑 M9」 |
+| **待決事項** | primary seed-42 結果為 provisional；額外 seeds、F7、robustness 與真模型 demo 證據尚未完成；凍結 thresholds 不得放寬 |
+| **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；不啟動發佈或重生成 |
+| **阻塞項** | 技術上無；GPU 工作只在 sibling workloads 消失且顯卡安全空閒時啟動 |
 
 ---
 
@@ -130,17 +130,17 @@
 | 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
 | **零樣本 baseline**（未微調 base model 跑真實 Test） | 2,974/2,974；JSON-valid 17.38%、intent accuracy 10.66%、macro-F1 23.12%、slot F1 0%、exact 8.10%；無 constrained decoding |
 
-### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🟡 **啟動準備完成**
+### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🟡 **primary seed 42 完成**
 
-> 使用者已看過 M8 並授權睡覺期間使用 GPU。六組資料、Standard Aug、
-> batch resume 與 evaluation dry plan 已驗證；長批次尚未啟動，先處理 M6
-> 只有 3,760 筆通過的科學決策。
+> 六組 primary seed-42 訓練與評估已全部完成；3,760-row filtered corpus
+> 照實進入比較，沒有放寬 frozen thresholds。`real_only` 與
+> `real_syn_filtered` 的 seeds 43/44（四個額外 runs）仍待安全 GPU 時段。
 
 | 交付物 | 驗證方法 |
 |---|---|
-| 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ dry plan / inputs；實際六份 snapshot 等正式 run 完成後比對 |
-| `real_only` 與最佳 filtered 組補到 3 seeds（合計約 10 runs） | 每個 run 有 `metrics.jsonl`、`adapter/`、`env.json` |
-| 過夜批次（估 5–8 h） | ✅ contributor / worktree / data / model / GPU / disk gate 與 1→2 step resume；正式 batch 未啟動 |
+| 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ 六份 seed-42 adapter、snapshot、metrics 與環境證據完整 |
+| `real_only` 與最佳 filtered 組補到 3 seeds（合計 10 runs） | 🟡 seeds 43/44 四組待跑；完成前不宣稱變異或統計顯著性 |
+| Primary 過夜批次 | ✅ 六組訓練 6.540 h；六組評估 2.777 h；guard／resume 實際通過 |
 | `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | ✅ notebook / bundle / 120 秒 Drive sync / resume preflight；Colab 實跑一組仍待使用者操作 |
 | `docs/instructions_for_me.md` 的 Colab 章節填實 | ✅ 上傳檔、GPU 門檻、Secrets、續跑、下載與成功確認皆已填實 |
 
@@ -148,10 +148,10 @@
 
 | 交付物 | 驗證方法 |
 |---|---|
-| `src/evaluation/`（`run_adapter` / `parse` / `metrics` / `probe` / `report`）+ `scripts/eval.py` CLI | ✅ CPU 程式與測試完成；trained adapter GPU inference 待 M9 |
-| **主表七行**（零樣本 + 六組）× 全指標 | 🟡 產生器已完成，zero-shot 列已回填；六個 trained rows 等 M9/M10 |
-| 差距補回率 | 同時報絕對差值；分母過小時標註「此比率不可靠」（R-11） |
-| per-intent 進步排序 | 最進步與**退步最多**都要列（退步的通常最能說明失敗模式） |
+| `src/evaluation/`（`run_adapter` / `parse` / `metrics` / `probe` / `report`）+ `scripts/eval.py` CLI | ✅ 六個 trained adapters 與 zero-shot 均完成全 2,974-row Test 評估 |
+| **主表七行**（零樣本 + 六組）× 全指標 | ✅ `reports/m10_main_results.json` / `.md` 完整 |
+| 差距補回率 | ✅ filtered exact +3.06 points、補回 26.4%；slot +4.40 points、補回 46.6% |
+| per-intent 進步排序 | ✅ 最大進步與最大退步都已寫入 M10 與 README |
 | Robustness 探測集 | ✅ 2,974 Test × 3 種 slot-safe 擾動＝8,922 筆；manifest/hash 完成，明確 evaluation-only |
 | 效能表 | tokens/s、VRAM 峰值、單筆 latency |
 | **不使用 constrained decoding** | code review 確認：JSON-valid rate 是要量的指標，強制合法會讓它恆等 100% |
@@ -160,18 +160,18 @@
 
 | 交付物 | 驗證方法 |
 |---|---|
-| 本機 Gradio：輸入繁中句 → intent / slots / 原始 JSON / latency | 併列**微調前 vs 微調後**同一句的輸出 |
-| 預載示範句，含一組易混淆 minimal pair | 例：「播放周杰倫」vs「搜尋周杰倫的歌」，直接展示 hard negative recipe 的效果 |
-| README GIF | **自己錄自己打開看過** |
+| 本機 Gradio：輸入繁中句 → intent / slots / 原始 JSON / latency | ✅ 單一 4-bit Gemma 切換 adapter，併列**微調前 vs 微調後** |
+| 預載示範句，含一組易混淆 minimal pair | ✅ mock runtime 瀏覽器互動、console 與輸出驗證通過 |
+| README GIF / 真模型證據 | 🟡 UI 截圖已檢查；真模型 GPU 執行與 GIF 待安全 GPU 時段 |
 
 ### M12 · README + 數字誠實性
 
 | 交付物 | 驗證方法 |
 |---|---|
-| README 依 D-008 排版（主標＝差距補回率 → 過濾管線價值 → $0/4090 → robustness 輔助） | 骨架順序符合 `docs/DESIGN_PHASE2.md` §7 |
-| 方法流程圖、資料漏斗圖、七行主表、資源總帳、Limitations（含負面結果） | 圖表**自己打開看過** |
-| `scripts/verify_readme.py` | 跑給使用者看：README 每個數字都能從 `runs/*/metrics.jsonl` 與 `reports/` 重算 |
-| 選配 roadmap 段落（台灣知識蒸餾 + TMMLU+ / twinkle-eval） | **只寫文字，不實作** |
+| README 依 D-008 排版（主標＝差距補回率 → 過濾管線價值 → $0/4090 → robustness 輔助） | ✅ primary seed-42 結果與 pending 工作均明確標示 |
+| 方法流程圖、資料漏斗圖、七行主表、資源總帳、Limitations（含負面結果） | ✅ 五張圖可重建並已打開檢查；F5 mode collapse 未隱藏 |
+| `scripts/verify_readme.py` | ✅ 20 項原始 artifact 對照全部通過 |
+| 選配 roadmap 段落（台灣知識蒸餾 + TMMLU+ / twinkle-eval） | ✅ 只寫未來方向，未假裝已實作 |
 
 ### M13 · 發佈前總驗收 → 發佈 → ⛔ 需使用者核可
 

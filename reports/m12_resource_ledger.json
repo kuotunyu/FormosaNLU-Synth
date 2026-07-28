@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "complete_primary_seed_42",
+  "hardware": "NVIDIA GeForce RTX 4090 24 GB",
+  "api_spend_usd": 0.0,
+  "phases": {
+    "synthetic_generation": {
+      "wall_hours": 4.073094691722221,
+      "basis": "reports/generation_report.json generation.wall_seconds"
+    },
+    "primary_training_seed_42": {
+      "wall_hours": 6.5397021027777775,
+      "runs": 6,
+      "basis": "runs/m9_batch_report.json started_at to finished_at"
+    },
+    "trained_evaluation_seed_42": {
+      "wall_hours": 2.777254808611111,
+      "runs": 6,
+      "basis": "results/m9_eval_batch_report.json started_at to finished_at"
+    },
+    "zero_shot_evaluation": {
+      "wall_hours": 1.0497403051944325,
+      "basis": "reports/m8_zeroshot_baseline.json summed generation wall_seconds"
+    }
+  },
+  "measured_core_gpu_hours": 14.439791908305544,
+  "gpu_tdp_watts": 450,
+  "gpu_tdp_energy_upper_bound_kwh": 6.497906358737495,
+  "energy_note": "Upper-bound GPU-only envelope using the RTX 4090 450 W TDP; not a wall-socket measurement and excludes extra-seed reruns.",
+  "pending": [
+    "real_only seeds 43 and 44",
+    "real_syn_filtered seeds 43 and 44",
+    "F7 independent judge audit",
+    "robustness probe inference"
+  ]
+}

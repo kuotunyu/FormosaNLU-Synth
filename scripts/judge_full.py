@@ -14,6 +14,7 @@ from typing import Any
 import httpx
 
 from scripts.judge_pilot import _judge_one, _model_digest
+from src.gpu_safety import assert_safe_gpu_launch, safety_status
 from src.synthetic.checkpoint import JsonlCheckpoint
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -150,6 +151,10 @@ def main() -> int:
     checkpoint = JsonlCheckpoint(args.results)
     existing = checkpoint.load()
     print(f"F7 plan: {len(manifest)} rows; checkpoint {len(existing)}/{len(manifest)}")
+    print(
+        "GPU safety: "
+        + json.dumps(safety_status(), ensure_ascii=False, separators=(",", ":"))
+    )
     if args.report_only:
         missing = [row for row in manifest if row["generation_index"] not in existing]
         if missing:
@@ -166,6 +171,7 @@ def main() -> int:
         return 0
     if args.confirm != CONFIRMATION:
         raise RuntimeError(f"F7 execution requires --confirm {CONFIRMATION}")
+    assert_safe_gpu_launch()
     result = asyncio.run(execute(args, manifest))
     return 0 if result["status"] == "complete" else 1
 
