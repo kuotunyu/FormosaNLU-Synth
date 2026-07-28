@@ -1,8 +1,9 @@
 # FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
 
 > **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、M10 評估、
-> M11 比較介面與 M12 報告產物均已完成。F7 independent judge audit、
-> seeds 43/44、robustness inference、Colab portability 與正式發佈仍在進行。
+> M11 比較介面、M12 報告產物與 Colab portability 均已完成。F7
+> independent judge audit、seeds 43/44、robustness inference 與正式發佈
+> 仍在進行。
 
 在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
 language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
@@ -243,8 +244,11 @@ python -m scripts.eval_robustness \
 Colab notebook
 [`notebooks/01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) 使用相同
 training code。Bundle、GPU-memory preflight、每兩分鐘 Drive checkpoint
-sync 與 resume path 已準備完成；one-group Colab portability run 仍需由使用者
-在 Colab 操作。
+sync 與 resume path 已實際通過 one-group portability run：`real_only`
+seed 42 在 G4（NVIDIA RTX PRO 6000 Blackwell）完成 500 steps，training
+runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆數、
+參數量與本機 primary contract 全部一致；稽核證據見
+[`reports/m9_colab_portability.json`](reports/m9_colab_portability.json)。
 
 ## Leakage 與 contamination 聲明
 

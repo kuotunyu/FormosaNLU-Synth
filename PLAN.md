@@ -7,10 +7,10 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-28 22:06 +08:00 |
-| **目前里程碑** | **M11/M12 primary 交付完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
+| **最後更新** | 2026-07-29 00:25 +08:00 |
+| **目前里程碑** | **M11/M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
 | **下一步動作** | 完成文件／測試總驗收；確認 sibling 與 GPU 空閒後，依序安排 F7 judge audit 與 seeds 43/44 四組補跑 |
-| **球在誰身上** | Codex；Colab 一組可攜性實跑與最終發佈之後才需使用者操作 |
+| **球在誰身上** | Codex；只在最終發佈 review 時再需使用者操作 |
 | **累計 GPU 時數** | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、六組訓練 6.540、六組評估 2.777 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
 | **待決事項** | primary seed-42 結果為 provisional；額外 seeds、F7、robustness 與真模型 demo 證據尚未完成；凍結 thresholds 不得放寬 |
@@ -130,7 +130,7 @@
 | 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
 | **零樣本 baseline**（未微調 base model 跑真實 Test） | 2,974/2,974；JSON-valid 17.38%、intent accuracy 10.66%、macro-F1 23.12%、slot F1 0%、exact 8.10%；無 constrained decoding |
 
-### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🟡 **primary seed 42 完成**
+### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🟡 **primary 與 Colab 完成**
 
 > 六組 primary seed-42 訓練與評估已全部完成；3,760-row filtered corpus
 > 照實進入比較，沒有放寬 frozen thresholds。`real_only` 與
@@ -141,7 +141,7 @@
 | 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ 六份 seed-42 adapter、snapshot、metrics 與環境證據完整 |
 | `real_only` 與最佳 filtered 組補到 3 seeds（合計 10 runs） | 🟡 seeds 43/44 四組待跑；完成前不宣稱變異或統計顯著性 |
 | Primary 過夜批次 | ✅ 六組訓練 6.540 h；六組評估 2.777 h；guard／resume 實際通過 |
-| `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | ✅ notebook / bundle / 120 秒 Drive sync / resume preflight；Colab 實跑一組仍待使用者操作 |
+| `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | ✅ G4 實跑 `real_only` seed 42、500 steps；frozen config 與本機 contract 一致，正式稽核完成 |
 | `docs/instructions_for_me.md` 的 Colab 章節填實 | ✅ 上傳檔、GPU 門檻、Secrets、續跑、下載與成功確認皆已填實 |
 
 ### M10 · 評測

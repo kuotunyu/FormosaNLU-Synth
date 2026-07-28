@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：本機 M9/M10、M11 mock 驗證與 M12 已完成；Colab 與 M13 外部操作待辦。**
+> **狀態：本機 M9/M10、M11 mock、M12 與 Colab portability 已完成；M13 外部操作待辦。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -11,11 +11,8 @@
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
 **目前不需要你操作。** 本機 primary 六組訓練、六組評估、M10、M11
-介面與 M12 報告都已完成。Codex 正在等待 sibling GPU workload 安全結束，
-再跑 F7 與四個 extra-seed runs。
-
-你方便時仍可做一件非阻塞工作：依下方 A 節跑一次 Colab `real_only`
-可攜性驗證。若現在不想處理，不會阻塞本機工作。
+介面、M12 報告與 Colab `real_only` portability run 都已完成。Codex 正在
+等待安全 GPU 時段，再跑 F7 與四個 extra-seed runs。
 
 ---
 
@@ -42,6 +39,11 @@ gate 全綠時處理；中斷後會跳過完整 run，未完成 run 從最新 ch
 ## A. Colab 可攜性驗證（M9，只跑一組）
 
 > 因為 D-006 改成「本機 4090 跑全部訓練」，Colab 在這個專案的角色是**驗證 notebook 真的能在別人的機器上跑起來**，不是主力算力。所以只需要跑一組，約 1.5 小時 units。
+
+**狀態：✅ 已完成。** 2026-07-28 使用 G4（NVIDIA RTX PRO 6000
+Blackwell）完成 `real_only` seed 42、500 steps；成果已匯入
+`results/colab/real_only/seed_42/`，正式比對報告為
+`reports/m9_colab_portability.json`。下列步驟保留作重現 SOP。
 
 ### A-1. 上傳
 
@@ -91,6 +93,11 @@ shards，以及六組訓練所需的 synthetic / Standard Aug 資料；**不含*
 
 下載回本機後會比對 shared config、資料筆數、完成 step 與 validation loss
 trajectory；可攜性驗證不要求不同 GPU 的浮點結果逐位元一致。
+
+本次驗證結果：frozen config 與十個 identity fields 均相同，final adapter
+可正常讀取；Colab training runtime 1,914.7 秒，peak allocated VRAM
+20,646 MiB。兩個 Drive 下載 ZIP 均通過完整性、安全路徑與 secret pattern
+檢查。
 
 ---
 

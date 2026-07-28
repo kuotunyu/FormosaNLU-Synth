@@ -11,8 +11,8 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-28 18:10 +08:00（跨多次使用者回來後續作） |
-| 完成到 | M9/M10 primary seed-42 全部完成；M11 demo 與 M12 README／圖表／資源帳本完成 |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 00:25 +08:00（跨多次使用者回來後續作） |
+| 完成到 | M9/M10 primary seed-42、M11 demo、M12 README／圖表／資源帳本與 Colab portability 完成 |
 | 卡住的項目 | 技術上無；額外 seeds、F7、robustness 與真模型 demo 只等待安全 GPU 時段 |
 | GPU 時數 | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、訓練 6.540、trained eval 2.777 |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
@@ -23,8 +23,8 @@
 <!-- 逐條列出。每條要有：問題、背景、我建議的選項、以及不決定會擋住什麼 -->
 
 Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thresholds。
-目前 Codex 可繼續做本機驗收與 GPU-safe 工作；只有 Colab 一組可攜性實跑、
-Hugging Face 上傳與最終公開才需要使用者操作或核可。
+目前 Codex 可繼續做本機驗收與 GPU-safe 工作；Colab 一組可攜性實跑已完成，
+只剩 Hugging Face 上傳與最終公開需要使用者操作或核可。
 
 ### 👀 需要你 review 的產出
 
@@ -58,6 +58,19 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 00:25 +08:00] Colab portability — 完成並匯入
+
+- 使用者在 G4（NVIDIA RTX PRO 6000 Blackwell 96 GB）完成 `real_only`
+  seed 42、500 steps；training runtime 1,914.7 秒，peak allocated
+  20,646 MiB
+- Google Drive 下載為兩個 ZIP；兩包均通過 archive integrity、安全路徑與
+  secret pattern 檢查，合併匯入 `results/colab/real_only/seed_42/`
+- `status/group/seed`、資料筆數、batch、max steps、參數量與 global step
+  均和本機 primary 相同；frozen config 完全一致
+- final adapter safetensors 可讀取（686 tensor keys）；不同硬體與套件環境下
+  不要求 adapter weights 逐位元相同
+- 完整可追溯證據寫入 `reports/m9_colab_portability.json`
 
 ### [2026-07-28 22:06 +08:00] GitHub repository — 改名為 FormosaNLU-Synth
 
