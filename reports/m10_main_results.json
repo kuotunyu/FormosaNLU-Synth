@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "pending",
+  "status": "complete",
   "seed": 42,
   "rows": [
     {
@@ -328,66 +328,2503 @@
     {
       "group": "real_only",
       "seed": 42,
-      "status": "missing",
-      "missing": [
-        "runs\\real_only\\seed_42\\run_report.json",
-        "reports\\m9\\real_only_seed_42.json"
-      ]
+      "status": "complete",
+      "metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.980161398789509,
+        "intent_accuracy": 0.7353732347007398,
+        "intent_macro_f1": 0.7519770487432381,
+        "slot_micro_f1": 0.6214039125431531,
+        "exact_match": 0.49058507061197043
+      },
+      "best_checkpoint_step": 150,
+      "best_epoch": 2.0272108843537415,
+      "real_sample_exposure_estimate": 2400,
+      "real_sample_exposure_note": "step × effective_batch × real_rows / assembled_train_rows; rounded because sampler order is not logged per example",
+      "performance": {
+        "output_tokens_per_second": 32.42703509343433,
+        "peak_gpu_memory_mib": 11134.0,
+        "mean_latency_seconds": 0.6506252562205933
+      },
+      "per_intent": {
+        "alarm_query": {
+          "correct": 28,
+          "total": 34,
+          "accuracy": 0.8235294117647058
+        },
+        "alarm_remove": {
+          "correct": 20,
+          "total": 21,
+          "accuracy": 0.9523809523809523
+        },
+        "alarm_set": {
+          "correct": 40,
+          "total": 41,
+          "accuracy": 0.975609756097561
+        },
+        "audio_volume_down": {
+          "correct": 10,
+          "total": 11,
+          "accuracy": 0.9090909090909091
+        },
+        "audio_volume_mute": {
+          "correct": 27,
+          "total": 32,
+          "accuracy": 0.84375
+        },
+        "audio_volume_other": {
+          "correct": 4,
+          "total": 6,
+          "accuracy": 0.6666666666666666
+        },
+        "audio_volume_up": {
+          "correct": 12,
+          "total": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "calendar_query": {
+          "correct": 62,
+          "total": 126,
+          "accuracy": 0.49206349206349204
+        },
+        "calendar_remove": {
+          "correct": 31,
+          "total": 67,
+          "accuracy": 0.4626865671641791
+        },
+        "calendar_set": {
+          "correct": 168,
+          "total": 209,
+          "accuracy": 0.8038277511961722
+        },
+        "cooking_query": {
+          "correct": 0,
+          "total": 0,
+          "accuracy": 0.0
+        },
+        "cooking_recipe": {
+          "correct": 52,
+          "total": 72,
+          "accuracy": 0.7222222222222222
+        },
+        "datetime_convert": {
+          "correct": 11,
+          "total": 15,
+          "accuracy": 0.7333333333333333
+        },
+        "datetime_query": {
+          "correct": 83,
+          "total": 88,
+          "accuracy": 0.9431818181818182
+        },
+        "email_addcontact": {
+          "correct": 8,
+          "total": 12,
+          "accuracy": 0.6666666666666666
+        },
+        "email_query": {
+          "correct": 90,
+          "total": 119,
+          "accuracy": 0.7563025210084033
+        },
+        "email_querycontact": {
+          "correct": 12,
+          "total": 26,
+          "accuracy": 0.46153846153846156
+        },
+        "email_sendemail": {
+          "correct": 96,
+          "total": 114,
+          "accuracy": 0.8421052631578947
+        },
+        "general_greet": {
+          "correct": 1,
+          "total": 1,
+          "accuracy": 1.0
+        },
+        "general_joke": {
+          "correct": 19,
+          "total": 19,
+          "accuracy": 1.0
+        },
+        "general_quirky": {
+          "correct": 105,
+          "total": 169,
+          "accuracy": 0.621301775147929
+        },
+        "iot_cleaning": {
+          "correct": 25,
+          "total": 26,
+          "accuracy": 0.9615384615384616
+        },
+        "iot_coffee": {
+          "correct": 36,
+          "total": 36,
+          "accuracy": 1.0
+        },
+        "iot_hue_lightchange": {
+          "correct": 34,
+          "total": 36,
+          "accuracy": 0.9444444444444444
+        },
+        "iot_hue_lightdim": {
+          "correct": 18,
+          "total": 21,
+          "accuracy": 0.8571428571428571
+        },
+        "iot_hue_lightoff": {
+          "correct": 42,
+          "total": 43,
+          "accuracy": 0.9767441860465116
+        },
+        "iot_hue_lighton": {
+          "correct": 2,
+          "total": 3,
+          "accuracy": 0.6666666666666666
+        },
+        "iot_hue_lightup": {
+          "correct": 21,
+          "total": 27,
+          "accuracy": 0.7777777777777778
+        },
+        "iot_wemo_off": {
+          "correct": 17,
+          "total": 18,
+          "accuracy": 0.9444444444444444
+        },
+        "iot_wemo_on": {
+          "correct": 8,
+          "total": 10,
+          "accuracy": 0.8
+        },
+        "lists_createoradd": {
+          "correct": 34,
+          "total": 39,
+          "accuracy": 0.8717948717948718
+        },
+        "lists_query": {
+          "correct": 38,
+          "total": 51,
+          "accuracy": 0.7450980392156863
+        },
+        "lists_remove": {
+          "correct": 35,
+          "total": 52,
+          "accuracy": 0.6730769230769231
+        },
+        "music_dislikeness": {
+          "correct": 4,
+          "total": 4,
+          "accuracy": 1.0
+        },
+        "music_likeness": {
+          "correct": 29,
+          "total": 36,
+          "accuracy": 0.8055555555555556
+        },
+        "music_query": {
+          "correct": 26,
+          "total": 35,
+          "accuracy": 0.7428571428571429
+        },
+        "music_settings": {
+          "correct": 5,
+          "total": 6,
+          "accuracy": 0.8333333333333334
+        },
+        "news_query": {
+          "correct": 95,
+          "total": 124,
+          "accuracy": 0.7661290322580645
+        },
+        "play_audiobook": {
+          "correct": 28,
+          "total": 41,
+          "accuracy": 0.6829268292682927
+        },
+        "play_game": {
+          "correct": 30,
+          "total": 35,
+          "accuracy": 0.8571428571428571
+        },
+        "play_music": {
+          "correct": 103,
+          "total": 176,
+          "accuracy": 0.5852272727272727
+        },
+        "play_podcasts": {
+          "correct": 47,
+          "total": 63,
+          "accuracy": 0.746031746031746
+        },
+        "play_radio": {
+          "correct": 47,
+          "total": 72,
+          "accuracy": 0.6527777777777778
+        },
+        "qa_currency": {
+          "correct": 39,
+          "total": 39,
+          "accuracy": 1.0
+        },
+        "qa_definition": {
+          "correct": 31,
+          "total": 57,
+          "accuracy": 0.543859649122807
+        },
+        "qa_factoid": {
+          "correct": 25,
+          "total": 141,
+          "accuracy": 0.1773049645390071
+        },
+        "qa_maths": {
+          "correct": 25,
+          "total": 25,
+          "accuracy": 1.0
+        },
+        "qa_stock": {
+          "correct": 23,
+          "total": 26,
+          "accuracy": 0.8846153846153846
+        },
+        "recommendation_events": {
+          "correct": 33,
+          "total": 43,
+          "accuracy": 0.7674418604651163
+        },
+        "recommendation_locations": {
+          "correct": 24,
+          "total": 31,
+          "accuracy": 0.7741935483870968
+        },
+        "recommendation_movies": {
+          "correct": 18,
+          "total": 20,
+          "accuracy": 0.9
+        },
+        "social_post": {
+          "correct": 62,
+          "total": 81,
+          "accuracy": 0.7654320987654321
+        },
+        "social_query": {
+          "correct": 20,
+          "total": 25,
+          "accuracy": 0.8
+        },
+        "takeaway_order": {
+          "correct": 16,
+          "total": 22,
+          "accuracy": 0.7272727272727273
+        },
+        "takeaway_query": {
+          "correct": 31,
+          "total": 35,
+          "accuracy": 0.8857142857142857
+        },
+        "transport_query": {
+          "correct": 27,
+          "total": 51,
+          "accuracy": 0.5294117647058824
+        },
+        "transport_taxi": {
+          "correct": 23,
+          "total": 23,
+          "accuracy": 1.0
+        },
+        "transport_ticket": {
+          "correct": 31,
+          "total": 35,
+          "accuracy": 0.8857142857142857
+        },
+        "transport_traffic": {
+          "correct": 14,
+          "total": 15,
+          "accuracy": 0.9333333333333333
+        },
+        "weather_query": {
+          "correct": 142,
+          "total": 156,
+          "accuracy": 0.9102564102564102
+        }
+      }
     },
     {
       "group": "real_std_aug",
       "seed": 42,
-      "status": "missing",
-      "missing": [
-        "runs\\real_std_aug\\seed_42\\run_report.json",
-        "reports\\m9\\real_std_aug_seed_42.json"
-      ]
+      "status": "complete",
+      "metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.9623402824478816,
+        "intent_accuracy": 0.7431069266980498,
+        "intent_macro_f1": 0.7558697700109737,
+        "slot_micro_f1": 0.6257889990982868,
+        "exact_match": 0.46805648957632817
+      },
+      "best_checkpoint_step": 200,
+      "best_epoch": 0.6482982171799028,
+      "real_sample_exposure_estimate": 762,
+      "real_sample_exposure_note": "step × effective_batch × real_rows / assembled_train_rows; rounded because sampler order is not logged per example",
+      "performance": {
+        "output_tokens_per_second": 41.388441186709464,
+        "peak_gpu_memory_mib": 11903.0,
+        "mean_latency_seconds": 0.5441093685944857
+      },
+      "per_intent": {
+        "alarm_query": {
+          "correct": 30,
+          "total": 34,
+          "accuracy": 0.8823529411764706
+        },
+        "alarm_remove": {
+          "correct": 21,
+          "total": 21,
+          "accuracy": 1.0
+        },
+        "alarm_set": {
+          "correct": 41,
+          "total": 41,
+          "accuracy": 1.0
+        },
+        "audio_volume_down": {
+          "correct": 11,
+          "total": 11,
+          "accuracy": 1.0
+        },
+        "audio_volume_mute": {
+          "correct": 30,
+          "total": 32,
+          "accuracy": 0.9375
+        },
+        "audio_volume_other": {
+          "correct": 3,
+          "total": 6,
+          "accuracy": 0.5
+        },
+        "audio_volume_up": {
+          "correct": 12,
+          "total": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "calendar_query": {
+          "correct": 51,
+          "total": 126,
+          "accuracy": 0.40476190476190477
+        },
+        "calendar_remove": {
+          "correct": 35,
+          "total": 67,
+          "accuracy": 0.5223880597014925
+        },
+        "calendar_set": {
+          "correct": 98,
+          "total": 209,
+          "accuracy": 0.4688995215311005
+        },
+        "cooking_query": {
+          "correct": 0,
+          "total": 0,
+          "accuracy": 0.0
+        },
+        "cooking_recipe": {
+          "correct": 52,
+          "total": 72,
+          "accuracy": 0.7222222222222222
+        },
+        "datetime_convert": {
+          "correct": 12,
+          "total": 15,
+          "accuracy": 0.8
+        },
+        "datetime_query": {
+          "correct": 83,
+          "total": 88,
+          "accuracy": 0.9431818181818182
+        },
+        "email_addcontact": {
+          "correct": 11,
+          "total": 12,
+          "accuracy": 0.9166666666666666
+        },
+        "email_query": {
+          "correct": 96,
+          "total": 119,
+          "accuracy": 0.8067226890756303
+        },
+        "email_querycontact": {
+          "correct": 13,
+          "total": 26,
+          "accuracy": 0.5
+        },
+        "email_sendemail": {
+          "correct": 85,
+          "total": 114,
+          "accuracy": 0.7456140350877193
+        },
+        "general_greet": {
+          "correct": 1,
+          "total": 1,
+          "accuracy": 1.0
+        },
+        "general_joke": {
+          "correct": 18,
+          "total": 19,
+          "accuracy": 0.9473684210526315
+        },
+        "general_quirky": {
+          "correct": 25,
+          "total": 169,
+          "accuracy": 0.14792899408284024
+        },
+        "iot_cleaning": {
+          "correct": 24,
+          "total": 26,
+          "accuracy": 0.9230769230769231
+        },
+        "iot_coffee": {
+          "correct": 33,
+          "total": 36,
+          "accuracy": 0.9166666666666666
+        },
+        "iot_hue_lightchange": {
+          "correct": 32,
+          "total": 36,
+          "accuracy": 0.8888888888888888
+        },
+        "iot_hue_lightdim": {
+          "correct": 17,
+          "total": 21,
+          "accuracy": 0.8095238095238095
+        },
+        "iot_hue_lightoff": {
+          "correct": 42,
+          "total": 43,
+          "accuracy": 0.9767441860465116
+        },
+        "iot_hue_lighton": {
+          "correct": 3,
+          "total": 3,
+          "accuracy": 1.0
+        },
+        "iot_hue_lightup": {
+          "correct": 19,
+          "total": 27,
+          "accuracy": 0.7037037037037037
+        },
+        "iot_wemo_off": {
+          "correct": 16,
+          "total": 18,
+          "accuracy": 0.8888888888888888
+        },
+        "iot_wemo_on": {
+          "correct": 8,
+          "total": 10,
+          "accuracy": 0.8
+        },
+        "lists_createoradd": {
+          "correct": 35,
+          "total": 39,
+          "accuracy": 0.8974358974358975
+        },
+        "lists_query": {
+          "correct": 46,
+          "total": 51,
+          "accuracy": 0.9019607843137255
+        },
+        "lists_remove": {
+          "correct": 41,
+          "total": 52,
+          "accuracy": 0.7884615384615384
+        },
+        "music_dislikeness": {
+          "correct": 3,
+          "total": 4,
+          "accuracy": 0.75
+        },
+        "music_likeness": {
+          "correct": 23,
+          "total": 36,
+          "accuracy": 0.6388888888888888
+        },
+        "music_query": {
+          "correct": 24,
+          "total": 35,
+          "accuracy": 0.6857142857142857
+        },
+        "music_settings": {
+          "correct": 2,
+          "total": 6,
+          "accuracy": 0.3333333333333333
+        },
+        "news_query": {
+          "correct": 98,
+          "total": 124,
+          "accuracy": 0.7903225806451613
+        },
+        "play_audiobook": {
+          "correct": 37,
+          "total": 41,
+          "accuracy": 0.9024390243902439
+        },
+        "play_game": {
+          "correct": 31,
+          "total": 35,
+          "accuracy": 0.8857142857142857
+        },
+        "play_music": {
+          "correct": 124,
+          "total": 176,
+          "accuracy": 0.7045454545454546
+        },
+        "play_podcasts": {
+          "correct": 52,
+          "total": 63,
+          "accuracy": 0.8253968253968254
+        },
+        "play_radio": {
+          "correct": 61,
+          "total": 72,
+          "accuracy": 0.8472222222222222
+        },
+        "qa_currency": {
+          "correct": 39,
+          "total": 39,
+          "accuracy": 1.0
+        },
+        "qa_definition": {
+          "correct": 46,
+          "total": 57,
+          "accuracy": 0.8070175438596491
+        },
+        "qa_factoid": {
+          "correct": 123,
+          "total": 141,
+          "accuracy": 0.8723404255319149
+        },
+        "qa_maths": {
+          "correct": 23,
+          "total": 25,
+          "accuracy": 0.92
+        },
+        "qa_stock": {
+          "correct": 25,
+          "total": 26,
+          "accuracy": 0.9615384615384616
+        },
+        "recommendation_events": {
+          "correct": 40,
+          "total": 43,
+          "accuracy": 0.9302325581395349
+        },
+        "recommendation_locations": {
+          "correct": 22,
+          "total": 31,
+          "accuracy": 0.7096774193548387
+        },
+        "recommendation_movies": {
+          "correct": 18,
+          "total": 20,
+          "accuracy": 0.9
+        },
+        "social_post": {
+          "correct": 67,
+          "total": 81,
+          "accuracy": 0.8271604938271605
+        },
+        "social_query": {
+          "correct": 20,
+          "total": 25,
+          "accuracy": 0.8
+        },
+        "takeaway_order": {
+          "correct": 19,
+          "total": 22,
+          "accuracy": 0.8636363636363636
+        },
+        "takeaway_query": {
+          "correct": 29,
+          "total": 35,
+          "accuracy": 0.8285714285714286
+        },
+        "transport_query": {
+          "correct": 39,
+          "total": 51,
+          "accuracy": 0.7647058823529411
+        },
+        "transport_taxi": {
+          "correct": 22,
+          "total": 23,
+          "accuracy": 0.9565217391304348
+        },
+        "transport_ticket": {
+          "correct": 26,
+          "total": 35,
+          "accuracy": 0.7428571428571429
+        },
+        "transport_traffic": {
+          "correct": 13,
+          "total": 15,
+          "accuracy": 0.8666666666666667
+        },
+        "weather_query": {
+          "correct": 140,
+          "total": 156,
+          "accuracy": 0.8974358974358975
+        }
+      }
     },
     {
       "group": "real_syn_unfiltered_full",
       "seed": 42,
-      "status": "missing",
-      "missing": [
-        "runs\\real_syn_unfiltered_full\\seed_42\\run_report.json",
-        "reports\\m9\\real_syn_unfiltered_full_seed_42.json"
-      ]
+      "status": "complete",
+      "metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.9774714189643577,
+        "intent_accuracy": 0.7599193006052455,
+        "intent_macro_f1": 0.764242941922348,
+        "slot_micro_f1": 0.6500900900900901,
+        "exact_match": 0.5121049092131809
+      },
+      "best_checkpoint_step": 350,
+      "best_epoch": 0.45016077170418006,
+      "real_sample_exposure_estimate": 529,
+      "real_sample_exposure_note": "step × effective_batch × real_rows / assembled_train_rows; rounded because sampler order is not logged per example",
+      "performance": {
+        "output_tokens_per_second": 40.56918436570087,
+        "peak_gpu_memory_mib": 11263.0,
+        "mean_latency_seconds": 0.5480189854068687
+      },
+      "per_intent": {
+        "alarm_query": {
+          "correct": 33,
+          "total": 34,
+          "accuracy": 0.9705882352941176
+        },
+        "alarm_remove": {
+          "correct": 20,
+          "total": 21,
+          "accuracy": 0.9523809523809523
+        },
+        "alarm_set": {
+          "correct": 40,
+          "total": 41,
+          "accuracy": 0.975609756097561
+        },
+        "audio_volume_down": {
+          "correct": 11,
+          "total": 11,
+          "accuracy": 1.0
+        },
+        "audio_volume_mute": {
+          "correct": 28,
+          "total": 32,
+          "accuracy": 0.875
+        },
+        "audio_volume_other": {
+          "correct": 5,
+          "total": 6,
+          "accuracy": 0.8333333333333334
+        },
+        "audio_volume_up": {
+          "correct": 12,
+          "total": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "calendar_query": {
+          "correct": 62,
+          "total": 126,
+          "accuracy": 0.49206349206349204
+        },
+        "calendar_remove": {
+          "correct": 32,
+          "total": 67,
+          "accuracy": 0.47761194029850745
+        },
+        "calendar_set": {
+          "correct": 171,
+          "total": 209,
+          "accuracy": 0.8181818181818182
+        },
+        "cooking_query": {
+          "correct": 0,
+          "total": 0,
+          "accuracy": 0.0
+        },
+        "cooking_recipe": {
+          "correct": 54,
+          "total": 72,
+          "accuracy": 0.75
+        },
+        "datetime_convert": {
+          "correct": 11,
+          "total": 15,
+          "accuracy": 0.7333333333333333
+        },
+        "datetime_query": {
+          "correct": 82,
+          "total": 88,
+          "accuracy": 0.9318181818181818
+        },
+        "email_addcontact": {
+          "correct": 9,
+          "total": 12,
+          "accuracy": 0.75
+        },
+        "email_query": {
+          "correct": 100,
+          "total": 119,
+          "accuracy": 0.8403361344537815
+        },
+        "email_querycontact": {
+          "correct": 22,
+          "total": 26,
+          "accuracy": 0.8461538461538461
+        },
+        "email_sendemail": {
+          "correct": 91,
+          "total": 114,
+          "accuracy": 0.7982456140350878
+        },
+        "general_greet": {
+          "correct": 0,
+          "total": 1,
+          "accuracy": 0.0
+        },
+        "general_joke": {
+          "correct": 19,
+          "total": 19,
+          "accuracy": 1.0
+        },
+        "general_quirky": {
+          "correct": 40,
+          "total": 169,
+          "accuracy": 0.23668639053254437
+        },
+        "iot_cleaning": {
+          "correct": 25,
+          "total": 26,
+          "accuracy": 0.9615384615384616
+        },
+        "iot_coffee": {
+          "correct": 36,
+          "total": 36,
+          "accuracy": 1.0
+        },
+        "iot_hue_lightchange": {
+          "correct": 34,
+          "total": 36,
+          "accuracy": 0.9444444444444444
+        },
+        "iot_hue_lightdim": {
+          "correct": 18,
+          "total": 21,
+          "accuracy": 0.8571428571428571
+        },
+        "iot_hue_lightoff": {
+          "correct": 38,
+          "total": 43,
+          "accuracy": 0.8837209302325582
+        },
+        "iot_hue_lighton": {
+          "correct": 2,
+          "total": 3,
+          "accuracy": 0.6666666666666666
+        },
+        "iot_hue_lightup": {
+          "correct": 21,
+          "total": 27,
+          "accuracy": 0.7777777777777778
+        },
+        "iot_wemo_off": {
+          "correct": 18,
+          "total": 18,
+          "accuracy": 1.0
+        },
+        "iot_wemo_on": {
+          "correct": 9,
+          "total": 10,
+          "accuracy": 0.9
+        },
+        "lists_createoradd": {
+          "correct": 31,
+          "total": 39,
+          "accuracy": 0.7948717948717948
+        },
+        "lists_query": {
+          "correct": 44,
+          "total": 51,
+          "accuracy": 0.8627450980392157
+        },
+        "lists_remove": {
+          "correct": 38,
+          "total": 52,
+          "accuracy": 0.7307692307692307
+        },
+        "music_dislikeness": {
+          "correct": 3,
+          "total": 4,
+          "accuracy": 0.75
+        },
+        "music_likeness": {
+          "correct": 27,
+          "total": 36,
+          "accuracy": 0.75
+        },
+        "music_query": {
+          "correct": 28,
+          "total": 35,
+          "accuracy": 0.8
+        },
+        "music_settings": {
+          "correct": 3,
+          "total": 6,
+          "accuracy": 0.5
+        },
+        "news_query": {
+          "correct": 97,
+          "total": 124,
+          "accuracy": 0.782258064516129
+        },
+        "play_audiobook": {
+          "correct": 34,
+          "total": 41,
+          "accuracy": 0.8292682926829268
+        },
+        "play_game": {
+          "correct": 33,
+          "total": 35,
+          "accuracy": 0.9428571428571428
+        },
+        "play_music": {
+          "correct": 126,
+          "total": 176,
+          "accuracy": 0.7159090909090909
+        },
+        "play_podcasts": {
+          "correct": 49,
+          "total": 63,
+          "accuracy": 0.7777777777777778
+        },
+        "play_radio": {
+          "correct": 60,
+          "total": 72,
+          "accuracy": 0.8333333333333334
+        },
+        "qa_currency": {
+          "correct": 39,
+          "total": 39,
+          "accuracy": 1.0
+        },
+        "qa_definition": {
+          "correct": 52,
+          "total": 57,
+          "accuracy": 0.9122807017543859
+        },
+        "qa_factoid": {
+          "correct": 66,
+          "total": 141,
+          "accuracy": 0.46808510638297873
+        },
+        "qa_maths": {
+          "correct": 25,
+          "total": 25,
+          "accuracy": 1.0
+        },
+        "qa_stock": {
+          "correct": 24,
+          "total": 26,
+          "accuracy": 0.9230769230769231
+        },
+        "recommendation_events": {
+          "correct": 35,
+          "total": 43,
+          "accuracy": 0.813953488372093
+        },
+        "recommendation_locations": {
+          "correct": 19,
+          "total": 31,
+          "accuracy": 0.6129032258064516
+        },
+        "recommendation_movies": {
+          "correct": 18,
+          "total": 20,
+          "accuracy": 0.9
+        },
+        "social_post": {
+          "correct": 61,
+          "total": 81,
+          "accuracy": 0.7530864197530864
+        },
+        "social_query": {
+          "correct": 19,
+          "total": 25,
+          "accuracy": 0.76
+        },
+        "takeaway_order": {
+          "correct": 20,
+          "total": 22,
+          "accuracy": 0.9090909090909091
+        },
+        "takeaway_query": {
+          "correct": 28,
+          "total": 35,
+          "accuracy": 0.8
+        },
+        "transport_query": {
+          "correct": 36,
+          "total": 51,
+          "accuracy": 0.7058823529411765
+        },
+        "transport_taxi": {
+          "correct": 20,
+          "total": 23,
+          "accuracy": 0.8695652173913043
+        },
+        "transport_ticket": {
+          "correct": 26,
+          "total": 35,
+          "accuracy": 0.7428571428571429
+        },
+        "transport_traffic": {
+          "correct": 12,
+          "total": 15,
+          "accuracy": 0.8
+        },
+        "weather_query": {
+          "correct": 144,
+          "total": 156,
+          "accuracy": 0.9230769230769231
+        }
+      }
     },
     {
       "group": "real_syn_unfiltered_eqn",
       "seed": 42,
-      "status": "missing",
-      "missing": [
-        "runs\\real_syn_unfiltered_eqn\\seed_42\\run_report.json",
-        "reports\\m9\\real_syn_unfiltered_eqn_seed_42.json"
-      ]
+      "status": "complete",
+      "metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.9794889038332213,
+        "intent_accuracy": 0.7602555480833894,
+        "intent_macro_f1": 0.7559466376552456,
+        "slot_micro_f1": 0.6436781609195402,
+        "exact_match": 0.5100874243443174
+      },
+      "best_checkpoint_step": 300,
+      "best_epoch": 0.9724473257698542,
+      "real_sample_exposure_estimate": 1144,
+      "real_sample_exposure_note": "step × effective_batch × real_rows / assembled_train_rows; rounded because sampler order is not logged per example",
+      "performance": {
+        "output_tokens_per_second": 41.46700774611549,
+        "peak_gpu_memory_mib": 11398.0,
+        "mean_latency_seconds": 0.5394943699058332
+      },
+      "per_intent": {
+        "alarm_query": {
+          "correct": 33,
+          "total": 34,
+          "accuracy": 0.9705882352941176
+        },
+        "alarm_remove": {
+          "correct": 21,
+          "total": 21,
+          "accuracy": 1.0
+        },
+        "alarm_set": {
+          "correct": 39,
+          "total": 41,
+          "accuracy": 0.9512195121951219
+        },
+        "audio_volume_down": {
+          "correct": 10,
+          "total": 11,
+          "accuracy": 0.9090909090909091
+        },
+        "audio_volume_mute": {
+          "correct": 27,
+          "total": 32,
+          "accuracy": 0.84375
+        },
+        "audio_volume_other": {
+          "correct": 1,
+          "total": 6,
+          "accuracy": 0.16666666666666666
+        },
+        "audio_volume_up": {
+          "correct": 12,
+          "total": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "calendar_query": {
+          "correct": 70,
+          "total": 126,
+          "accuracy": 0.5555555555555556
+        },
+        "calendar_remove": {
+          "correct": 33,
+          "total": 67,
+          "accuracy": 0.4925373134328358
+        },
+        "calendar_set": {
+          "correct": 175,
+          "total": 209,
+          "accuracy": 0.8373205741626795
+        },
+        "cooking_query": {
+          "correct": 0,
+          "total": 0,
+          "accuracy": 0.0
+        },
+        "cooking_recipe": {
+          "correct": 23,
+          "total": 72,
+          "accuracy": 0.3194444444444444
+        },
+        "datetime_convert": {
+          "correct": 12,
+          "total": 15,
+          "accuracy": 0.8
+        },
+        "datetime_query": {
+          "correct": 82,
+          "total": 88,
+          "accuracy": 0.9318181818181818
+        },
+        "email_addcontact": {
+          "correct": 8,
+          "total": 12,
+          "accuracy": 0.6666666666666666
+        },
+        "email_query": {
+          "correct": 101,
+          "total": 119,
+          "accuracy": 0.8487394957983193
+        },
+        "email_querycontact": {
+          "correct": 19,
+          "total": 26,
+          "accuracy": 0.7307692307692307
+        },
+        "email_sendemail": {
+          "correct": 89,
+          "total": 114,
+          "accuracy": 0.7807017543859649
+        },
+        "general_greet": {
+          "correct": 1,
+          "total": 1,
+          "accuracy": 1.0
+        },
+        "general_joke": {
+          "correct": 18,
+          "total": 19,
+          "accuracy": 0.9473684210526315
+        },
+        "general_quirky": {
+          "correct": 56,
+          "total": 169,
+          "accuracy": 0.33136094674556216
+        },
+        "iot_cleaning": {
+          "correct": 24,
+          "total": 26,
+          "accuracy": 0.9230769230769231
+        },
+        "iot_coffee": {
+          "correct": 34,
+          "total": 36,
+          "accuracy": 0.9444444444444444
+        },
+        "iot_hue_lightchange": {
+          "correct": 33,
+          "total": 36,
+          "accuracy": 0.9166666666666666
+        },
+        "iot_hue_lightdim": {
+          "correct": 18,
+          "total": 21,
+          "accuracy": 0.8571428571428571
+        },
+        "iot_hue_lightoff": {
+          "correct": 39,
+          "total": 43,
+          "accuracy": 0.9069767441860465
+        },
+        "iot_hue_lighton": {
+          "correct": 3,
+          "total": 3,
+          "accuracy": 1.0
+        },
+        "iot_hue_lightup": {
+          "correct": 21,
+          "total": 27,
+          "accuracy": 0.7777777777777778
+        },
+        "iot_wemo_off": {
+          "correct": 17,
+          "total": 18,
+          "accuracy": 0.9444444444444444
+        },
+        "iot_wemo_on": {
+          "correct": 9,
+          "total": 10,
+          "accuracy": 0.9
+        },
+        "lists_createoradd": {
+          "correct": 29,
+          "total": 39,
+          "accuracy": 0.7435897435897436
+        },
+        "lists_query": {
+          "correct": 42,
+          "total": 51,
+          "accuracy": 0.8235294117647058
+        },
+        "lists_remove": {
+          "correct": 38,
+          "total": 52,
+          "accuracy": 0.7307692307692307
+        },
+        "music_dislikeness": {
+          "correct": 4,
+          "total": 4,
+          "accuracy": 1.0
+        },
+        "music_likeness": {
+          "correct": 31,
+          "total": 36,
+          "accuracy": 0.8611111111111112
+        },
+        "music_query": {
+          "correct": 28,
+          "total": 35,
+          "accuracy": 0.8
+        },
+        "music_settings": {
+          "correct": 4,
+          "total": 6,
+          "accuracy": 0.6666666666666666
+        },
+        "news_query": {
+          "correct": 99,
+          "total": 124,
+          "accuracy": 0.7983870967741935
+        },
+        "play_audiobook": {
+          "correct": 36,
+          "total": 41,
+          "accuracy": 0.8780487804878049
+        },
+        "play_game": {
+          "correct": 25,
+          "total": 35,
+          "accuracy": 0.7142857142857143
+        },
+        "play_music": {
+          "correct": 104,
+          "total": 176,
+          "accuracy": 0.5909090909090909
+        },
+        "play_podcasts": {
+          "correct": 51,
+          "total": 63,
+          "accuracy": 0.8095238095238095
+        },
+        "play_radio": {
+          "correct": 55,
+          "total": 72,
+          "accuracy": 0.7638888888888888
+        },
+        "qa_currency": {
+          "correct": 39,
+          "total": 39,
+          "accuracy": 1.0
+        },
+        "qa_definition": {
+          "correct": 48,
+          "total": 57,
+          "accuracy": 0.8421052631578947
+        },
+        "qa_factoid": {
+          "correct": 98,
+          "total": 141,
+          "accuracy": 0.6950354609929078
+        },
+        "qa_maths": {
+          "correct": 25,
+          "total": 25,
+          "accuracy": 1.0
+        },
+        "qa_stock": {
+          "correct": 24,
+          "total": 26,
+          "accuracy": 0.9230769230769231
+        },
+        "recommendation_events": {
+          "correct": 38,
+          "total": 43,
+          "accuracy": 0.8837209302325582
+        },
+        "recommendation_locations": {
+          "correct": 21,
+          "total": 31,
+          "accuracy": 0.6774193548387096
+        },
+        "recommendation_movies": {
+          "correct": 17,
+          "total": 20,
+          "accuracy": 0.85
+        },
+        "social_post": {
+          "correct": 61,
+          "total": 81,
+          "accuracy": 0.7530864197530864
+        },
+        "social_query": {
+          "correct": 20,
+          "total": 25,
+          "accuracy": 0.8
+        },
+        "takeaway_order": {
+          "correct": 20,
+          "total": 22,
+          "accuracy": 0.9090909090909091
+        },
+        "takeaway_query": {
+          "correct": 31,
+          "total": 35,
+          "accuracy": 0.8857142857142857
+        },
+        "transport_query": {
+          "correct": 43,
+          "total": 51,
+          "accuracy": 0.8431372549019608
+        },
+        "transport_taxi": {
+          "correct": 23,
+          "total": 23,
+          "accuracy": 1.0
+        },
+        "transport_ticket": {
+          "correct": 22,
+          "total": 35,
+          "accuracy": 0.6285714285714286
+        },
+        "transport_traffic": {
+          "correct": 14,
+          "total": 15,
+          "accuracy": 0.9333333333333333
+        },
+        "weather_query": {
+          "correct": 143,
+          "total": 156,
+          "accuracy": 0.9166666666666666
+        }
+      }
     },
     {
       "group": "real_syn_filtered",
       "seed": 42,
-      "status": "missing",
-      "missing": [
-        "runs\\real_syn_filtered\\seed_42\\run_report.json",
-        "reports\\m9\\real_syn_filtered_seed_42.json"
-      ]
+      "status": "complete",
+      "metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.9798251513113652,
+        "intent_accuracy": 0.7619367854741089,
+        "intent_macro_f1": 0.7609110853351442,
+        "slot_micro_f1": 0.6654191616766467,
+        "exact_match": 0.5211835911230666
+      },
+      "best_checkpoint_step": 250,
+      "best_epoch": 0.8103727714748784,
+      "real_sample_exposure_estimate": 953,
+      "real_sample_exposure_note": "step × effective_batch × real_rows / assembled_train_rows; rounded because sampler order is not logged per example",
+      "performance": {
+        "output_tokens_per_second": 41.45904820536989,
+        "peak_gpu_memory_mib": 11151.0,
+        "mean_latency_seconds": 0.5169619523873967
+      },
+      "per_intent": {
+        "alarm_query": {
+          "correct": 31,
+          "total": 34,
+          "accuracy": 0.9117647058823529
+        },
+        "alarm_remove": {
+          "correct": 20,
+          "total": 21,
+          "accuracy": 0.9523809523809523
+        },
+        "alarm_set": {
+          "correct": 40,
+          "total": 41,
+          "accuracy": 0.975609756097561
+        },
+        "audio_volume_down": {
+          "correct": 10,
+          "total": 11,
+          "accuracy": 0.9090909090909091
+        },
+        "audio_volume_mute": {
+          "correct": 27,
+          "total": 32,
+          "accuracy": 0.84375
+        },
+        "audio_volume_other": {
+          "correct": 4,
+          "total": 6,
+          "accuracy": 0.6666666666666666
+        },
+        "audio_volume_up": {
+          "correct": 12,
+          "total": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "calendar_query": {
+          "correct": 78,
+          "total": 126,
+          "accuracy": 0.6190476190476191
+        },
+        "calendar_remove": {
+          "correct": 36,
+          "total": 67,
+          "accuracy": 0.5373134328358209
+        },
+        "calendar_set": {
+          "correct": 154,
+          "total": 209,
+          "accuracy": 0.7368421052631579
+        },
+        "cooking_query": {
+          "correct": 0,
+          "total": 0,
+          "accuracy": 0.0
+        },
+        "cooking_recipe": {
+          "correct": 53,
+          "total": 72,
+          "accuracy": 0.7361111111111112
+        },
+        "datetime_convert": {
+          "correct": 11,
+          "total": 15,
+          "accuracy": 0.7333333333333333
+        },
+        "datetime_query": {
+          "correct": 86,
+          "total": 88,
+          "accuracy": 0.9772727272727273
+        },
+        "email_addcontact": {
+          "correct": 8,
+          "total": 12,
+          "accuracy": 0.6666666666666666
+        },
+        "email_query": {
+          "correct": 98,
+          "total": 119,
+          "accuracy": 0.8235294117647058
+        },
+        "email_querycontact": {
+          "correct": 16,
+          "total": 26,
+          "accuracy": 0.6153846153846154
+        },
+        "email_sendemail": {
+          "correct": 92,
+          "total": 114,
+          "accuracy": 0.8070175438596491
+        },
+        "general_greet": {
+          "correct": 1,
+          "total": 1,
+          "accuracy": 1.0
+        },
+        "general_joke": {
+          "correct": 19,
+          "total": 19,
+          "accuracy": 1.0
+        },
+        "general_quirky": {
+          "correct": 51,
+          "total": 169,
+          "accuracy": 0.30177514792899407
+        },
+        "iot_cleaning": {
+          "correct": 25,
+          "total": 26,
+          "accuracy": 0.9615384615384616
+        },
+        "iot_coffee": {
+          "correct": 36,
+          "total": 36,
+          "accuracy": 1.0
+        },
+        "iot_hue_lightchange": {
+          "correct": 32,
+          "total": 36,
+          "accuracy": 0.8888888888888888
+        },
+        "iot_hue_lightdim": {
+          "correct": 17,
+          "total": 21,
+          "accuracy": 0.8095238095238095
+        },
+        "iot_hue_lightoff": {
+          "correct": 40,
+          "total": 43,
+          "accuracy": 0.9302325581395349
+        },
+        "iot_hue_lighton": {
+          "correct": 2,
+          "total": 3,
+          "accuracy": 0.6666666666666666
+        },
+        "iot_hue_lightup": {
+          "correct": 24,
+          "total": 27,
+          "accuracy": 0.8888888888888888
+        },
+        "iot_wemo_off": {
+          "correct": 18,
+          "total": 18,
+          "accuracy": 1.0
+        },
+        "iot_wemo_on": {
+          "correct": 8,
+          "total": 10,
+          "accuracy": 0.8
+        },
+        "lists_createoradd": {
+          "correct": 32,
+          "total": 39,
+          "accuracy": 0.8205128205128205
+        },
+        "lists_query": {
+          "correct": 38,
+          "total": 51,
+          "accuracy": 0.7450980392156863
+        },
+        "lists_remove": {
+          "correct": 35,
+          "total": 52,
+          "accuracy": 0.6730769230769231
+        },
+        "music_dislikeness": {
+          "correct": 4,
+          "total": 4,
+          "accuracy": 1.0
+        },
+        "music_likeness": {
+          "correct": 28,
+          "total": 36,
+          "accuracy": 0.7777777777777778
+        },
+        "music_query": {
+          "correct": 29,
+          "total": 35,
+          "accuracy": 0.8285714285714286
+        },
+        "music_settings": {
+          "correct": 4,
+          "total": 6,
+          "accuracy": 0.6666666666666666
+        },
+        "news_query": {
+          "correct": 106,
+          "total": 124,
+          "accuracy": 0.8548387096774194
+        },
+        "play_audiobook": {
+          "correct": 33,
+          "total": 41,
+          "accuracy": 0.8048780487804879
+        },
+        "play_game": {
+          "correct": 27,
+          "total": 35,
+          "accuracy": 0.7714285714285715
+        },
+        "play_music": {
+          "correct": 93,
+          "total": 176,
+          "accuracy": 0.5284090909090909
+        },
+        "play_podcasts": {
+          "correct": 51,
+          "total": 63,
+          "accuracy": 0.8095238095238095
+        },
+        "play_radio": {
+          "correct": 51,
+          "total": 72,
+          "accuracy": 0.7083333333333334
+        },
+        "qa_currency": {
+          "correct": 38,
+          "total": 39,
+          "accuracy": 0.9743589743589743
+        },
+        "qa_definition": {
+          "correct": 50,
+          "total": 57,
+          "accuracy": 0.8771929824561403
+        },
+        "qa_factoid": {
+          "correct": 98,
+          "total": 141,
+          "accuracy": 0.6950354609929078
+        },
+        "qa_maths": {
+          "correct": 25,
+          "total": 25,
+          "accuracy": 1.0
+        },
+        "qa_stock": {
+          "correct": 23,
+          "total": 26,
+          "accuracy": 0.8846153846153846
+        },
+        "recommendation_events": {
+          "correct": 36,
+          "total": 43,
+          "accuracy": 0.8372093023255814
+        },
+        "recommendation_locations": {
+          "correct": 22,
+          "total": 31,
+          "accuracy": 0.7096774193548387
+        },
+        "recommendation_movies": {
+          "correct": 18,
+          "total": 20,
+          "accuracy": 0.9
+        },
+        "social_post": {
+          "correct": 68,
+          "total": 81,
+          "accuracy": 0.8395061728395061
+        },
+        "social_query": {
+          "correct": 19,
+          "total": 25,
+          "accuracy": 0.76
+        },
+        "takeaway_order": {
+          "correct": 19,
+          "total": 22,
+          "accuracy": 0.8636363636363636
+        },
+        "takeaway_query": {
+          "correct": 29,
+          "total": 35,
+          "accuracy": 0.8285714285714286
+        },
+        "transport_query": {
+          "correct": 41,
+          "total": 51,
+          "accuracy": 0.803921568627451
+        },
+        "transport_taxi": {
+          "correct": 19,
+          "total": 23,
+          "accuracy": 0.8260869565217391
+        },
+        "transport_ticket": {
+          "correct": 23,
+          "total": 35,
+          "accuracy": 0.6571428571428571
+        },
+        "transport_traffic": {
+          "correct": 13,
+          "total": 15,
+          "accuracy": 0.8666666666666667
+        },
+        "weather_query": {
+          "correct": 145,
+          "total": 156,
+          "accuracy": 0.9294871794871795
+        }
+      }
     },
     {
       "group": "full_real",
       "seed": 42,
-      "status": "missing",
-      "missing": [
-        "runs\\full_real\\seed_42\\run_report.json",
-        "reports\\m9\\full_real_seed_42.json"
-      ]
+      "status": "complete",
+      "metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.9973100201748487,
+        "intent_accuracy": 0.8453261600537996,
+        "intent_macro_f1": 0.8165492785814253,
+        "slot_micro_f1": 0.715831957439002,
+        "exact_match": 0.6065904505716208
+      },
+      "best_checkpoint_step": 500,
+      "best_epoch": 0.694806322737537,
+      "real_sample_exposure_estimate": 8000,
+      "real_sample_exposure_note": "step × effective_batch × real_rows / assembled_train_rows; rounded because sampler order is not logged per example",
+      "performance": {
+        "output_tokens_per_second": 43.175225287160146,
+        "peak_gpu_memory_mib": 10467.0,
+        "mean_latency_seconds": 0.5012650782783766
+      },
+      "per_intent": {
+        "alarm_query": {
+          "correct": 30,
+          "total": 34,
+          "accuracy": 0.8823529411764706
+        },
+        "alarm_remove": {
+          "correct": 21,
+          "total": 21,
+          "accuracy": 1.0
+        },
+        "alarm_set": {
+          "correct": 38,
+          "total": 41,
+          "accuracy": 0.926829268292683
+        },
+        "audio_volume_down": {
+          "correct": 10,
+          "total": 11,
+          "accuracy": 0.9090909090909091
+        },
+        "audio_volume_mute": {
+          "correct": 27,
+          "total": 32,
+          "accuracy": 0.84375
+        },
+        "audio_volume_other": {
+          "correct": 5,
+          "total": 6,
+          "accuracy": 0.8333333333333334
+        },
+        "audio_volume_up": {
+          "correct": 12,
+          "total": 13,
+          "accuracy": 0.9230769230769231
+        },
+        "calendar_query": {
+          "correct": 81,
+          "total": 126,
+          "accuracy": 0.6428571428571429
+        },
+        "calendar_remove": {
+          "correct": 37,
+          "total": 67,
+          "accuracy": 0.5522388059701493
+        },
+        "calendar_set": {
+          "correct": 183,
+          "total": 209,
+          "accuracy": 0.8755980861244019
+        },
+        "cooking_query": {
+          "correct": 0,
+          "total": 0,
+          "accuracy": 0.0
+        },
+        "cooking_recipe": {
+          "correct": 70,
+          "total": 72,
+          "accuracy": 0.9722222222222222
+        },
+        "datetime_convert": {
+          "correct": 12,
+          "total": 15,
+          "accuracy": 0.8
+        },
+        "datetime_query": {
+          "correct": 85,
+          "total": 88,
+          "accuracy": 0.9659090909090909
+        },
+        "email_addcontact": {
+          "correct": 6,
+          "total": 12,
+          "accuracy": 0.5
+        },
+        "email_query": {
+          "correct": 107,
+          "total": 119,
+          "accuracy": 0.8991596638655462
+        },
+        "email_querycontact": {
+          "correct": 22,
+          "total": 26,
+          "accuracy": 0.8461538461538461
+        },
+        "email_sendemail": {
+          "correct": 103,
+          "total": 114,
+          "accuracy": 0.9035087719298246
+        },
+        "general_greet": {
+          "correct": 0,
+          "total": 1,
+          "accuracy": 0.0
+        },
+        "general_joke": {
+          "correct": 18,
+          "total": 19,
+          "accuracy": 0.9473684210526315
+        },
+        "general_quirky": {
+          "correct": 99,
+          "total": 169,
+          "accuracy": 0.5857988165680473
+        },
+        "iot_cleaning": {
+          "correct": 25,
+          "total": 26,
+          "accuracy": 0.9615384615384616
+        },
+        "iot_coffee": {
+          "correct": 35,
+          "total": 36,
+          "accuracy": 0.9722222222222222
+        },
+        "iot_hue_lightchange": {
+          "correct": 30,
+          "total": 36,
+          "accuracy": 0.8333333333333334
+        },
+        "iot_hue_lightdim": {
+          "correct": 18,
+          "total": 21,
+          "accuracy": 0.8571428571428571
+        },
+        "iot_hue_lightoff": {
+          "correct": 40,
+          "total": 43,
+          "accuracy": 0.9302325581395349
+        },
+        "iot_hue_lighton": {
+          "correct": 2,
+          "total": 3,
+          "accuracy": 0.6666666666666666
+        },
+        "iot_hue_lightup": {
+          "correct": 21,
+          "total": 27,
+          "accuracy": 0.7777777777777778
+        },
+        "iot_wemo_off": {
+          "correct": 16,
+          "total": 18,
+          "accuracy": 0.8888888888888888
+        },
+        "iot_wemo_on": {
+          "correct": 9,
+          "total": 10,
+          "accuracy": 0.9
+        },
+        "lists_createoradd": {
+          "correct": 33,
+          "total": 39,
+          "accuracy": 0.8461538461538461
+        },
+        "lists_query": {
+          "correct": 43,
+          "total": 51,
+          "accuracy": 0.8431372549019608
+        },
+        "lists_remove": {
+          "correct": 42,
+          "total": 52,
+          "accuracy": 0.8076923076923077
+        },
+        "music_dislikeness": {
+          "correct": 3,
+          "total": 4,
+          "accuracy": 0.75
+        },
+        "music_likeness": {
+          "correct": 28,
+          "total": 36,
+          "accuracy": 0.7777777777777778
+        },
+        "music_query": {
+          "correct": 28,
+          "total": 35,
+          "accuracy": 0.8
+        },
+        "music_settings": {
+          "correct": 1,
+          "total": 6,
+          "accuracy": 0.16666666666666666
+        },
+        "news_query": {
+          "correct": 107,
+          "total": 124,
+          "accuracy": 0.8629032258064516
+        },
+        "play_audiobook": {
+          "correct": 38,
+          "total": 41,
+          "accuracy": 0.926829268292683
+        },
+        "play_game": {
+          "correct": 30,
+          "total": 35,
+          "accuracy": 0.8571428571428571
+        },
+        "play_music": {
+          "correct": 167,
+          "total": 176,
+          "accuracy": 0.9488636363636364
+        },
+        "play_podcasts": {
+          "correct": 49,
+          "total": 63,
+          "accuracy": 0.7777777777777778
+        },
+        "play_radio": {
+          "correct": 59,
+          "total": 72,
+          "accuracy": 0.8194444444444444
+        },
+        "qa_currency": {
+          "correct": 39,
+          "total": 39,
+          "accuracy": 1.0
+        },
+        "qa_definition": {
+          "correct": 51,
+          "total": 57,
+          "accuracy": 0.8947368421052632
+        },
+        "qa_factoid": {
+          "correct": 121,
+          "total": 141,
+          "accuracy": 0.8581560283687943
+        },
+        "qa_maths": {
+          "correct": 24,
+          "total": 25,
+          "accuracy": 0.96
+        },
+        "qa_stock": {
+          "correct": 25,
+          "total": 26,
+          "accuracy": 0.9615384615384616
+        },
+        "recommendation_events": {
+          "correct": 35,
+          "total": 43,
+          "accuracy": 0.813953488372093
+        },
+        "recommendation_locations": {
+          "correct": 29,
+          "total": 31,
+          "accuracy": 0.9354838709677419
+        },
+        "recommendation_movies": {
+          "correct": 17,
+          "total": 20,
+          "accuracy": 0.85
+        },
+        "social_post": {
+          "correct": 73,
+          "total": 81,
+          "accuracy": 0.9012345679012346
+        },
+        "social_query": {
+          "correct": 18,
+          "total": 25,
+          "accuracy": 0.72
+        },
+        "takeaway_order": {
+          "correct": 17,
+          "total": 22,
+          "accuracy": 0.7727272727272727
+        },
+        "takeaway_query": {
+          "correct": 30,
+          "total": 35,
+          "accuracy": 0.8571428571428571
+        },
+        "transport_query": {
+          "correct": 41,
+          "total": 51,
+          "accuracy": 0.803921568627451
+        },
+        "transport_taxi": {
+          "correct": 23,
+          "total": 23,
+          "accuracy": 1.0
+        },
+        "transport_ticket": {
+          "correct": 22,
+          "total": 35,
+          "accuracy": 0.6285714285714286
+        },
+        "transport_traffic": {
+          "correct": 15,
+          "total": 15,
+          "accuracy": 1.0
+        },
+        "weather_query": {
+          "correct": 144,
+          "total": 156,
+          "accuracy": 0.9230769230769231
+        }
+      }
     }
   ],
-  "missing_groups": [
-    "real_only",
-    "real_std_aug",
-    "real_syn_unfiltered_full",
-    "real_syn_unfiltered_eqn",
-    "real_syn_filtered",
-    "full_real"
-  ],
-  "gap_closed": {},
-  "per_intent_movement": []
+  "missing_groups": [],
+  "gap_closed": {
+    "real_only": {
+      "intent_accuracy": {
+        "absolute_delta": 0.0,
+        "denominator": 0.10995292535305978,
+        "gap_closed_percent": 0.0,
+        "reliable": true
+      },
+      "intent_macro_f1": {
+        "absolute_delta": 0.0,
+        "denominator": 0.06457222983818722,
+        "gap_closed_percent": 0.0,
+        "reliable": true
+      },
+      "slot_micro_f1": {
+        "absolute_delta": 0.0,
+        "denominator": 0.09442804489584888,
+        "gap_closed_percent": 0.0,
+        "reliable": true
+      },
+      "exact_match": {
+        "absolute_delta": 0.0,
+        "denominator": 0.11600537995965032,
+        "gap_closed_percent": 0.0,
+        "reliable": true
+      },
+      "json_valid_rate": {
+        "absolute_delta": 0.0,
+        "denominator": 0.01714862138533968,
+        "gap_closed_percent": 0.0,
+        "reliable": true
+      }
+    },
+    "real_std_aug": {
+      "intent_accuracy": {
+        "absolute_delta": 0.007733691997309999,
+        "denominator": 0.10995292535305978,
+        "gap_closed_percent": 7.0336391437308725,
+        "reliable": true
+      },
+      "intent_macro_f1": {
+        "absolute_delta": 0.003892721267735544,
+        "denominator": 0.06457222983818722,
+        "gap_closed_percent": 6.028475828526269,
+        "reliable": true
+      },
+      "slot_micro_f1": {
+        "absolute_delta": 0.004385086555133699,
+        "denominator": 0.09442804489584888,
+        "gap_closed_percent": 4.643839189904132,
+        "reliable": true
+      },
+      "exact_match": {
+        "absolute_delta": -0.02252858103564226,
+        "denominator": 0.11600537995965032,
+        "gap_closed_percent": -19.420289855072483,
+        "reliable": true
+      },
+      "json_valid_rate": {
+        "absolute_delta": -0.01782111634162742,
+        "denominator": 0.01714862138533968,
+        "gap_closed_percent": -103.92156862745044,
+        "reliable": true
+      }
+    },
+    "real_syn_unfiltered_full": {
+      "intent_accuracy": {
+        "absolute_delta": 0.0245460659045057,
+        "denominator": 0.10995292535305978,
+        "gap_closed_percent": 22.324159021406725,
+        "reliable": true
+      },
+      "intent_macro_f1": {
+        "absolute_delta": 0.012265893179109866,
+        "denominator": 0.06457222983818722,
+        "gap_closed_percent": 18.995616551956157,
+        "reliable": true
+      },
+      "slot_micro_f1": {
+        "absolute_delta": 0.02868617754693703,
+        "denominator": 0.09442804489584888,
+        "gap_closed_percent": 30.378874812643815,
+        "reliable": true
+      },
+      "exact_match": {
+        "absolute_delta": 0.021519838601210428,
+        "denominator": 0.11600537995965032,
+        "gap_closed_percent": 18.550724637681103,
+        "reliable": true
+      },
+      "json_valid_rate": {
+        "absolute_delta": -0.0026899798251512896,
+        "denominator": 0.01714862138533968,
+        "gap_closed_percent": -15.68627450980373,
+        "reliable": true
+      }
+    },
+    "real_syn_unfiltered_eqn": {
+      "intent_accuracy": {
+        "absolute_delta": 0.024882313382649568,
+        "denominator": 0.10995292535305978,
+        "gap_closed_percent": 22.6299694189602,
+        "reliable": true
+      },
+      "intent_macro_f1": {
+        "absolute_delta": 0.003969588912007493,
+        "denominator": 0.06457222983818722,
+        "gap_closed_percent": 6.147517163268113,
+        "reliable": true
+      },
+      "slot_micro_f1": {
+        "absolute_delta": 0.02227424837638714,
+        "denominator": 0.09442804489584888,
+        "gap_closed_percent": 23.588594258151723,
+        "reliable": true
+      },
+      "exact_match": {
+        "absolute_delta": 0.01950235373234699,
+        "denominator": 0.11600537995965032,
+        "gap_closed_percent": 16.811594202898533,
+        "reliable": true
+      },
+      "json_valid_rate": {
+        "absolute_delta": -0.0006724949562877391,
+        "denominator": 0.01714862138533968,
+        "gap_closed_percent": -3.9215686274504473,
+        "reliable": true
+      }
+    },
+    "real_syn_filtered": {
+      "intent_accuracy": {
+        "absolute_delta": 0.026563550773369138,
+        "denominator": 0.10995292535305978,
+        "gap_closed_percent": 24.15902140672779,
+        "reliable": true
+      },
+      "intent_macro_f1": {
+        "absolute_delta": 0.008934036591906058,
+        "denominator": 0.06457222983818722,
+        "gap_closed_percent": 13.83572568934669,
+        "reliable": true
+      },
+      "slot_micro_f1": {
+        "absolute_delta": 0.04401524913349364,
+        "denominator": 0.09442804489584888,
+        "gap_closed_percent": 46.61247533192184,
+        "reliable": true
+      },
+      "exact_match": {
+        "absolute_delta": 0.030598520511096128,
+        "denominator": 0.11600537995965032,
+        "gap_closed_percent": 26.37681159420286,
+        "reliable": true
+      },
+      "json_valid_rate": {
+        "absolute_delta": -0.00033624747814386957,
+        "denominator": 0.01714862138533968,
+        "gap_closed_percent": -1.9607843137252237,
+        "reliable": true
+      }
+    },
+    "full_real": {
+      "intent_accuracy": {
+        "absolute_delta": 0.10995292535305978,
+        "denominator": 0.10995292535305978,
+        "gap_closed_percent": 100.0,
+        "reliable": true
+      },
+      "intent_macro_f1": {
+        "absolute_delta": 0.06457222983818722,
+        "denominator": 0.06457222983818722,
+        "gap_closed_percent": 100.0,
+        "reliable": true
+      },
+      "slot_micro_f1": {
+        "absolute_delta": 0.09442804489584888,
+        "denominator": 0.09442804489584888,
+        "gap_closed_percent": 100.0,
+        "reliable": true
+      },
+      "exact_match": {
+        "absolute_delta": 0.11600537995965032,
+        "denominator": 0.11600537995965032,
+        "gap_closed_percent": 100.0,
+        "reliable": true
+      },
+      "json_valid_rate": {
+        "absolute_delta": 0.01714862138533968,
+        "denominator": 0.01714862138533968,
+        "gap_closed_percent": 100.0,
+        "reliable": true
+      }
+    }
+  },
+  "per_intent_movement": [
+    {
+      "intent": "qa_factoid",
+      "real_only_accuracy": 0.1773049645390071,
+      "filtered_accuracy": 0.6950354609929078,
+      "absolute_delta": 0.5177304964539007
+    },
+    {
+      "intent": "qa_definition",
+      "real_only_accuracy": 0.543859649122807,
+      "filtered_accuracy": 0.8771929824561403,
+      "absolute_delta": 0.33333333333333326
+    },
+    {
+      "intent": "transport_query",
+      "real_only_accuracy": 0.5294117647058824,
+      "filtered_accuracy": 0.803921568627451,
+      "absolute_delta": 0.27450980392156865
+    },
+    {
+      "intent": "email_querycontact",
+      "real_only_accuracy": 0.46153846153846156,
+      "filtered_accuracy": 0.6153846153846154,
+      "absolute_delta": 0.15384615384615385
+    },
+    {
+      "intent": "takeaway_order",
+      "real_only_accuracy": 0.7272727272727273,
+      "filtered_accuracy": 0.8636363636363636,
+      "absolute_delta": 0.13636363636363635
+    },
+    {
+      "intent": "calendar_query",
+      "real_only_accuracy": 0.49206349206349204,
+      "filtered_accuracy": 0.6190476190476191,
+      "absolute_delta": 0.12698412698412703
+    },
+    {
+      "intent": "play_audiobook",
+      "real_only_accuracy": 0.6829268292682927,
+      "filtered_accuracy": 0.8048780487804879,
+      "absolute_delta": 0.12195121951219512
+    },
+    {
+      "intent": "iot_hue_lightup",
+      "real_only_accuracy": 0.7777777777777778,
+      "filtered_accuracy": 0.8888888888888888,
+      "absolute_delta": 0.11111111111111105
+    },
+    {
+      "intent": "news_query",
+      "real_only_accuracy": 0.7661290322580645,
+      "filtered_accuracy": 0.8548387096774194,
+      "absolute_delta": 0.08870967741935487
+    },
+    {
+      "intent": "alarm_query",
+      "real_only_accuracy": 0.8235294117647058,
+      "filtered_accuracy": 0.9117647058823529,
+      "absolute_delta": 0.08823529411764708
+    },
+    {
+      "intent": "music_query",
+      "real_only_accuracy": 0.7428571428571429,
+      "filtered_accuracy": 0.8285714285714286,
+      "absolute_delta": 0.08571428571428574
+    },
+    {
+      "intent": "calendar_remove",
+      "real_only_accuracy": 0.4626865671641791,
+      "filtered_accuracy": 0.5373134328358209,
+      "absolute_delta": 0.07462686567164178
+    },
+    {
+      "intent": "social_post",
+      "real_only_accuracy": 0.7654320987654321,
+      "filtered_accuracy": 0.8395061728395061,
+      "absolute_delta": 0.07407407407407407
+    },
+    {
+      "intent": "recommendation_events",
+      "real_only_accuracy": 0.7674418604651163,
+      "filtered_accuracy": 0.8372093023255814,
+      "absolute_delta": 0.06976744186046513
+    },
+    {
+      "intent": "email_query",
+      "real_only_accuracy": 0.7563025210084033,
+      "filtered_accuracy": 0.8235294117647058,
+      "absolute_delta": 0.0672268907563025
+    },
+    {
+      "intent": "play_podcasts",
+      "real_only_accuracy": 0.746031746031746,
+      "filtered_accuracy": 0.8095238095238095,
+      "absolute_delta": 0.06349206349206349
+    },
+    {
+      "intent": "iot_wemo_off",
+      "real_only_accuracy": 0.9444444444444444,
+      "filtered_accuracy": 1.0,
+      "absolute_delta": 0.05555555555555558
+    },
+    {
+      "intent": "play_radio",
+      "real_only_accuracy": 0.6527777777777778,
+      "filtered_accuracy": 0.7083333333333334,
+      "absolute_delta": 0.05555555555555558
+    },
+    {
+      "intent": "datetime_query",
+      "real_only_accuracy": 0.9431818181818182,
+      "filtered_accuracy": 0.9772727272727273,
+      "absolute_delta": 0.03409090909090906
+    },
+    {
+      "intent": "weather_query",
+      "real_only_accuracy": 0.9102564102564102,
+      "filtered_accuracy": 0.9294871794871795,
+      "absolute_delta": 0.019230769230769273
+    },
+    {
+      "intent": "cooking_recipe",
+      "real_only_accuracy": 0.7222222222222222,
+      "filtered_accuracy": 0.7361111111111112,
+      "absolute_delta": 0.01388888888888895
+    },
+    {
+      "intent": "alarm_remove",
+      "real_only_accuracy": 0.9523809523809523,
+      "filtered_accuracy": 0.9523809523809523,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "alarm_set",
+      "real_only_accuracy": 0.975609756097561,
+      "filtered_accuracy": 0.975609756097561,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "audio_volume_down",
+      "real_only_accuracy": 0.9090909090909091,
+      "filtered_accuracy": 0.9090909090909091,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "audio_volume_mute",
+      "real_only_accuracy": 0.84375,
+      "filtered_accuracy": 0.84375,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "audio_volume_other",
+      "real_only_accuracy": 0.6666666666666666,
+      "filtered_accuracy": 0.6666666666666666,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "audio_volume_up",
+      "real_only_accuracy": 0.9230769230769231,
+      "filtered_accuracy": 0.9230769230769231,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "cooking_query",
+      "real_only_accuracy": 0.0,
+      "filtered_accuracy": 0.0,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "datetime_convert",
+      "real_only_accuracy": 0.7333333333333333,
+      "filtered_accuracy": 0.7333333333333333,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "email_addcontact",
+      "real_only_accuracy": 0.6666666666666666,
+      "filtered_accuracy": 0.6666666666666666,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "general_greet",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 1.0,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "general_joke",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 1.0,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "iot_cleaning",
+      "real_only_accuracy": 0.9615384615384616,
+      "filtered_accuracy": 0.9615384615384616,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "iot_coffee",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 1.0,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "iot_hue_lighton",
+      "real_only_accuracy": 0.6666666666666666,
+      "filtered_accuracy": 0.6666666666666666,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "iot_wemo_on",
+      "real_only_accuracy": 0.8,
+      "filtered_accuracy": 0.8,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "lists_query",
+      "real_only_accuracy": 0.7450980392156863,
+      "filtered_accuracy": 0.7450980392156863,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "lists_remove",
+      "real_only_accuracy": 0.6730769230769231,
+      "filtered_accuracy": 0.6730769230769231,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "music_dislikeness",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 1.0,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "qa_maths",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 1.0,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "qa_stock",
+      "real_only_accuracy": 0.8846153846153846,
+      "filtered_accuracy": 0.8846153846153846,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "recommendation_movies",
+      "real_only_accuracy": 0.9,
+      "filtered_accuracy": 0.9,
+      "absolute_delta": 0.0
+    },
+    {
+      "intent": "qa_currency",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 0.9743589743589743,
+      "absolute_delta": -0.02564102564102566
+    },
+    {
+      "intent": "music_likeness",
+      "real_only_accuracy": 0.8055555555555556,
+      "filtered_accuracy": 0.7777777777777778,
+      "absolute_delta": -0.02777777777777779
+    },
+    {
+      "intent": "email_sendemail",
+      "real_only_accuracy": 0.8421052631578947,
+      "filtered_accuracy": 0.8070175438596491,
+      "absolute_delta": -0.03508771929824561
+    },
+    {
+      "intent": "social_query",
+      "real_only_accuracy": 0.8,
+      "filtered_accuracy": 0.76,
+      "absolute_delta": -0.040000000000000036
+    },
+    {
+      "intent": "iot_hue_lightoff",
+      "real_only_accuracy": 0.9767441860465116,
+      "filtered_accuracy": 0.9302325581395349,
+      "absolute_delta": -0.046511627906976716
+    },
+    {
+      "intent": "iot_hue_lightdim",
+      "real_only_accuracy": 0.8571428571428571,
+      "filtered_accuracy": 0.8095238095238095,
+      "absolute_delta": -0.04761904761904756
+    },
+    {
+      "intent": "lists_createoradd",
+      "real_only_accuracy": 0.8717948717948718,
+      "filtered_accuracy": 0.8205128205128205,
+      "absolute_delta": -0.05128205128205132
+    },
+    {
+      "intent": "iot_hue_lightchange",
+      "real_only_accuracy": 0.9444444444444444,
+      "filtered_accuracy": 0.8888888888888888,
+      "absolute_delta": -0.05555555555555558
+    },
+    {
+      "intent": "play_music",
+      "real_only_accuracy": 0.5852272727272727,
+      "filtered_accuracy": 0.5284090909090909,
+      "absolute_delta": -0.05681818181818177
+    },
+    {
+      "intent": "takeaway_query",
+      "real_only_accuracy": 0.8857142857142857,
+      "filtered_accuracy": 0.8285714285714286,
+      "absolute_delta": -0.05714285714285705
+    },
+    {
+      "intent": "recommendation_locations",
+      "real_only_accuracy": 0.7741935483870968,
+      "filtered_accuracy": 0.7096774193548387,
+      "absolute_delta": -0.06451612903225801
+    },
+    {
+      "intent": "transport_traffic",
+      "real_only_accuracy": 0.9333333333333333,
+      "filtered_accuracy": 0.8666666666666667,
+      "absolute_delta": -0.06666666666666665
+    },
+    {
+      "intent": "calendar_set",
+      "real_only_accuracy": 0.8038277511961722,
+      "filtered_accuracy": 0.7368421052631579,
+      "absolute_delta": -0.06698564593301437
+    },
+    {
+      "intent": "play_game",
+      "real_only_accuracy": 0.8571428571428571,
+      "filtered_accuracy": 0.7714285714285715,
+      "absolute_delta": -0.08571428571428563
+    },
+    {
+      "intent": "music_settings",
+      "real_only_accuracy": 0.8333333333333334,
+      "filtered_accuracy": 0.6666666666666666,
+      "absolute_delta": -0.16666666666666674
+    },
+    {
+      "intent": "transport_taxi",
+      "real_only_accuracy": 1.0,
+      "filtered_accuracy": 0.8260869565217391,
+      "absolute_delta": -0.17391304347826086
+    },
+    {
+      "intent": "transport_ticket",
+      "real_only_accuracy": 0.8857142857142857,
+      "filtered_accuracy": 0.6571428571428571,
+      "absolute_delta": -0.22857142857142854
+    },
+    {
+      "intent": "general_quirky",
+      "real_only_accuracy": 0.621301775147929,
+      "filtered_accuracy": 0.30177514792899407,
+      "absolute_delta": -0.3195266272189349
+    }
+  ]
 }
