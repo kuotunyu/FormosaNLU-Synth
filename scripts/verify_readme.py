@@ -14,13 +14,13 @@ GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 
 DESCRIPTIONS = {
-    "zero_shot": "not trained",
+    "zero_shot": "未訓練",
     "real_only": "20-shot real",
     "real_std_aug": "+ classical augmentation",
-    "real_syn_unfiltered_full": "+ all unfiltered synthetic",
+    "real_syn_unfiltered_full": "+ 全部 unfiltered synthetic",
     "real_syn_unfiltered_eqn": "+ equal-N unfiltered synthetic",
     "real_syn_filtered": "+ filtered synthetic",
-    "full_real": "full MASSIVE train",
+    "full_real": "完整 MASSIVE train",
 }
 
 

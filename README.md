@@ -1,98 +1,98 @@
-# FormosaNLU — Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU
+# FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
 
-> **Status:** the frozen corpus, primary seed-42 experiment matrix, M10
-> evaluation, M11 comparison demo, and M12 report artifacts are complete.
-> Four additional-seed runs, the F7 judge audit, robustness inference, and
-> release work remain pending.
+> **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、M10 評估、
+> M11 比較介面與 M12 報告產物均已完成。F7 independent judge audit、
+> seeds 43/44、robustness inference、Colab portability 與正式發佈仍在進行。
 
-Can locally generated synthetic data help a small language model in a
-low-resource setting? FormosaNLU measures that question on Traditional Chinese
-(Taiwan) spoken-language understanding: joint intent classification and slot
-filling under a strict JSON output contract.
+在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
+language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
+任務包含 joint intent classification、slot filling，以及嚴格的 JSON output
+contract。
 
-| | |
+| 項目 | 設定 |
 | --- | --- |
-| **Dataset** | MASSIVE `zh-TW` (CC BY 4.0), 60 intents and 55 slot types |
-| **Low-resource setting** | `min(20, available)` real train examples per intent, seed 42 |
-| **Teacher** | `qwen3.6:27b`, run locally through Ollama |
-| **Student** | `google/gemma-4-E4B-it`, 4-bit QLoRA |
-| **Independent judge** | `gpt-oss` open-weight model |
-| **Hardware / API spend** | One RTX 4090 24 GB / **$0** |
+| **Dataset** | MASSIVE `zh-TW`（CC BY 4.0），60 個 intents、55 種 slot types |
+| **Low-resource setting** | 每個 intent 取 `min(20, available)` 筆 real train examples，seed 42 |
+| **Teacher** | `qwen3.6:27b`，透過 Ollama 在本機執行 |
+| **Student** | `google/gemma-4-E4B-it`，4-bit QLoRA |
+| **Independent judge** | `gpt-oss:20b` |
+| **Hardware / API spend** | 單張 RTX 4090 24 GB / **$0** |
 
-Teacher, student, and judge are from different model families. The primary
-results below are measured on all 2,974 untouched MASSIVE `zh-TW` Test rows.
+Teacher、student 與 judge 來自不同 model families。Primary 結果使用
+2,974 筆完全未進入訓練流程的 MASSIVE `zh-TW` Test rows。
 
 ## TL;DR
 
-With seed 42, adding the 3,760-row filtered synthetic corpus to the 20-shot real
-baseline raised exact match by **+3.06%** (3.06 percentage points), closing
-**26.4%** of the gap to full-real training. Slot F1 improved by 4.40 points and
-closed 46.6% of its gap. Filtering produced the strongest synthetic-data result
-despite using one third as many synthetic rows as the unfiltered-full group.
-These are primary-run results, not confidence intervals; seeds 43 and 44 for
-`real_only` and `real_syn_filtered` are still pending.
+在 seed 42 下，將 3,760 筆 filtered synthetic corpus 加入 20-shot real
+baseline，使 exact match 提升 **+3.06%**（3.06 個百分點），補回與
+full-real training 差距的 **26.4%**；slot F1 提升 4.40 個百分點，補回
+46.6% 的差距。Filtered 組只使用約三分之一的 synthetic rows，表現仍優於
+unfiltered-full 組。
 
-![Primary M9 results](assets/m12_main_results.png)
+這些是 primary single-seed 結果，不是 confidence interval。`real_only`
+與 `real_syn_filtered` 的 seeds 43/44 已預先登記，完成前不宣稱統計顯著性。
 
-## Results
+![M9 primary 結果](assets/m12_main_results.png)
 
-### Primary seed-42 matrix
+## 實驗結果
+
+### Seed-42 primary 實驗矩陣
 
 | Group | Training data | intent acc | intent macro-F1 | slot F1 | exact match | JSON-valid |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| `zero_shot` | not trained | 10.66% | 23.12% | 0.00% | 8.10% | 17.38% |
+| `zero_shot` | 未訓練 | 10.66% | 23.12% | 0.00% | 8.10% | 17.38% |
 | `real_only` | 20-shot real | 73.54% | 75.20% | 62.14% | 49.06% | 98.02% |
 | `real_std_aug` | + classical augmentation | 74.31% | 75.59% | 62.58% | 46.81% | 96.23% |
-| `real_syn_unfiltered_full` | + all unfiltered synthetic | 75.99% | 76.42% | 65.01% | 51.21% | 97.75% |
+| `real_syn_unfiltered_full` | + 全部 unfiltered synthetic | 75.99% | 76.42% | 65.01% | 51.21% | 97.75% |
 | `real_syn_unfiltered_eqn` | + equal-N unfiltered synthetic | 76.03% | 75.59% | 64.37% | 51.01% | 97.95% |
 | `real_syn_filtered` | + filtered synthetic | 76.19% | 76.09% | 66.54% | 52.12% | 97.98% |
-| `full_real` | full MASSIVE train | 84.53% | 81.65% | 71.58% | 60.66% | 99.73% |
+| `full_real` | 完整 MASSIVE train | 84.53% | 81.65% | 71.58% | 60.66% | 99.73% |
 
-The zero-shot row uses the frozen catalog prompt containing the valid intent and
-slot labels. Trained groups use the frozen SFT prompt without that catalog, so
-zero-shot should be read as a deployment baseline rather than a prompt-identical
-ablation.
+`zero_shot` 使用包含合法 intent／slot labels 的 frozen catalog prompt；
+trained groups 使用不含 catalog 的 frozen SFT prompt。因此 zero-shot 是
+deployment baseline，不是 prompt 完全相同的 ablation。
 
-### Gap closed
+### 差距補回率
 
-`real_only` defines 0% and `full_real` defines 100%. The filtered synthetic run
-changed the primary metrics as follows:
+以 `real_only` 定義 0%、`full_real` 定義 100%，filtered synthetic primary
+run 的變化如下：
 
-| Metric | Absolute change vs `real_only` | Gap closed |
+| Metric | 相較 `real_only` 的絕對變化 | 差距補回率 |
 | --- | ---: | ---: |
-| Intent accuracy | +2.66 points | 24.2% |
-| Intent macro-F1 | +0.89 points | 13.8% |
-| Slot micro-F1 | +4.40 points | 46.6% |
-| Exact match | +3.06 points | 26.4% |
+| Intent accuracy | +2.66 個百分點 | 24.2% |
+| Intent macro-F1 | +0.89 個百分點 | 13.8% |
+| Slot micro-F1 | +4.40 個百分點 | 46.6% |
+| Exact match | +3.06 個百分點 | 26.4% |
 
-### Per-intent movement
+### 各 intent 的變化
 
-The largest improvements were `qa_factoid` (+51.77 points),
-`qa_definition` (+33.33), and `transport_query` (+27.45). The largest
-regressions were `general_quirky` (-31.95), `transport_ticket` (-22.86), and
-`transport_taxi` (-17.39). Reporting both sides matters: the synthetic corpus
-did not improve every intent.
+進步最多的是 `qa_factoid`（+51.77 個百分點）、`qa_definition`（+33.33）
+與 `transport_query`（+27.45）。退步最多的是 `general_quirky`（-31.95）、
+`transport_ticket`（-22.86）與 `transport_taxi`（-17.39）。
 
-![Per-intent movement](assets/m12_intent_movement.png)
+Synthetic data 並未改善所有 intents，因此進步與退步都必須呈現。
 
-## Does the filter pipeline earn its keep?
+![各 intent 的 accuracy 變化](assets/m12_intent_movement.png)
 
-The three synthetic groups separate data quality from quantity. Against all
-11,264 unfiltered rows, the 3,760-row filtered corpus improved intent accuracy
-by 0.20 points, slot F1 by 1.53 points, and exact match by 0.91 points. Against
-the equal-N unfiltered control, it improved intent accuracy by 0.17 points, slot
-F1 by 2.17 points, and exact match by 1.11 points. On seed 42, the filter
-therefore helped beyond simply changing the number of training rows.
+## Filter pipeline 是否真的有價值？
 
-![Filtered and unfiltered controls](assets/m12_filter_comparison.png)
+三個 synthetic groups 用來區分 data quality 與 quantity：
+
+- 相較使用全部 11,264 筆資料的 unfiltered-full，3,760-row filtered corpus
+  的 intent accuracy 高 0.20、slot F1 高 1.53、exact match 高 0.91 個百分點。
+- 相較 equal-N unfiltered control，filtered corpus 的 intent accuracy 高
+  0.17、slot F1 高 2.17、exact match 高 1.11 個百分點。
+
+在 seed 42 的結果中，filter pipeline 帶來的改善不只是 training rows 數量不同。
+
+![Filtered 與 unfiltered controls](assets/m12_filter_comparison.png)
 
 ### Filter funnel
 
-The preregistered 8,000–9,000 accepted-row target was not met. Frozen F1–F6
-retained 3,760 / 11,264 rows (33.38%); thresholds were not relaxed after seeing
-the outcome.
+預先登記的 8,000–9,000 accepted-row 目標沒有達成。Frozen F1–F6 最終保留
+3,760 / 11,264 筆（33.38%）；看到結果後沒有放寬 thresholds。
 
-| Stage | Removed | Remaining |
+| Stage | 移除 | 剩餘 |
 | --- | ---: | ---: |
 | Generated / F1 schema | 0 | 11,264 |
 | F2 label contract | 461 | 10,803 |
@@ -100,36 +100,38 @@ the outcome.
 | F4 Taiwan locale/language | 951 | 9,114 |
 | F5 seed copy / synthetic duplicate / outlier | 5,106 | 4,008 |
 | F6 Val/Test contamination exclusion | 248 | **3,760** |
-| F7 independent judge audit | pending | pending |
+| F7 independent judge audit | 進行中 | checkpoint 64 / 376 |
 
 ![F1–F6 filter funnel](assets/m12_filter_funnel.png)
 
-The dominant loss was 4,596 synthetic near-duplicates. Among 9,114 F1–F4
-survivors, only 4,044 utterances were exact-text distinct. This corpus-scale mode
-collapse was much less visible in the 500-row pilot and is retained as a
-negative result. The 376-row F7 independent-judge sample is frozen and ready,
-but its GPU audit has not yet run; no judge miss-rate claim is made yet.
+最大宗損失是 4,596 筆 synthetic near-duplicates。9,114 筆 F1–F4 survivors
+中，只有 4,044 個 utterances 在 exact-text 層級不重複。這種 corpus-scale
+mode collapse 在 500-row pilot 中並不明顯，因此被保留為重要的 negative
+result，而不是隱藏或事後調整門檻。
 
-## Cost and reproducibility
+F7 已固定抽樣 376 筆；目前安全 checkpoint 為 64/376。完成前不報告 judge
+miss rate。
 
-The measured core GPU path totals **14.440 h** on one RTX 4090:
+## 成本與可重現性
 
-| Phase | GPU wall-clock | Evidence |
+Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
+
+| Phase | GPU wall-clock | 證據 |
 | --- | ---: | --- |
 | Synthetic generation | **4.073 h** | `reports/generation_report.json` |
-| Primary training, seed 42 | **6.540 h** | six runs in `runs/m9_batch_report.json` |
-| Trained evaluation, seed 42 | **2.777 h** | six runs in `results/m9_eval_batch_report.json` |
-| Zero-shot evaluation | **1.050 h** | generation timing in the M8 report |
-| **Measured core total** | **14.440 h** | excludes pending extra seeds, F7, and robustness inference |
-| **API spend** | **$0** | all model work ran locally |
+| Primary training，seed 42 | **6.540 h** | `runs/m9_batch_report.json` 的六個 runs |
+| Trained evaluation，seed 42 | **2.777 h** | `results/m9_eval_batch_report.json` 的六個 runs |
+| Zero-shot evaluation | **1.050 h** | M8 report 的 generation timing |
+| **Measured primary core total** | **14.440 h** | 不含 extra seeds、F7 與 robustness |
+| **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
-At the RTX 4090's 450 W TDP, 14.440 hours corresponds to a conservative
-GPU-only upper-bound envelope of 6.498 kWh. This is not a wall-socket energy
-measurement. The machine was not assumed to draw TDP continuously.
+若以 RTX 4090 的 450 W TDP 計算，14.440 小時對應 6.498 kWh 的保守
+GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以 TDP
+運作。
 
-The ledger is generated at
-[`reports/m12_resource_ledger.json`](reports/m12_resource_ledger.json); the
-figures and ledger are rebuilt with:
+資源帳本位於
+[`reports/m12_resource_ledger.json`](reports/m12_resource_ledger.json)，
+可使用下列命令重建圖表並驗證 README：
 
 ```bash
 python -m scripts.build_m12_artifacts
@@ -138,66 +140,67 @@ python -m scripts.verify_readme
 
 ## Robustness probe
 
-The auxiliary perturbation manifest contains 8,922 rows spanning typo,
-code-switching, and ASR-like noise. It is frozen and ready for inference, but it
-has not yet been evaluated. Robustness results are therefore intentionally not
-included in the headline table.
+Auxiliary perturbation manifest 含 8,922 筆 rows，涵蓋 typo、code-switching
+與 ASR-like noise。Manifest 已 frozen，推論尚未完成，因此 robustness
+結果不會出現在 headline table。
 
-## Method
+## 方法
 
 ![FormosaNLU pipeline](assets/m12_pipeline.png)
 
 ### Generation recipes
 
-| Recipe | Purpose |
+| Recipe | 用途 |
 | --- | --- |
-| `paraphrase` | Label-preserving rewrites of seed utterances |
-| `slot_substitution` | Procedural Taiwan-local slot replacement followed by a constrained natural-language rewrite |
-| `noise_codeswitch` | Code-switching, typos, spoken particles, and ASR-like noise without breaking slot spans |
-| `hard_negative` | Minimal pairs across confusable intents |
+| `paraphrase` | 保留 labels 的 seed utterance 改寫 |
+| `slot_substitution` | 先由程式替換台灣在地 slot value，再做受限制的自然語言改寫 |
+| `noise_codeswitch` | Code-switching、typo、spoken particles 與 ASR-like noise，且不得破壞 slot span |
+| `hard_negative` | 建立容易混淆 intents 之間的 minimal pairs |
 
-Labels are produced automatically; there is no per-sample manual annotation.
-Human involvement was limited to spot-checking 20 samples. The frozen semantic
-thresholds are: synthetic duplicate 0.999, seed copy 0.995, outlier 0.650, and
-Val/Test contamination 0.990.
+Labels 由 pipeline 自動產生，沒有逐筆人工標註。人工僅 spot-check 20 筆。
+Frozen semantic thresholds 如下：
 
-Full design: [`docs/DESIGN.md`](docs/DESIGN.md).
+- synthetic duplicate：0.999
+- seed copy：0.995
+- outlier：0.650
+- Val/Test contamination：0.990
 
-### Interactive comparison demo
+完整設計請見 [`docs/DESIGN.md`](docs/DESIGN.md)。
 
-M11 provides a side-by-side base-versus-filtered-adapter Gradio interface. The
-real runtime loads one 4-bit Gemma model and toggles the LoRA adapter, avoiding
-two simultaneous model copies.
+### 互動式比較介面
+
+M11 提供同一句輸入的 base model 與 filtered-adapter 並排比較。Real runtime
+只載入一份 4-bit Gemma model，再切換 LoRA adapter，避免同時載入兩份 model。
 
 ```bash
 uv sync --extra demo
 python -m scripts.demo
 ```
 
-For UI-only validation without loading model weights:
+若只想驗證 UI，不載入 model weights：
 
 ```bash
 python -m scripts.demo --mock
 ```
 
-## Reproduce
+## 重現流程
 
-> Native Windows, one RTX 4090, no WSL required.
+> 執行環境：native Windows、單張 RTX 4090，不需要 WSL。
 
 ```bash
-# 1. Environment
+# 1. 建立環境
 uv sync --extra demo
 python -m scripts.check_env
 
-# 2. Freeze or verify the split manifest
+# 2. 建立或驗證 split manifest
 python -m src.data.freeze_split
 python -m src.data.freeze_split --verify
 
-# 3. Generate the frozen corpus
+# 3. 產生 frozen corpus
 python -m src.synthetic.generate --pilot 500
 python -m src.synthetic.generate --full 11264
 
-# 4. Apply frozen F1-F6 filters
+# 4. 套用 frozen F1-F6 filters
 python -m src.filtering.run \
   --input data/generated/full_unfiltered.jsonl \
   --accepted data/filtered/full_f1_f4.jsonl \
@@ -213,7 +216,7 @@ python -m src.filtering.apply_semantic \
   --exclusions data/filtered/full_f6_exclusions.jsonl \
   --report reports/m6_full_filter_funnel.json
 
-# 5. Prepare, validate, train, evaluate, and report
+# 5. 準備、驗證、訓練與評估 primary runs
 python -m scripts.prepare_m9_data
 python -m scripts.train_all --validate-inputs
 python -m scripts.m9_overnight
@@ -221,79 +224,75 @@ python -m scripts.m9_overnight --execute --confirm M9-OVERNIGHT-3760-4090
 python -m scripts.eval --execute --confirm M9-EVAL-LOCAL-4090
 python -m scripts.report_results
 
-# 6. Rebuild and verify M12
+# 6. 重建並驗證 M12
 python -m scripts.build_m12_artifacts
 python -m scripts.verify_readme
 
-# 7. Inspect the pending F7 and three-seed plans (CPU-only)
+# 7. 查看尚未完成的 F7 與 three-seed plans（CPU-only）
 python -m scripts.judge_full
 python -m scripts.m9_replicates
 
-# Execute only after their printed sibling/GPU safety gates are green
+# 以下命令只能在 sibling/GPU safety gates 全綠後執行
 python -m scripts.judge_full --execute --confirm F7-GPT-OSS-20B
 python -m scripts.m9_replicates \
   --execute --confirm M9-REPLICATES-43-44-4090
+python -m scripts.eval_robustness \
+  --execute --confirm M10-ROBUSTNESS-8922-4090
 ```
 
-The Colab notebook
-[`notebooks/01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) wraps the
-same training code for portability. Its bundle, GPU-memory preflight,
-two-minute Drive checkpoint sync, and resume path are prepared; the one-group
-Colab evidence run still requires a user-operated Colab session.
+Colab notebook
+[`notebooks/01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) 使用相同
+training code。Bundle、GPU-memory preflight、每兩分鐘 Drive checkpoint
+sync 與 resume path 已準備完成；one-group Colab portability run 仍需由使用者
+在 Colab 操作。
 
-## Leakage and contamination statement
+## Leakage 與 contamination 聲明
 
-- The generator never reads validation or test examples. Seeds come only from
-  the frozen 20-shot train manifest.
-- Validation and test are always real data and never enter training.
-- Decontamination against Val/Test is exclusion-only: near-duplicates are
-  removed, while Val/Test are never used to rank or select training samples.
-- The robustness probe perturbs Test for evaluation only and never flows back
-  into training.
-- Split manifest, seed, and source hashes are recorded in
-  [`splits/manifest.json`](splits/manifest.json).
+- Generator 從未讀取 validation 或 Test examples；seeds 只來自 frozen
+  20-shot train manifest。
+- Validation 與 Test 永遠是 real data，不進入 training。
+- 對 Val/Test 的 decontamination 僅做 exclusion：移除 near-duplicates，
+  Val/Test 從未用於 ranking、weighting 或挑選 training samples。
+- Robustness probe 只用於 evaluation，絕不回流 training。
+- Split manifest、seed 與 source hashes 記錄於
+  [`splits/manifest.json`](splits/manifest.json)。
 
-## Limitations
+## 限制
 
-- The primary M9 table currently has one seed. Four preregistered reruns
-  (`real_only` and `real_syn_filtered`, seeds 43 and 44) are pending, so no
-  variance or significance claim is made.
-- F7 independent-judge auditing and robustness inference are pending.
-- No per-recipe ablation was run; recipe-specific causal claims are out of
-  scope.
-- MASSIVE `zh-TW` is translated from English SLURP and may not reflect the full
-  distribution of spontaneous Taiwan speech.
-- Synthetic data inherits teacher biases and Taiwan-specific knowledge gaps.
-- F5 removed 4,596 synthetic near-duplicates, demonstrating substantial
-  generator mode collapse.
+- M9 headline table 目前只有 seed 42。Seeds 43/44 完成前不提供 variance、
+  confidence interval 或 significance claim。
+- F7 independent judge audit 目前為 64/376；robustness inference 尚未完成。
+- 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。
+- MASSIVE `zh-TW` 翻譯自 English SLURP，未必涵蓋自然台灣口語的完整分布。
+- Synthetic data 會繼承 teacher 的 biases 與台灣在地知識缺口。
+- F5 移除 4,596 筆 synthetic near-duplicates，顯示明顯的 generator mode
+  collapse。
 
-## Licenses
+## 授權
 
 | Artifact | License |
 | --- | --- |
-| Code in this repository | MIT ([LICENSE](LICENSE)) |
+| 本 repository 的 code | MIT（[LICENSE](LICENSE)） |
 | MASSIVE `zh-TW` seed data | CC BY 4.0 |
-| Teacher, judge, and student weights | Apache-2.0; see upstream model cards |
-| Synthetic dataset | See [`docs/data_card.md`](docs/data_card.md) |
-| LoRA adapter | Apache-2.0, inherited from the student base model |
+| Teacher、judge 與 student weights | Apache-2.0；詳見各 upstream model card |
+| Synthetic dataset | 詳見 [`docs/data_card.md`](docs/data_card.md) |
+| LoRA adapter | Apache-2.0，沿用 student base model |
 
 ## Roadmap
 
-Complete the extra-seed uncertainty runs, F7 audit, robustness probe, and one
-real-model demo capture; then perform the clean-environment M13 release audit.
-A future extension could apply the same pipeline to Taiwan-specific knowledge
-distillation and evaluate with TMMLU+ and community tooling such as
-`twinkle-eval`.
+近期工作是完成 extra-seed uncertainty、F7 audit、robustness probe、真模型
+demo evidence 與 clean-environment M13 release audit。後續可將同一 pipeline
+延伸至台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval` 等工具評估。
 
-## Documents
+## 專案文件
 
-| File | Purpose |
+| 文件 | 用途 |
 | --- | --- |
-| [`CLAUDE.md`](CLAUDE.md) | Repository working rules |
-| [`PLAN.md`](PLAN.md) | Milestones, verification, and current status |
-| [`docs/DESIGN.md`](docs/DESIGN.md) | Data pipeline design |
-| [`docs/DESIGN_PHASE2.md`](docs/DESIGN_PHASE2.md) | Training, evaluation, demo, and release design |
+| [`CLAUDE.md`](CLAUDE.md) | Repository 工作規則 |
+| [`PLAN.md`](PLAN.md) | Milestones、驗證方法與目前狀態 |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | Data pipeline 設計 |
+| [`docs/DESIGN_PHASE2.md`](docs/DESIGN_PHASE2.md) | Training、evaluation、demo 與 release 設計 |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | ADR-style decision log |
-| [`docs/teacher_choice.md`](docs/teacher_choice.md) | Model selection and licensing analysis |
+| [`docs/teacher_choice.md`](docs/teacher_choice.md) | Model 選擇與授權分析 |
 | [`docs/data_card.md`](docs/data_card.md) | Synthetic dataset card |
-| [`docs/instructions_for_me.md`](docs/instructions_for_me.md) | Human-operated Colab, Hugging Face, and GitHub steps |
+| [`docs/instructions_for_me.md`](docs/instructions_for_me.md) | 需要使用者操作的 Colab、Hugging Face 與 GitHub 步驟 |
