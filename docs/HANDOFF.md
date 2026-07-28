@@ -59,6 +59,17 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
+### [2026-07-28 18:29 +08:00] 剩餘 GPU queue — F7 安全暫停
+
+- F7 在兩次 gate 全綠後啟動，完成並 fsync checkpoint **64/376**
+- 執行中偵測到 DefectForge／SafeSynth 新程序，故只停止 FormosaNLU
+  `scripts.judge_full`，沒有修改或停止任何 sibling；`gpt-oss:20b` 已卸載
+- 同一 F7 命令可由 index 64 後安全續跑；結果 JSONL 與 logs 均為 ignored
+- 新增 30 分鐘 heartbeat：連續兩次 free 才續跑，順序為 F7 → M11 real
+  evidence → extra seeds 43/44 → robustness；不發佈、不 push
+- 額外完成 guarded runners、三種子統計器、robustness runner 與 M13
+  release preflight；目前全 repo **95 tests passed**
+
 ### [2026-07-28 18:10 +08:00] M11/M12 — primary 報告與 demo 完成
 
 - M9 六組 seed-42 訓練與六組全 Test 評估完成；M10 七行主表完整
