@@ -1,4 +1,4 @@
-# CLAUDE.md — FormosaNLU（`03-formosanlu-sdg`）工作鐵律
+# CLAUDE.md — FormosaNLU（`FormosaNLU-Synth`）工作鐵律
 
 > **每個 session 開工前先讀這份，然後讀 `PLAN.md` 的 📍 狀態區塊，再讀 `docs/DECISIONS.md`。**
 > 🌙 **無人監督執行（使用者睡覺時）另外必讀 [`docs/AUTONOMOUS_RUN.md`](docs/AUTONOMOUS_RUN.md)** —— 預先授權範圍、卡住時的改道協定、pilot 放行門檻、硬性禁止事項、誠實性鐵律。進度寫 [`docs/HANDOFF.md`](docs/HANDOFF.md)。

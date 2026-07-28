@@ -1,6 +1,6 @@
 ---
 name: formosanlu
-description: FormosaNLU（03-formosanlu-sdg）專案的脈絡恢復與工作慣例。當在這個 repo 開始新 session、問「我們做到哪了」「下一步是什麼」「當初為什麼這樣決定」、或要開始／收尾任何里程碑時使用。涵蓋目錄地圖、常用指令、記帳與 provenance 慣例、里程碑收尾 checklist。
+description: FormosaNLU（FormosaNLU-Synth）專案的脈絡恢復與工作慣例。當在這個 repo 開始新 session、問「我們做到哪了」「下一步是什麼」「當初為什麼這樣決定」、或要開始／收尾任何里程碑時使用。涵蓋目錄地圖、常用指令、記帳與 provenance 慣例、里程碑收尾 checklist。
 ---
 
 # FormosaNLU 專案導航

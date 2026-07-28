@@ -17,7 +17,7 @@ DEFAULT_JSON = REPO_ROOT / "runs" / "m13_release_preflight.json"
 DEFAULT_MARKDOWN = REPO_ROOT / "logs" / "m13_release_preflight.md"
 EXPECTED_NAME = "kuotunyu"
 EXPECTED_EMAIL = "61350295+kuotunyu@users.noreply.github.com"
-EXPECTED_ORIGIN = "https://github.com/kuotunyu/03-formosanlu-sdg.git"
+EXPECTED_ORIGIN = "https://github.com/kuotunyu/FormosaNLU-Synth.git"
 
 
 @dataclass(frozen=True)

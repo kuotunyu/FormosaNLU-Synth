@@ -7,7 +7,7 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-28 18:43 +08:00 |
+| **最後更新** | 2026-07-28 22:06 +08:00 |
 | **目前里程碑** | **M11/M12 primary 交付完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
 | **下一步動作** | 完成文件／測試總驗收；確認 sibling 與 GPU 空閒後，依序安排 F7 judge audit 與 seeds 43/44 四組補跑 |
 | **球在誰身上** | Codex；Colab 一組可攜性實跑與最終發佈之後才需使用者操作 |
@@ -183,7 +183,7 @@
 | 授權相容性 | 資料集（MASSIVE CC BY 4.0 + teacher Apache-2.0）／adapter（Apache-2.0）／程式碼（MIT）標註齊全 |
 | 安全掃描 | 全 repo 掃 API key、個人絕對路徑、個資 |
 | HF 上傳 | dataset `steven0226/formosa-nlu-synth-v1`、model `steven0226/gemma-4-e4b-formosanlu-lora`，雙語 card |
-| GitHub | 此時才 `gh repo create kuotunyu/03-formosanlu-sdg`（先 private，D-005）；**commit 不帶 `Co-Authored-By`** |
+| GitHub | 使用 `kuotunyu/FormosaNLU-Synth`（先 Private，D-005）；**commit 不帶 `Co-Authored-By`** |
 | 一頁驗收報告 | 通過項／修正項／殘留風險；**使用者說 OK 才轉 public** |
 
 ### Phase 2 資源預估

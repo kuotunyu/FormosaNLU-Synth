@@ -232,7 +232,7 @@ gap_closed(%) = (score(group) − score(real_only)) / (score(full_real) − scor
 |---|---|
 | HF dataset | `steven0226/formosa-nlu-synth-v1`（filtered + unfiltered 兩個 config） |
 | HF model | `steven0226/gemma-4-e4b-formosanlu-lora`（LoRA adapter，非合併權重） |
-| GitHub | `kuotunyu/03-formosanlu-sdg`，**此時才 `gh repo create`**（D-005） |
+| GitHub | `kuotunyu/FormosaNLU-Synth`，先建 Private（D-005） |
 | Card | 雙語（英文為主 + 繁中摘要），內容依 `docs/data_card.md` |
 | Commit | **絕不帶 `Co-Authored-By` trailer**（Contributors 只能有 kuotunyu） |
 

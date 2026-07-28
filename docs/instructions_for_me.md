@@ -45,7 +45,7 @@ gate 全綠時處理；中斷後會跳過完整 run，未完成 run 從最新 ch
 
 ### A-1. 上傳
 
-1. 在 Google Drive 建立 `MyDrive/sdg-portfolio/03-formosanlu-sdg/`
+1. 在 Google Drive 建立 `MyDrive/sdg-portfolio/FormosaNLU-Synth/`
 2. 上傳 `notebooks/01_sft_student.ipynb`
 3. 上傳 `outputs/formosanlu_colab_bundle.zip`，改名或解壓都不需要
 
@@ -109,7 +109,7 @@ trajectory；可攜性驗證不要求不同 GPU 的浮點結果逐位元一致�
 
 Repository 已於使用者明確同意後建立：
 
-- [x] repo：`kuotunyu/03-formosanlu-sdg`
+- [x] repo：`kuotunyu/FormosaNLU-Synth`
 - [x] 先建為 **Private**
 - [x] Description 與 README 以正體中文（台灣，`zh-TW`）為主
 - [x] 首次 push；remote commits 與 GitHub Contributors 都只有 `kuotunyu`

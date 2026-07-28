@@ -59,6 +59,15 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
+### [2026-07-28 22:06 +08:00] GitHub repository — 改名為 FormosaNLU-Synth
+
+- 使用者確認正式名稱為 `kuotunyu/FormosaNLU-Synth`，讓名稱直接表達
+  synthetic data 主題
+- GitHub rename 保留完整 commit history、Private visibility 與 `main`
+- local origin、release gate、文件、Colab Drive path 與 GPU automation
+  同步使用新名稱
+- 改名後仍須驗證 remote Authors／Contributors 只有 `kuotunyu`
+
 ### [2026-07-28 18:43 +08:00] CPU preflight — Colab bundle 與 GPU queue 已重驗
 
 - 重新建立 `outputs/formosanlu_colab_bundle.zip`：3,597,778 bytes，
@@ -73,7 +82,8 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
 ### [2026-07-28 18:38 +08:00] GitHub repository — Private 首次 push 完成
 
-- 建立 `kuotunyu/03-formosanlu-sdg`，Visibility 為 Private，default branch `main`
+- 建立 GitHub Private repository（現名 `kuotunyu/FormosaNLU-Synth`），
+  default branch `main`
 - Description 與 README 已改為正體中文（台灣，`zh-TW`）為主，專有名詞保留原文
 - README 20 項 artifact 重算、95 tests、Ruff 與 contributor audit 全綠後 push
 - GitHub remote commit authors 與 Contributors API 都只回傳 `kuotunyu`
