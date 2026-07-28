@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
@@ -53,6 +54,51 @@ def _json_status(path: Path) -> str:
         return "invalid"
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _jsonl_count(path: Path) -> int:
+    with path.open("r", encoding="utf-8") as handle:
+        return sum(bool(line.strip()) for line in handle)
+
+
+def _f7_release_status(
+    report_path: Path,
+    *,
+    repo_root: Path = REPO_ROOT,
+) -> str:
+    if not report_path.is_file():
+        return "missing"
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return "invalid"
+    if report.get("status") != "complete":
+        return str(report.get("status"))
+    required = (
+        ("source", "source_rows", "source_sha256"),
+        ("judge_results", "judge_rows", "judge_results_sha256"),
+        ("release_output", "release_rows", "release_sha256"),
+    )
+    try:
+        for path_key, rows_key, sha_key in required:
+            path = repo_root / str(report[path_key])
+            if not path.is_file():
+                return f"{path_key}_missing"
+            if _jsonl_count(path) != int(report[rows_key]):
+                return f"{path_key}_row_mismatch"
+            if _sha256(path) != str(report[sha_key]):
+                return f"{path_key}_sha256_mismatch"
+    except (KeyError, OSError, TypeError, ValueError):
+        return "invalid"
+    return "complete"
+
+
 def _tracked_large_files(limit_bytes: int = 100 * 1024 * 1024) -> list[str]:
     tracked = _git("ls-files")
     if tracked.returncode != 0:
@@ -84,6 +130,9 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
     origin_url = origin.stdout.strip() if origin.returncode == 0 else "missing"
     large = _tracked_large_files()
     secret_count = _secret_pattern_count()
+    f7_release = _f7_release_status(
+        REPO_ROOT / "reports" / "m6_f7_release.json"
+    )
 
     checks = [
         Check(
@@ -138,9 +187,9 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
         ),
         Check(
             "f7_release_corpus",
-            _json_status(REPO_ROOT / "reports" / "m6_f7_release.json") == "complete",
-            _json_status(REPO_ROOT / "reports" / "m6_f7_release.json"),
-            "judge-rejected sampled rows excluded from release-only corpus",
+            f7_release == "complete",
+            f7_release,
+            "source, judge, and release JSONL rows/hashes match the F7 report",
         ),
         Check(
             "three_seed_uncertainty",
