@@ -11,9 +11,9 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 03:37 +08:00（跨多次使用者回來後續作） |
-| 完成到 | F7、M9/M10 primary seed-42、M11 demo、M12 README／圖表／資源帳本與 Colab portability 完成 |
-| 卡住的項目 | 技術上無；額外 seeds、robustness 與真模型 demo 只等待各階段的安全 GPU gate |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 04:06 +08:00（跨多次使用者回來後續作） |
+| 完成到 | F7、M9/M10 primary seed-42、M11 real evidence、M12 README／圖表／資源帳本與 Colab portability 完成 |
+| 卡住的項目 | 技術上無；額外 seeds 與 robustness 只等待各階段的安全 GPU gate |
 | GPU 時數 | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、訓練 6.540、trained eval 2.777 |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
@@ -40,6 +40,8 @@ Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thres
 - `reports/m6_f7_judge.json`：376-row independent judge 完整結果
 - `reports/m6_f7_release.json`：6 筆排除與 3,754-row release-only corpus hash
 - `reports/m10_main_results.md`：zero-shot + 六組 trained 的完整七行 primary 主表
+- `reports/m11_demo_evidence.json`：五句真模型 base-versus-adapter 原始輸出、
+  strict validity、latency 與 adapter hash
 - `reports/m12_resource_ledger.json`：14.440 h 可追溯 primary GPU 資源帳本
 - `assets/m12_*.png`：主表、filter 比較、漏斗、per-intent 與方法圖
 - `src/inference/demo.py`：base vs filtered adapter 的 M11 Gradio 比較介面
@@ -48,8 +50,7 @@ Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thres
 
 ### ➡️ 接下來的建議起點
 
-先完成 F7 的全 repo tests、Ruff、README 與 contributor audit。確認 DefectForge、
-SafeSynth 程序都消失且 GPU 空閒後，先擷取 M11 real evidence，再補
+M11 real evidence 已完成。確認 sibling 程序都消失且 GPU 空閒後，補
 `real_only` / `real_syn_filtered` 的 seeds 43/44。額外 seeds 完成前，
 README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
@@ -59,6 +60,18 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 04:02 +08:00] M11 real demo evidence — 完成
+
+- 兩次 GPU safety gate 全綠後，以 `google/gemma-4-E4B-it`、
+  filtered seed-42 adapter 與 unconstrained decoding 跑固定五句
+- base model 0/5 通過嚴格 schema；filtered adapter 5/5 通過。這是 curated
+  qualitative evidence，不是 Test-set accuracy estimate
+- evidence 綁定 adapter tree SHA-256
+  `fec6f9214022eae0fb7ece8a29a7cfdb90188fd770829045dc6b1ee0e5faccac`
+  與 source commit `3a39eae4cf04ad6984f984134da03c6b635613bb`
+- 完整原始輸出與 latency 在 `reports/m11_demo_evidence.json`；commit
+  `53182a5` 已推送，GitHub author/committer/Contributors 均只有 `kuotunyu`
 
 ### [2026-07-29 03:37 +08:00] F7 independent judge — 完成
 

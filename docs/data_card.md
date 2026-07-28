@@ -2,7 +2,8 @@
 
 > **Status: M12 evidence-backed pre-release draft.** Full-corpus F1–F7 and the
 > primary seed-42 utility experiment are populated. Finalize at **M13** after
-> extra-seed uncertainty, robustness, and release review. Every number here
+> extra-seed uncertainty, robustness, and release review. The five-row real
+> model demo contract is also verified. Every number here
 > is traceable to a file under `reports/`. Bilingual: English first, 繁體中文
 > summary at the end.
 
@@ -136,6 +137,12 @@ The filtered group also outperformed the equal-N unfiltered control by 1.11
 exact-match points and 2.17 slot-F1 points. These are single-seed primary
 results, not confidence intervals. Seeds 43 and 44 for `real_only` and
 `real_syn_filtered` are preregistered and pending.
+
+Separately, the M11 real-runtime demo ran five fixed Traditional Chinese
+utterances through the base model and filtered seed-42 adapter with unconstrained
+decoding. The base outputs passed the strict schema 0/5 times and the adapted
+outputs 5/5 times. This is qualitative execution evidence tied to an adapter
+tree hash, not an accuracy estimate or substitute for the 2,974-row Test set.
 
 ## Considerations for Using the Data
 

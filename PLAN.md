@@ -7,13 +7,13 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 03:39 +08:00 |
-| **目前里程碑** | **F7、M11/M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
-| **下一步動作** | F7 的 98 tests、Ruff、README 22-check 與 contributor audit 已全綠；重新通過 GPU safety gate 後，依序執行 M11 real evidence、seeds 43/44 四組補跑與 robustness |
+| **最後更新** | 2026-07-29 04:06 +08:00 |
+| **目前里程碑** | **F7、M11 real evidence、M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
+| **下一步動作** | M11 五句 real-runtime evidence 已驗證並推送；兩次 GPU safety gate 後執行 seeds 43/44 四組補跑，再做 robustness |
 | **球在誰身上** | Codex；只在最終發佈 review 時再需使用者操作 |
 | **累計 GPU 時數** | 可追溯 primary core 14.440 h：generation 4.073、zero-shot 1.050、六組訓練 6.540、六組評估 2.777 |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | primary seed-42 結果為 provisional；額外 seeds、robustness 與真模型 demo 證據尚未完成；凍結 thresholds 不得放寬 |
+| **待決事項** | primary seed-42 結果為 provisional；額外 seeds 與 robustness 尚未完成；凍結 thresholds 不得放寬 |
 | **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；Private GitHub repo 與正體中文 README 已首次 push，不啟動 Public 發佈或重生成 |
 | **阻塞項** | 技術上無；GPU 工作只在 sibling workloads 消失且顯卡安全空閒時啟動 |
 
@@ -162,7 +162,7 @@
 |---|---|
 | 本機 Gradio：輸入繁中句 → intent / slots / 原始 JSON / latency | ✅ 單一 4-bit Gemma 切換 adapter，併列**微調前 vs 微調後** |
 | 預載示範句，含一組易混淆 minimal pair | ✅ mock runtime 瀏覽器互動、console 與輸出驗證通過 |
-| README GIF / 真模型證據 | 🟡 UI 截圖已檢查；真模型 GPU 執行與 GIF 待安全 GPU 時段 |
+| 真模型證據 / README GIF | ✅ 五句 base-versus-adapter real runtime 已完成並綁定 adapter hash；GIF 為非阻塞選配 |
 
 ### M12 · README + 數字誠實性
 

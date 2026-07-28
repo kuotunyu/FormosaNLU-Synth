@@ -176,6 +176,11 @@ Frozen semantic thresholds 如下：
 
 M11 提供同一句輸入的 base model 與 filtered-adapter 並排比較。Real runtime
 只載入一份 4-bit Gemma model，再切換 LoRA adapter，避免同時載入兩份 model。
+固定五句的本機 RTX 4090 evidence 已完成：在相同 unconstrained decoding
+contract 下，base model 的五筆輸出都未通過嚴格 schema，filtered adapter
+則為 5/5 valid JSON。這是小型質性示範，不是 accuracy estimate；原始輸出、
+latency、adapter tree SHA-256 與 source commit 都保存在
+[`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
 
 ```bash
 uv sync --extra demo
@@ -240,6 +245,8 @@ python -m scripts.m9_replicates
 
 # 以下命令只能在 sibling/GPU safety gates 全綠後執行
 python -m scripts.judge_full --execute --confirm F7-GPT-OSS-20B
+python -m scripts.capture_demo_evidence \
+  --execute --confirm M11-DEMO-EVIDENCE-4090
 python -m scripts.m9_replicates \
   --execute --confirm M9-REPLICATES-43-44-4090
 python -m scripts.eval_robustness \
@@ -272,6 +279,8 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
   confidence interval 或 significance claim。
 - F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
   為 6.0%，但樣本僅 50 筆，95% interval 很寬。Robustness inference 尚未完成。
+- M11 的五句 real-runtime comparison 只證明 demo contract 與 adapter 可實際
+  執行；它是 curated qualitative evidence，不可當成 Test-set 成效。
 - 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。
 - MASSIVE `zh-TW` 翻譯自 English SLURP，未必涵蓋自然台灣口語的完整分布。
 - Synthetic data 會繼承 teacher 的 biases 與台灣在地知識缺口。
@@ -290,8 +299,8 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## Roadmap
 
-近期工作是完成 extra-seed uncertainty、robustness probe、真模型 demo
-evidence 與 clean-environment M13 release audit。後續可將同一 pipeline
+近期工作是完成 extra-seed uncertainty、robustness probe 與
+clean-environment M13 release audit。後續可將同一 pipeline
 延伸至台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval` 等工具評估。
 
 ## 專案文件
