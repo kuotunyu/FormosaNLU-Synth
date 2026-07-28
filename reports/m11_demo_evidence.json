@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-28T20:00:53.435184+00:00",
+  "status": "complete",
+  "runtime_mode": "real",
+  "model": "google/gemma-4-E4B-it",
+  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\real_syn_filtered\\seed_42\\adapter",
+  "adapter_tree_sha256": "fec6f9214022eae0fb7ece8a29a7cfdb90188fd770829045dc6b1ee0e5faccac",
+  "prompt_template": "formosanlu_nlu.v1",
+  "unconstrained_decoding": true,
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4090",
+    "memory_total_mib": 24564,
+    "memory_used_mib": 857,
+    "utilization_percent": 0,
+    "temperature_c": 35
+  },
+  "source_commit": "3a39eae4cf04ad6984f984134da03c6b635613bb",
+  "comparisons": [
+    {
+      "utterance": "播放周杰倫",
+      "base": {
+        "raw": "{\n\"intent\": \"play_music\",\n\"slots\": [\n{\n\"slot\": \"artist_name\",\n\"value\": \"周杰倫\"\n}\n]\n}",
+        "intent": "INVALID",
+        "slots": [],
+        "valid": false,
+        "error": "ValidationError: 2 validation errors for NluOutput\nslots.0.type\n  Field required [type=missing, input_value={'slot': 'artist_name', 'value': '周杰倫'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.0.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='artist_name', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "latency_ms": 3743.9260000001013
+      },
+      "adapted": {
+        "raw": "{\"intent\":\"play_music\",\"slots\":[{\"type\":\"artist_name\",\"value\":\"周杰倫\"}]}",
+        "intent": "play_music",
+        "slots": [
+          {
+            "type": "artist_name",
+            "value": "周杰倫"
+          }
+        ],
+        "valid": true,
+        "error": null,
+        "latency_ms": 2836.1277999993035
+      }
+    },
+    {
+      "utterance": "搜尋周杰倫的歌",
+      "base": {
+        "raw": "{\n\"intent\": \"music_query\",\n\"slots\": [\n{\n\"slot\": \"artist_name\",\n\"value\": \"周杰倫\"\n},\n{\n\"slot\": \"song_name\",\n\"value\": \"歌\"\n}\n]\n}",
+        "intent": "INVALID",
+        "slots": [],
+        "valid": false,
+        "error": "ValidationError: 4 validation errors for NluOutput\nslots.0.type\n  Field required [type=missing, input_value={'slot': 'artist_name', 'value': '周杰倫'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.0.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='artist_name', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nslots.1.type\n  Field required [type=missing, input_value={'slot': 'song_name', 'value': '歌'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.1.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='song_name', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "latency_ms": 4011.1156000002666
+      },
+      "adapted": {
+        "raw": "{\"intent\":\"music_query\",\"slots\":[{\"type\":\"artist_name\",\"value\":\"周杰倫\"}]}",
+        "intent": "music_query",
+        "slots": [
+          {
+            "type": "artist_name",
+            "value": "周杰倫"
+          }
+        ],
+        "valid": true,
+        "error": null,
+        "latency_ms": 2770.200599999953
+      }
+    },
+    {
+      "utterance": "明天早上七點叫我起床",
+      "base": {
+        "raw": "{\n\"intent\": \"alarm_set\",\n\"slots\": [\n{\n\"slot\": \"time\",\n\"value\": \"早上七點\"\n},\n{\n\"slot\": \"timeofday\",\n\"value\": \"明天\"\n}]\n}",
+        "intent": "INVALID",
+        "slots": [],
+        "valid": false,
+        "error": "ValidationError: 4 validation errors for NluOutput\nslots.0.type\n  Field required [type=missing, input_value={'slot': 'time', 'value': '早上七點'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.0.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='time', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nslots.1.type\n  Field required [type=missing, input_value={'slot': 'timeofday', 'value': '明天'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.1.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='timeofday', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "latency_ms": 3665.4341000003114
+      },
+      "adapted": {
+        "raw": "{\"intent\":\"alarm_set\",\"slots\":[{\"type\":\"date\",\"value\":\"明天\"},{\"type\":\"time\",\"value\":\"早上七點\"}]}",
+        "intent": "alarm_set",
+        "slots": [
+          {
+            "type": "date",
+            "value": "明天"
+          },
+          {
+            "type": "time",
+            "value": "早上七點"
+          }
+        ],
+        "valid": true,
+        "error": null,
+        "latency_ms": 3467.2420999995666
+      }
+    },
+    {
+      "utterance": "台北明天會不會下雨",
+      "base": {
+        "raw": "{\n\"intent\": \"weather_query\",\n\"slots\": [\n{\n\"name\": \"place_name\",\n\"value\": \"台北\"\n},\n{\n\"name\": \"time\",\n\"value\": \"明天\"\n},\n{\n\"name\": \"weather_descriptor\",\n\"value\": \"下雨\"\n}\n]\n}",
+        "intent": "INVALID",
+        "slots": [],
+        "valid": false,
+        "error": "ValidationError: 6 validation errors for NluOutput\nslots.0.type\n  Field required [type=missing, input_value={'name': 'place_name', 'value': '台北'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.0.name\n  Extra inputs are not permitted [type=extra_forbidden, input_value='place_name', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nslots.1.type\n  Field required [type=missing, input_value={'name': 'time', 'value': '明天'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.1.name\n  Extra inputs are not permitted [type=extra_forbidden, input_value='time', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nslots.2.type\n  Field required [type=missing, input_value={'name': 'weather_descriptor', 'value': '下雨'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.2.name\n  Extra inputs are not permitted [type=extra_forbidden, input_value='weather_descriptor', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "latency_ms": 5035.253300000477
+      },
+      "adapted": {
+        "raw": "{\"intent\":\"weather_query\",\"slots\":[{\"type\":\"place_name\",\"value\":\"台北\"},{\"type\":\"date\",\"value\":\"明天\"}]}",
+        "intent": "weather_query",
+        "slots": [
+          {
+            "type": "place_name",
+            "value": "台北"
+          },
+          {
+            "type": "date",
+            "value": "明天"
+          }
+        ],
+        "valid": true,
+        "error": null,
+        "latency_ms": 3393.619999999828
+      }
+    },
+    {
+      "utterance": "幫我寄信給小美說會晚到",
+      "base": {
+        "raw": "{\n\"intent\": \"email_sendemail\",\n\"slots\": [\n{\n\"slot\": \"person\",\n\"value\": \"小美\"\n},\n{\n\"slot\": \"email_folder\",\n\"value\": \"會晚到\"\n}\n]\n}",
+        "intent": "INVALID",
+        "slots": [],
+        "valid": false,
+        "error": "ValidationError: 4 validation errors for NluOutput\nslots.0.type\n  Field required [type=missing, input_value={'slot': 'person', 'value': '小美'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.0.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='person', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nslots.1.type\n  Field required [type=missing, input_value={'slot': 'email_folder', 'value': '會晚到'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.1.slot\n  Extra inputs are not permitted [type=extra_forbidden, input_value='email_folder', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "latency_ms": 4056.8268000006356
+      },
+      "adapted": {
+        "raw": "{\"intent\":\"email_sendemail\",\"slots\":[{\"type\":\"person\",\"value\":\"小美\"}]}",
+        "intent": "email_sendemail",
+        "slots": [
+          {
+            "type": "person",
+            "value": "小美"
+          }
+        ],
+        "valid": true,
+        "error": null,
+        "latency_ms": 2456.7528999996284
+      }
+    }
+  ]
+}
