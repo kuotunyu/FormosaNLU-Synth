@@ -130,6 +130,7 @@ Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
 | **Measured primary core total** | **14.440 h** | 不含 extra seeds、F7 與 robustness |
 | F7 independent judge（auxiliary） | **0.756 h** | 376 筆逐列 model latency 加總 |
 | M11 real demo（auxiliary） | **0.010 h** | 10 次 generation latency 加總 |
+| **Measured auxiliary subtotal** | **0.766 h** | F7 + M11 |
 | **目前可追溯 local total** | **15.205 h** | primary core + 已完成 auxiliary |
 | **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
@@ -181,7 +182,7 @@ Frozen semantic thresholds 如下：
 M11 提供同一句輸入的 base model 與 filtered-adapter 並排比較。Real runtime
 只載入一份 4-bit Gemma model，再切換 LoRA adapter，避免同時載入兩份 model。
 固定五句的本機 RTX 4090 evidence 已完成：在相同 unconstrained decoding
-contract 下，base model 的五筆輸出都未通過嚴格 schema，filtered adapter
+contract 下，base model 0/5 通過嚴格 schema，filtered adapter
 則為 5/5 valid JSON。這是小型質性示範，不是 accuracy estimate；原始輸出、
 latency、adapter tree SHA-256 與 source commit 都保存在
 [`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。

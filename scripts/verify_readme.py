@@ -12,6 +12,7 @@ README = REPO_ROOT / "README.md"
 M10 = REPO_ROOT / "reports" / "m10_main_results.json"
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
+M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
 
 DESCRIPTIONS = {
     "zero_shot": "未訓練",
@@ -49,12 +50,16 @@ def verify_readme(
     m10: dict[str, Any],
     generation: dict[str, Any],
     resources: dict[str, Any],
+    m11: dict[str, Any],
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
         checks.append((f"main row {expected.split('|')[1].strip()}", expected in readme))
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
+    comparisons = m11["comparisons"]
+    base_valid = sum(bool(row["base"]["valid"]) for row in comparisons)
+    adapted_valid = sum(bool(row["adapted"]["valid"]) for row in comparisons)
     checks.extend(
         [
             (
@@ -98,6 +103,29 @@ def verify_readme(
                 "core GPU hours",
                 f"{resources['measured_core_gpu_hours']:.3f} h" in readme,
             ),
+            (
+                "auxiliary GPU hours",
+                f"{resources['measured_auxiliary_gpu_hours']:.3f} h" in readme,
+            ),
+            (
+                "local total GPU hours",
+                f"{resources['measured_total_local_gpu_hours']:.3f} h" in readme,
+            ),
+            (
+                "local total TDP envelope",
+                (
+                    f"{resources['gpu_tdp_total_energy_upper_bound_kwh']:.3f} kWh"
+                    in readme
+                ),
+            ),
+            (
+                "M11 base strict validity",
+                f"base model {base_valid}/{len(comparisons)}" in readme,
+            ),
+            (
+                "M11 adapted strict validity",
+                f"{adapted_valid}/{len(comparisons)} valid JSON" in readme,
+            ),
             ("M12 placeholders removed", "FILL AT M12" not in readme),
         ]
     )
@@ -122,6 +150,7 @@ def main() -> int:
         m10=_load(M10),
         generation=_load(GENERATION),
         resources=_load(RESOURCES),
+        m11=_load(M11),
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:
