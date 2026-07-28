@@ -24,7 +24,7 @@
 
 Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thresholds。
 目前 Codex 可繼續做本機驗收與 GPU-safe 工作；只有 Colab 一組可攜性實跑、
-建立 GitHub repository、Hugging Face 上傳與最終公開才需要使用者操作或核可。
+Hugging Face 上傳與最終公開才需要使用者操作或核可。
 
 ### 👀 需要你 review 的產出
 
@@ -59,7 +59,19 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
-### [2026-07-28 18:45 +08:00] GitHub repository — Private 首次 push 完成
+### [2026-07-28 18:43 +08:00] CPU preflight — Colab bundle 與 GPU queue 已重驗
+
+- 重新建立 `outputs/formosanlu_colab_bundle.zip`：3,597,778 bytes，
+  SHA-256 `25f73183bf2af9285929b97433d2c278f01ee83118feb2b3a1d6d8785c36fefc`
+- bundle 綁定 source commit `16ee1ac5d7aed101bc413aaf03afaf1d2ab76d40`，
+  不含 Gemma weights，避免把 15.9 GB model 包進 Git／Drive bundle
+- extra-seed dry plan 再確認四組 pending，seeds 43/44 的資料 SHA-256
+  與各自 primary seed-42 完全一致
+- robustness 與真模型 demo dry-run 正確偵測 SafeSynth，沒有啟動 GPU
+- 30 分鐘 automation 已同步為既有 Private origin；里程碑全綠後才可
+  commit/push，且每次 push 後都要重驗 GitHub Contributors 只有 `kuotunyu`
+
+### [2026-07-28 18:38 +08:00] GitHub repository — Private 首次 push 完成
 
 - 建立 `kuotunyu/03-formosanlu-sdg`，Visibility 為 Private，default branch `main`
 - Description 與 README 已改為正體中文（台灣，`zh-TW`）為主，專有名詞保留原文
@@ -74,7 +86,8 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
   `scripts.judge_full`，沒有修改或停止任何 sibling；`gpt-oss:20b` 已卸載
 - 同一 F7 命令可由 index 64 後安全續跑；結果 JSONL 與 logs 均為 ignored
 - 新增 30 分鐘 heartbeat：連續兩次 free 才續跑，順序為 F7 → M11 real
-  evidence → extra seeds 43/44 → robustness；不發佈、不 push
+  evidence → extra seeds 43/44 → robustness；不發佈，里程碑全綠後可推送
+  既有 Private origin
 - 額外完成 guarded runners、三種子統計器、robustness runner 與 M13
   release preflight；目前全 repo **95 tests passed**
 
