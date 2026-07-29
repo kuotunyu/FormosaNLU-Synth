@@ -48,6 +48,17 @@ def test_markdown_marks_nonblocking_failure_as_info() -> None:
     assert "| `remote_not_created_early` | INFO | origin |" in markdown
 
 
+def test_markdown_records_verified_public_release() -> None:
+    markdown = render_markdown(
+        {
+            "status": "public_verified",
+            "external_actions_performed": True,
+            "checks": [],
+        }
+    )
+    assert "public GitHub, dataset, and model release" in markdown
+
+
 def test_f7_release_status_recomputes_rows_and_hashes(tmp_path) -> None:
     source = tmp_path / "source.jsonl"
     judge = tmp_path / "judge.jsonl"
@@ -77,10 +88,7 @@ def test_f7_release_status_recomputes_rows_and_hashes(tmp_path) -> None:
     assert _f7_release_status(report, repo_root=tmp_path) == "complete"
 
     release.write_text('{"id":9}\n', encoding="utf-8")
-    assert (
-        _f7_release_status(report, repo_root=tmp_path)
-        == "release_output_sha256_mismatch"
-    )
+    assert _f7_release_status(report, repo_root=tmp_path) == "release_output_sha256_mismatch"
 
 
 def test_m11_evidence_status_validates_real_rows_and_adapter(tmp_path) -> None:
@@ -129,10 +137,7 @@ def test_replicate_summary_status_recomputes_all_seed_statistics(tmp_path) -> No
         metrics_by_group[group] = {}
         for seed in EXPECTED_REPLICATE_SEEDS:
             offset = 0.03 if group == "real_syn_filtered" else 0.0
-            metrics = {
-                metric: 0.60 + 0.01 * (seed - 42) + offset
-                for metric in METRICS
-            }
+            metrics = {metric: 0.60 + 0.01 * (seed - 42) + offset for metric in METRICS}
             metrics_by_group[group][seed] = metrics
             path = tmp_path / "reports" / "m9" / f"{group}_seed_{seed}.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -154,16 +159,11 @@ def test_replicate_summary_status_recomputes_all_seed_statistics(tmp_path) -> No
     for group in EXPECTED_REPLICATE_GROUPS:
         summary_metrics[group] = {}
         for metric in METRICS:
-            values = [
-                metrics_by_group[group][seed][metric]
-                for seed in EXPECTED_REPLICATE_SEEDS
-            ]
+            values = [metrics_by_group[group][seed][metric] for seed in EXPECTED_REPLICATE_SEEDS]
             summary_metrics[group][metric] = {
                 "by_seed": {
                     str(seed): value
-                    for seed, value in zip(
-                        EXPECTED_REPLICATE_SEEDS, values, strict=True
-                    )
+                    for seed, value in zip(EXPECTED_REPLICATE_SEEDS, values, strict=True)
                 },
                 **_three_value_summary(values),
             }
@@ -177,9 +177,7 @@ def test_replicate_summary_status_recomputes_all_seed_statistics(tmp_path) -> No
         paired[metric] = {
             "by_seed": {
                 str(seed): value
-                for seed, value in zip(
-                    EXPECTED_REPLICATE_SEEDS, values, strict=True
-                )
+                for seed, value in zip(EXPECTED_REPLICATE_SEEDS, values, strict=True)
             },
             **_three_value_summary(values),
         }
@@ -208,8 +206,7 @@ def test_robustness_status_checks_probe_hash_and_group_deltas(tmp_path) -> None:
     probe.parent.mkdir(parents=True)
     probe.write_text(
         "".join(
-            json.dumps({"id": index, "evaluation_only": True}) + "\n"
-            for index in range(8_922)
+            json.dumps({"id": index, "evaluation_only": True}) + "\n" for index in range(8_922)
         ),
         encoding="utf-8",
     )
@@ -262,10 +259,7 @@ def test_robustness_status_checks_probe_hash_and_group_deltas(tmp_path) -> None:
             )
         }
         deltas = {
-            kind: {
-                metric: values[metric] - primary_metrics[metric]
-                for metric in METRICS
-            }
+            kind: {metric: values[metric] - primary_metrics[metric] for metric in METRICS}
             for kind, values in by_kind.items()
         }
         group_report = {
@@ -276,18 +270,14 @@ def test_robustness_status_checks_probe_hash_and_group_deltas(tmp_path) -> None:
             "adapter_dir": str(adapter),
             "target": 8_922,
             "completed": 8_922,
-            "probe_kind_counts": dict.fromkeys(
-                ("asr_noise", "colloquial", "lexical"), 2_974
-            ),
+            "probe_kind_counts": dict.fromkeys(("asr_noise", "colloquial", "lexical"), 2_974),
             "metrics": {"samples": 8_922.0, **dict.fromkeys(METRICS, 0.44)},
             "metrics_by_probe_kind": by_kind,
             "primary_test_metrics": primary_metrics,
             "delta_vs_primary_by_probe_kind": deltas,
             "evaluation_only": True,
         }
-        group_path = (
-            tmp_path / "reports" / "m10_robustness" / f"{group}_seed_42.json"
-        )
+        group_path = tmp_path / "reports" / "m10_robustness" / f"{group}_seed_42.json"
         group_path.parent.mkdir(parents=True, exist_ok=True)
         group_path.write_text(json.dumps(group_report), encoding="utf-8")
         groups[group] = group_report
@@ -302,12 +292,8 @@ def test_robustness_status_checks_probe_hash_and_group_deltas(tmp_path) -> None:
     report.write_text(json.dumps(payload), encoding="utf-8")
     assert _robustness_status(report, repo_root=tmp_path) == "complete"
 
-    groups["real_only"]["delta_vs_primary_by_probe_kind"]["lexical"][
-        "exact_match"
-    ] = 99.0
-    group_path = (
-        tmp_path / "reports" / "m10_robustness" / "real_only_seed_42.json"
-    )
+    groups["real_only"]["delta_vs_primary_by_probe_kind"]["lexical"]["exact_match"] = 99.0
+    group_path = tmp_path / "reports" / "m10_robustness" / "real_only_seed_42.json"
     group_path.write_text(json.dumps(groups["real_only"]), encoding="utf-8")
     report.write_text(json.dumps(payload), encoding="utf-8")
     assert (

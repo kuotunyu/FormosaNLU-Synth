@@ -1,0 +1,53 @@
+{
+  "anonymous_verification": true,
+  "dataset": {
+    "files": [
+      ".gitattributes",
+      "LICENSE",
+      "README.md",
+      "data/train.jsonl",
+      "release_manifest.json",
+      "schema.json"
+    ],
+    "hub_commit": "03a337b61a200ab690994dca4dc31aa7f209800e",
+    "license": "cc-by-4.0",
+    "repo_id": "steven0226/formosa-nlu-synth-v1",
+    "rows": 3754,
+    "train_sha256": "c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665",
+    "url": "https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1",
+    "viewer_status": "ready",
+    "visibility": "public"
+  },
+  "github": {
+    "contributors": [
+      "kuotunyu"
+    ],
+    "contributors_only_kuotunyu": true,
+    "default_branch": "main",
+    "url": "https://github.com/kuotunyu/FormosaNLU-Synth",
+    "visibility": "public"
+  },
+  "model": {
+    "adapter_bytes": 155609536,
+    "adapter_sha256": "f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a",
+    "base_model": "google/gemma-4-E4B-it",
+    "files": [
+      ".gitattributes",
+      "LICENSE",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tokenizer.json",
+      "tokenizer_config.json"
+    ],
+    "hub_commit": "073ee39d727da3f0dbc7320de61c2ebb7c6b402d",
+    "license": "apache-2.0",
+    "repo_id": "steven0226/gemma-4-e4b-formosanlu-lora",
+    "url": "https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora",
+    "visibility": "public"
+  },
+  "schema_version": 1,
+  "status": "public_verified",
+  "verified_at": "2026-07-29T11:47:32.261182+00:00"
+}

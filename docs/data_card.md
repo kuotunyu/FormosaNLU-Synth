@@ -1,8 +1,10 @@
 # Dataset Card — FormosaNLU Synthetic (`formosa_synth_v1`)
 
-> **Status: M12 evidence-backed pre-release draft.** Full-corpus F1–F7 and the
-> three-seed utility and robustness evidence are populated. Finalize at **M13**
-> after release review. The five-row real
+> **Status: M13 public release.** Full-corpus F1–F7 and the
+> three-seed utility and robustness evidence are populated. The public dataset
+> is available at
+> [`steven0226/formosa-nlu-synth-v1`](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1).
+> The five-row real
 > model demo contract is also verified. Every number here
 > is traceable to a file under `reports/`. Bilingual: English first, 繁體中文
 > summary at the end.

@@ -4,7 +4,7 @@
 > uncertainty runs、M10 評估、
 > M11 比較介面、M12 報告產物、Colab portability 與 F7 independent
 > judge audit、robustness inference 均已完成。所有本機 GPU 階段已收尾；
-> 正式發佈仍待最終 review。
+> GitHub、Hugging Face Dataset 與 LoRA adapter 已公開，並通過匿名下載驗證。
 
 在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
 language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
@@ -22,6 +22,26 @@ contract。
 
 Teacher、student 與 judge 來自不同 model families。Primary 結果使用
 2,974 筆完全未進入訓練流程的 MASSIVE `zh-TW` Test rows。
+
+## 公開產物
+
+| Artifact | 位置 | 驗證狀態 |
+| --- | --- | --- |
+| Source、pipeline、reports | [GitHub](https://github.com/kuotunyu/FormosaNLU-Synth) | Public；Contributors 僅 `kuotunyu` |
+| 3,754-row F1–F7 corpus | [Hugging Face Dataset](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) | Public；Dataset Viewer 與匿名載入通過 |
+| Filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) | Public；PEFT config、686 tensors 與 SHA-256 通過 |
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset("steven0226/formosa-nlu-synth-v1")
+print(dataset["train"].num_rows)  # 3754
+```
+
+LoRA adapter 使用方式與 Gemma 4 text-tower key mapping 已完整寫在
+[Model Card](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)。
+匿名發布稽核結果保存在
+[`reports/m13_publication.json`](reports/m13_publication.json)。
 
 ## TL;DR
 
@@ -344,8 +364,7 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## Roadmap
 
-近期工作是完成 clean-environment M13 release audit 與使用者發佈 review。
-後續可將同一 pipeline
+M13 public release 與匿名驗證已完成。後續可將同一 pipeline
 延伸至台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval` 等工具評估。
 
 ## 專案文件
@@ -359,4 +378,5 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | ADR-style decision log |
 | [`docs/teacher_choice.md`](docs/teacher_choice.md) | Model 選擇與授權分析 |
 | [`docs/data_card.md`](docs/data_card.md) | Synthetic dataset card |
-| [`docs/instructions_for_me.md`](docs/instructions_for_me.md) | 需要使用者操作的 Colab、Hugging Face 與 GitHub 步驟 |
+| [`hf_cards/`](hf_cards) | Hugging Face Dataset／Model Cards |
+| [`docs/instructions_for_me.md`](docs/instructions_for_me.md) | Colab、Hugging Face 與 GitHub 操作紀錄 |

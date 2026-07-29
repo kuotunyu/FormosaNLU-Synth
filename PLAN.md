@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 12:52 +08:00 |
-| **目前里程碑** | **所有本機 GPU 階段完成**：F7、M9 三種子 uncertainty、M10 robustness、M11 real evidence、M12 與 Colab portability |
-| **下一步動作** | 更新最終文件並執行 clean-environment M13 release audit；使用者過目後才決定 Public／Hugging Face |
-| **球在誰身上** | Codex；只在最終發佈 review 時再需使用者操作 |
+| **最後更新** | 2026-07-29 19:45 +08:00 |
+| **目前里程碑** | **M13 public release 完成**：GitHub、HF Dataset、HF LoRA adapter 均公開且匿名驗證通過 |
+| **下一步動作** | 無必要發布工作；後續研究可延伸台灣在地知識 distillation 或跨模型驗證 |
+| **球在誰身上** | 無；專案已完成公開交付 |
 | **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h（F7、M11、extra seeds、robustness）；可追溯 local total 23.124 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | 三種子 intervals 僅為 descriptive uncertainty；robustness 只用 seed 42；Public／Hugging Face 發佈需使用者 review |
-| **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；Private GitHub repo 與正體中文 README 已首次 push，不啟動 Public 發佈或重生成 |
-| **阻塞項** | 技術上無；只等 clean-environment audit 與使用者發佈 review |
+| **待決事項** | 三種子 intervals 僅為 descriptive uncertainty；robustness 只用 seed 42；這些是研究限制而非發布阻塞 |
+| **目前範圍** | GitHub source、3,754-row HF Dataset 與 filtered seed-42 HF LoRA adapter 均已公開；不發布完整 base weights、checkpoints 或 rejected rows |
+| **阻塞項** | 無 |
 
 ---
 

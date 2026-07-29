@@ -133,8 +133,7 @@ def _summary_matches(
     if not isinstance(observed, dict):
         return False
     expected_by_seed = {
-        str(seed): value
-        for seed, value in zip(EXPECTED_REPLICATE_SEEDS, values, strict=True)
+        str(seed): value for seed, value in zip(EXPECTED_REPLICATE_SEEDS, values, strict=True)
     }
     by_seed = observed.get("by_seed")
     if not isinstance(by_seed, dict) or set(by_seed) != set(expected_by_seed):
@@ -143,9 +142,7 @@ def _summary_matches(
         return False
     expected = _three_value_summary(values)
     return observed.get("n") == 3 and all(
-        _close(observed.get(key), float(value))
-        for key, value in expected.items()
-        if key != "n"
+        _close(observed.get(key), float(value)) for key, value in expected.items() if key != "n"
     )
 
 
@@ -191,9 +188,7 @@ def _replicate_summary_status(
                     not _numeric(metrics.get(metric)) for metric in METRICS
                 ):
                     return f"{group}_seed_{seed}_metrics_invalid"
-                source_metrics[group][seed] = {
-                    metric: float(metrics[metric]) for metric in METRICS
-                }
+                source_metrics[group][seed] = {metric: float(metrics[metric]) for metric in METRICS}
 
         summaries = report.get("metrics")
         paired = report.get("paired_filtered_minus_real_only")
@@ -209,10 +204,7 @@ def _replicate_summary_status(
             if not isinstance(group_summary, dict) or set(group_summary) != set(METRICS):
                 return f"{group}_summary_shape_mismatch"
             for metric in METRICS:
-                values = [
-                    source_metrics[group][seed][metric]
-                    for seed in EXPECTED_REPLICATE_SEEDS
-                ]
+                values = [source_metrics[group][seed][metric] for seed in EXPECTED_REPLICATE_SEEDS]
                 if not _summary_matches(group_summary.get(metric), values=values):
                     return f"{group}_{metric}_summary_mismatch"
         for metric in METRICS:
@@ -263,21 +255,13 @@ def _robustness_status(
         if _sha256(probe_path) != str(manifest["output_sha256"]):
             return "probe_sha256_mismatch"
         expected_kinds = {
-            str(key): int(value)
-            for key, value in dict(manifest["probe_kinds"]).items()
+            str(key): int(value) for key, value in dict(manifest["probe_kinds"]).items()
         }
         groups = report.get("groups")
-        if not isinstance(groups, dict) or set(groups) != set(
-            EXPECTED_REPLICATE_GROUPS
-        ):
+        if not isinstance(groups, dict) or set(groups) != set(EXPECTED_REPLICATE_GROUPS):
             return "group_contract_mismatch"
         for group in EXPECTED_REPLICATE_GROUPS:
-            group_path = (
-                repo_root
-                / "reports"
-                / "m10_robustness"
-                / f"{group}_seed_42.json"
-            )
+            group_path = repo_root / "reports" / "m10_robustness" / f"{group}_seed_42.json"
             primary_path = repo_root / "reports" / "m9" / f"{group}_seed_42.json"
             if not group_path.is_file() or not primary_path.is_file():
                 return f"{group}_source_report_missing"
@@ -287,8 +271,7 @@ def _robustness_status(
                 return f"{group}_combined_report_mismatch"
             if (
                 group_report.get("status") != "complete"
-                or group_report.get("evaluation_mode")
-                != "trained_adapter_robustness_probe"
+                or group_report.get("evaluation_mode") != "trained_adapter_robustness_probe"
                 or group_report.get("group") != group
                 or group_report.get("seed") != 42
                 or group_report.get("target") != EXPECTED_ROBUSTNESS_ROWS
@@ -296,12 +279,9 @@ def _robustness_status(
                 or group_report.get("evaluation_only") is not True
             ):
                 return f"{group}_contract_mismatch"
-            expected_adapter = (
-                repo_root / "runs" / group / "seed_42" / "adapter"
-            ).resolve()
+            expected_adapter = (repo_root / "runs" / group / "seed_42" / "adapter").resolve()
             if (
-                Path(str(group_report.get("adapter_dir"))).resolve()
-                != expected_adapter
+                Path(str(group_report.get("adapter_dir"))).resolve() != expected_adapter
                 or not expected_adapter.is_dir()
             ):
                 return f"{group}_adapter_mismatch"
@@ -336,17 +316,13 @@ def _robustness_status(
                 if (
                     not isinstance(kind_metrics, dict)
                     or not _close(kind_metrics.get("samples"), count)
-                    or any(
-                        not _numeric(kind_metrics.get(metric)) for metric in METRICS
-                    )
+                    or any(not _numeric(kind_metrics.get(metric)) for metric in METRICS)
                     or not isinstance(kind_deltas, dict)
                     or set(kind_deltas) != set(METRICS)
                 ):
                     return f"{group}_{kind}_metrics_invalid"
                 for metric in METRICS:
-                    expected_delta = float(kind_metrics[metric]) - float(
-                        primary_metrics[metric]
-                    )
+                    expected_delta = float(kind_metrics[metric]) - float(primary_metrics[metric])
                     if not _close(kind_deltas.get(metric), expected_delta):
                         return f"{group}_{kind}_{metric}_delta_mismatch"
     except (KeyError, OSError, TypeError, ValueError):
@@ -462,26 +438,18 @@ def _secret_pattern_count() -> int:
 def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
     name = _git("config", "--get", "user.name").stdout.strip()
     email = _git("config", "--get", "user.email").stdout.strip()
-    contributors = _run(
-        [sys.executable, str(REPO_ROOT / "scripts" / "verify_contributors.py")]
-    )
+    contributors = _run([sys.executable, str(REPO_ROOT / "scripts" / "verify_contributors.py")])
     worktree = _git("status", "--porcelain=v1").stdout.strip()
     origin = _git("remote", "get-url", "origin")
     origin_url = origin.stdout.strip() if origin.returncode == 0 else "missing"
     large = _tracked_large_files()
     secret_count = _secret_pattern_count()
-    f7_release = _f7_release_status(
-        REPO_ROOT / "reports" / "m6_f7_release.json"
-    )
-    m11_evidence = _m11_evidence_status(
-        REPO_ROOT / "reports" / "m11_demo_evidence.json"
-    )
+    f7_release = _f7_release_status(REPO_ROOT / "reports" / "m6_f7_release.json")
+    m11_evidence = _m11_evidence_status(REPO_ROOT / "reports" / "m11_demo_evidence.json")
     replicate_summary = _replicate_summary_status(
         REPO_ROOT / "reports" / "m9_replicate_summary.json"
     )
-    robustness = _robustness_status(
-        REPO_ROOT / "reports" / "m10_robustness.json"
-    )
+    robustness = _robustness_status(REPO_ROOT / "reports" / "m10_robustness.json")
 
     checks = [
         Check(
@@ -516,8 +484,7 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
         ),
         Check(
             "m10_primary",
-            _json_status(REPO_ROOT / "reports" / "m10_main_results.json")
-            == "complete",
+            _json_status(REPO_ROOT / "reports" / "m10_main_results.json") == "complete",
             _json_status(REPO_ROOT / "reports" / "m10_main_results.json"),
             "primary seven-row report complete",
         ),
@@ -562,22 +529,12 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
             "colab_portability",
             (
                 _json_status(
-                    REPO_ROOT
-                    / "results"
-                    / "colab"
-                    / "real_only"
-                    / "seed_42"
-                    / "run_report.json"
+                    REPO_ROOT / "results" / "colab" / "real_only" / "seed_42" / "run_report.json"
                 )
                 == "completed"
             ),
             _json_status(
-                REPO_ROOT
-                / "results"
-                / "colab"
-                / "real_only"
-                / "seed_42"
-                / "run_report.json"
+                REPO_ROOT / "results" / "colab" / "real_only" / "seed_42" / "run_report.json"
             ),
             "one user-operated Colab portability run complete",
         ),
@@ -622,11 +579,20 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
 def build_report(*, run_slow_checks: bool = True) -> dict[str, Any]:
     checks = collect_checks(run_slow_checks=run_slow_checks)
     blocking = [check for check in checks if check.blocking and not check.passed]
+    publication_status = _json_status(REPO_ROOT / "reports" / "m13_publication.json")
+    published = publication_status == "public_verified"
     return {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "status": "ready_for_user_release_review" if not blocking else "blocked",
-        "external_actions_performed": False,
+        "status": (
+            "blocked"
+            if blocking
+            else "public_verified"
+            if published
+            else "ready_for_user_release_review"
+        ),
+        "external_actions_performed": published,
+        "publication_status": publication_status,
         "checks": [asdict(check) for check in checks],
         "blocking_checks": [check.name for check in blocking],
     }
@@ -647,13 +613,12 @@ def render_markdown(payload: dict[str, Any]) -> str:
             result = "INFO"
         observed = str(check["observed"]).replace("|", "\\|").replace("\n", " ")
         lines.append(f"| `{check['name']}` | {result} | {observed} |")
-    lines.extend(
-        [
-            "",
-            "No repository, model, or dataset was published by this audit.",
-            "",
-        ]
+    release_note = (
+        "The public GitHub, dataset, and model release has anonymous verification evidence."
+        if payload.get("external_actions_performed")
+        else "No repository, model, or dataset was published by this audit."
     )
+    lines.extend(["", release_note, ""])
     return "\n".join(lines)
 
 
@@ -671,10 +636,7 @@ def main() -> int:
     payload = build_report(run_slow_checks=not args.fast)
     _write(args.json, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
     _write(args.markdown, render_markdown(payload))
-    print(
-        f"M13 preflight status={payload['status']}; "
-        f"blocking={payload['blocking_checks']}"
-    )
+    print(f"M13 preflight status={payload['status']}; blocking={payload['blocking_checks']}")
     return 0
 
 

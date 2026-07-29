@@ -11,9 +11,9 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 12:52 +08:00（跨多次使用者回來後續作） |
-| 完成到 | 所有本機 GPU 階段：F7、M9 primary 與 seeds 42–44 uncertainty、M10 robustness、M11 real evidence、M12 與 Colab portability |
-| 卡住的項目 | 技術上無；只剩 clean-environment M13 release audit 與使用者最終發佈 review |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 19:45 +08:00（跨多次使用者回來後續作） |
+| 完成到 | 所有本機 GPU 階段、M12、Colab portability 與 M13 GitHub／Hugging Face public release |
+| 卡住的項目 | 無 |
 | GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
@@ -24,7 +24,7 @@
 
 Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thresholds。
 目前 Codex 可繼續做本機驗收與 GPU-safe 工作；Colab 一組可攜性實跑已完成，
-只剩 Hugging Face 上傳與最終公開需要使用者操作或核可。
+GitHub、Hugging Face Dataset 與 LoRA adapter 均已公開並通過匿名驗證。
 
 ### 👀 需要你 review 的產出
 
@@ -50,9 +50,8 @@ Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thres
 
 ### ➡️ 接下來的建議起點
 
-所有本機 GPU evidence 已完成。更新 README／data card 後執行 final
-release preflight、commit/push 與 GitHub Contributors 稽核；使用者過目之前
-維持 Private、不發布 Hugging Face。
+公開交付已完成。後續若延伸研究，先從 `PLAN.md` 的研究限制與 Roadmap
+建立新里程碑；不要覆寫 v1 release corpus、frozen thresholds 或 primary runs。
 
 ---
 
@@ -60,6 +59,20 @@ release preflight、commit/push 與 GitHub Contributors 稽核；使用者過目
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 19:45 +08:00] M13 public release — 完成
+
+- GitHub `kuotunyu/FormosaNLU-Synth` 已轉 Public；公開前後 Contributors
+  API 均只有 `kuotunyu`
+- HF Dataset `steven0226/formosa-nlu-synth-v1`：3,754 rows、60 intents、
+  3,754 unique IDs，Dataset Viewer HTTP 200，CC BY 4.0
+- HF Model `steven0226/gemma-4-e4b-formosanlu-lora`：Apache-2.0、
+  `google/gemma-4-E4B-it` base、686 tensors、adapter SHA-256
+  `f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a`
+- 發布採 Private-first：逐檔回下載 SHA 比對全綠後，才依使用者明確授權
+  依序公開 GitHub → Dataset → Model
+- 匿名 `load_dataset`、PEFT config、safetensors、GitHub API 與 Dataset
+  Viewer 全部通過
 
 ### [2026-07-29 12:52 +08:00] M10 robustness — 完成
 

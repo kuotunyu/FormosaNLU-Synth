@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：所有本機 GPU 階段、Colab portability 與 M12 證據均已完成；M13 最終 review 待辦。**
+> **狀態：所有本機 GPU 階段、Colab portability、M12 與 M13 public release 均已完成。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -13,8 +13,8 @@
 **目前不需要你操作。** 本機 primary 六組訓練、六組評估、seeds 43/44
 四組 uncertainty runs、M10、M11
 介面與五句 real evidence、M12 報告、F7 與 Colab `real_only` portability
-run，以及兩組 robustness inference 都已完成。Codex 正在執行最終
-release audit；你醒來後只需 review 是否轉 Public／發布 Hugging Face。
+run，以及兩組 robustness inference 都已完成。GitHub、Hugging Face Dataset
+與 LoRA adapter 亦已公開並通過匿名載入驗證。
 
 ---
 
@@ -107,12 +107,11 @@ trajectory；可攜性驗證不要求不同 GPU 的浮點結果逐位元一致�
 
 ## B. Hugging Face 發佈（M13）
 
-<!-- FILL AT M13 -->
-
-- [ ] 確認 `huggingface-cli` / `hf` 已登入（帳號 `steven0226`）
-- [ ] dataset repo：`steven0226/formosa-nlu-synth-v1`
-- [ ] model repo：`steven0226/gemma-4-e4b-formosanlu-lora`
-- [ ] **轉 public 前我會先給你完整的 card 內容過目**
+- [x] `hf auth whoami`：帳號 `steven0226`
+- [x] Public dataset：[`steven0226/formosa-nlu-synth-v1`](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1)
+- [x] Public model：[`steven0226/gemma-4-e4b-formosanlu-lora`](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)
+- [x] 先建立 Private、逐檔回下載比對，再依使用者明確授權轉 Public
+- [x] 匿名 Dataset 載入、Dataset Viewer、PEFT config、adapter SHA-256 通過
 
 ---
 
@@ -126,8 +125,8 @@ Repository 已於使用者明確同意後建立：
 - [x] 首次 push；remote commits 與 GitHub Contributors 都只有 `kuotunyu`
 - [x] 完成 extra seeds 與三種子 uncertainty（真模型證據亦已完成）
 - [x] 完成 robustness
-- [ ] 完成發佈前總驗收並由使用者 review
-- [ ] **使用者過目後才轉 Public**
+- [x] 完成發佈前總驗收並取得使用者明確公開授權
+- [x] GitHub 轉 Public
 
 > 提醒：commit 一律不帶 `Co-Authored-By` trailer，GitHub Contributors 只會有 `kuotunyu`。
 > push 前先跑 `python scripts/verify_contributors.py`；任何非 `kuotunyu`

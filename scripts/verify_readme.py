@@ -12,6 +12,7 @@ README = REPO_ROOT / "README.md"
 M10 = REPO_ROOT / "reports" / "m10_main_results.json"
 M9_REPLICATES = REPO_ROOT / "reports" / "m9_replicate_summary.json"
 M10_ROBUSTNESS = REPO_ROOT / "reports" / "m10_robustness.json"
+M13_PUBLICATION = REPO_ROOT / "reports" / "m13_publication.json"
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
@@ -87,6 +88,16 @@ def expected_robustness_rows(report: dict[str, Any]) -> list[str]:
     return rows
 
 
+def expected_publication_markers(report: dict[str, Any]) -> list[str]:
+    """Return the public URLs and release-row marker required in README."""
+    return [
+        report["github"]["url"],
+        report["dataset"]["url"],
+        report["model"]["url"],
+        f"{int(report['dataset']['rows']):,}-row",
+    ]
+
+
 def verify_readme(
     *,
     readme: str,
@@ -96,6 +107,7 @@ def verify_readme(
     m11: dict[str, Any],
     replicates: dict[str, Any] | None = None,
     robustness: dict[str, Any] | None = None,
+    publication: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
@@ -118,6 +130,17 @@ def verify_readme(
                     expected in readme,
                 )
             )
+    if publication is not None:
+        checks.append(("public release verified", publication.get("status") == "public_verified"))
+        checks.append(
+            (
+                "public contributors only kuotunyu",
+                publication["github"].get("contributors_only_kuotunyu") is True
+                and "Contributors 僅 `kuotunyu`" in readme,
+            )
+        )
+        for marker in expected_publication_markers(publication):
+            checks.append((f"public marker {marker}", marker in readme))
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
     comparisons = m11["comparisons"]
@@ -209,6 +232,7 @@ def main() -> int:
         m11=_load(M11),
         replicates=_load(M9_REPLICATES),
         robustness=_load(M10_ROBUSTNESS) if M10_ROBUSTNESS.is_file() else None,
+        publication=_load(M13_PUBLICATION) if M13_PUBLICATION.is_file() else None,
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:

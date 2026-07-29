@@ -3,6 +3,7 @@ from __future__ import annotations
 from scripts.build_m12_artifacts import build_resource_ledger
 from scripts.verify_readme import (
     expected_main_rows,
+    expected_publication_markers,
     expected_replicate_rows,
     expected_robustness_rows,
 )
@@ -172,3 +173,21 @@ def test_expected_robustness_row_is_formatted_from_report() -> None:
     assert expected_robustness_rows(report)[0] == (
         "| `real_only` | `asr_noise` | 75.00% | 50.00% | 40.00% | 95.00% |"
     )
+
+
+def test_expected_publication_markers_are_derived_from_report() -> None:
+    report = {
+        "github": {"url": "https://github.com/example/project"},
+        "dataset": {
+            "url": "https://huggingface.co/datasets/example/data",
+            "rows": 3754,
+        },
+        "model": {"url": "https://huggingface.co/example/model"},
+    }
+
+    assert expected_publication_markers(report) == [
+        "https://github.com/example/project",
+        "https://huggingface.co/datasets/example/data",
+        "https://huggingface.co/example/model",
+        "3,754-row",
+    ]
