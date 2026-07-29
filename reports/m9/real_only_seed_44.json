@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-29T01:32:54.921689+00:00",
+  "model": "google/gemma-4-E4B-it",
+  "text_only_class": "Gemma4ForCausalLM",
+  "quantization": "NF4 double-quant, bf16 compute",
+  "prompt_template_version": "formosanlu_nlu.v1",
+  "evaluation_mode": "trained_adapter",
+  "label_catalog_included": false,
+  "zero_shot_prompt_includes_label_catalog": false,
+  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\real_only\\seed_44\\adapter",
+  "group": "real_only",
+  "seed": 44,
+  "constrained_decoding": false,
+  "completed": 2974,
+  "target": 2974,
+  "wall_seconds": 1469.3384342999811,
+  "timing_basis": "sum of model.generate batch elapsed; excludes model loading",
+  "output_tokens": 66303,
+  "output_tokens_per_second": 45.12438962476873,
+  "output_token_distribution": {
+    "p50": 22,
+    "p95": 39,
+    "p99": 50,
+    "maximum": 68,
+    "max_new_tokens": 128,
+    "at_generation_limit": 0
+  },
+  "peak_device_wide_gpu_memory_mib": 10568.0,
+  "gpu_memory_measurement": "nvidia-smi device-wide memory; concurrent project workloads may contribute",
+  "metrics": {
+    "samples": 2974.0,
+    "json_valid_rate": 0.9734364492266308,
+    "intent_accuracy": 0.7296570275722932,
+    "intent_macro_f1": 0.7308419260071817,
+    "slot_micro_f1": 0.6430268689453482,
+    "exact_match": 0.4791526563550773
+  },
+  "parser_outcomes": {
+    "unknown_intent": 19,
+    "unknown_slot_type": 60,
+    "valid": 2895
+  },
+  "conditional_on_strict_valid_json": {
+    "valid_rows": 2895,
+    "intent_correct": 2170,
+    "intent_accuracy": 0.7495682210708118
+  },
+  "per_intent": {
+    "alarm_query": {
+      "correct": 30,
+      "total": 34,
+      "accuracy": 0.8823529411764706
+    },
+    "alarm_remove": {
+      "correct": 21,
+      "total": 21,
+      "accuracy": 1.0
+    },
+    "alarm_set": {
+      "correct": 40,
+      "total": 41,
+      "accuracy": 0.975609756097561
+    },
+    "audio_volume_down": {
+      "correct": 10,
+      "total": 11,
+      "accuracy": 0.9090909090909091
+    },
+    "audio_volume_mute": {
+      "correct": 26,
+      "total": 32,
+      "accuracy": 0.8125
+    },
+    "audio_volume_other": {
+      "correct": 3,
+      "total": 6,
+      "accuracy": 0.5
+    },
+    "audio_volume_up": {
+      "correct": 12,
+      "total": 13,
+      "accuracy": 0.9230769230769231
+    },
+    "calendar_query": {
+      "correct": 32,
+      "total": 126,
+      "accuracy": 0.25396825396825395
+    },
+    "calendar_remove": {
+      "correct": 31,
+      "total": 67,
+      "accuracy": 0.4626865671641791
+    },
+    "calendar_set": {
+      "correct": 82,
+      "total": 209,
+      "accuracy": 0.3923444976076555
+    },
+    "cooking_query": {
+      "correct": 0,
+      "total": 0,
+      "accuracy": 0.0
+    },
+    "cooking_recipe": {
+      "correct": 66,
+      "total": 72,
+      "accuracy": 0.9166666666666666
+    },
+    "datetime_convert": {
+      "correct": 11,
+      "total": 15,
+      "accuracy": 0.7333333333333333
+    },
+    "datetime_query": {
+      "correct": 81,
+      "total": 88,
+      "accuracy": 0.9204545454545454
+    },
+    "email_addcontact": {
+      "correct": 9,
+      "total": 12,
+      "accuracy": 0.75
+    },
+    "email_query": {
+      "correct": 96,
+      "total": 119,
+      "accuracy": 0.8067226890756303
+    },
+    "email_querycontact": {
+      "correct": 21,
+      "total": 26,
+      "accuracy": 0.8076923076923077
+    },
+    "email_sendemail": {
+      "correct": 91,
+      "total": 114,
+      "accuracy": 0.7982456140350878
+    },
+    "general_greet": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 1.0
+    },
+    "general_joke": {
+      "correct": 19,
+      "total": 19,
+      "accuracy": 1.0
+    },
+    "general_quirky": {
+      "correct": 41,
+      "total": 169,
+      "accuracy": 0.24260355029585798
+    },
+    "iot_cleaning": {
+      "correct": 24,
+      "total": 26,
+      "accuracy": 0.9230769230769231
+    },
+    "iot_coffee": {
+      "correct": 36,
+      "total": 36,
+      "accuracy": 1.0
+    },
+    "iot_hue_lightchange": {
+      "correct": 31,
+      "total": 36,
+      "accuracy": 0.8611111111111112
+    },
+    "iot_hue_lightdim": {
+      "correct": 18,
+      "total": 21,
+      "accuracy": 0.8571428571428571
+    },
+    "iot_hue_lightoff": {
+      "correct": 39,
+      "total": 43,
+      "accuracy": 0.9069767441860465
+    },
+    "iot_hue_lighton": {
+      "correct": 2,
+      "total": 3,
+      "accuracy": 0.6666666666666666
+    },
+    "iot_hue_lightup": {
+      "correct": 19,
+      "total": 27,
+      "accuracy": 0.7037037037037037
+    },
+    "iot_wemo_off": {
+      "correct": 18,
+      "total": 18,
+      "accuracy": 1.0
+    },
+    "iot_wemo_on": {
+      "correct": 9,
+      "total": 10,
+      "accuracy": 0.9
+    },
+    "lists_createoradd": {
+      "correct": 35,
+      "total": 39,
+      "accuracy": 0.8974358974358975
+    },
+    "lists_query": {
+      "correct": 43,
+      "total": 51,
+      "accuracy": 0.8431372549019608
+    },
+    "lists_remove": {
+      "correct": 37,
+      "total": 52,
+      "accuracy": 0.7115384615384616
+    },
+    "music_dislikeness": {
+      "correct": 4,
+      "total": 4,
+      "accuracy": 1.0
+    },
+    "music_likeness": {
+      "correct": 27,
+      "total": 36,
+      "accuracy": 0.75
+    },
+    "music_query": {
+      "correct": 27,
+      "total": 35,
+      "accuracy": 0.7714285714285715
+    },
+    "music_settings": {
+      "correct": 3,
+      "total": 6,
+      "accuracy": 0.5
+    },
+    "news_query": {
+      "correct": 89,
+      "total": 124,
+      "accuracy": 0.717741935483871
+    },
+    "play_audiobook": {
+      "correct": 32,
+      "total": 41,
+      "accuracy": 0.7804878048780488
+    },
+    "play_game": {
+      "correct": 30,
+      "total": 35,
+      "accuracy": 0.8571428571428571
+    },
+    "play_music": {
+      "correct": 135,
+      "total": 176,
+      "accuracy": 0.7670454545454546
+    },
+    "play_podcasts": {
+      "correct": 50,
+      "total": 63,
+      "accuracy": 0.7936507936507936
+    },
+    "play_radio": {
+      "correct": 58,
+      "total": 72,
+      "accuracy": 0.8055555555555556
+    },
+    "qa_currency": {
+      "correct": 39,
+      "total": 39,
+      "accuracy": 1.0
+    },
+    "qa_definition": {
+      "correct": 44,
+      "total": 57,
+      "accuracy": 0.7719298245614035
+    },
+    "qa_factoid": {
+      "correct": 105,
+      "total": 141,
+      "accuracy": 0.7446808510638298
+    },
+    "qa_maths": {
+      "correct": 25,
+      "total": 25,
+      "accuracy": 1.0
+    },
+    "qa_stock": {
+      "correct": 25,
+      "total": 26,
+      "accuracy": 0.9615384615384616
+    },
+    "recommendation_events": {
+      "correct": 35,
+      "total": 43,
+      "accuracy": 0.813953488372093
+    },
+    "recommendation_locations": {
+      "correct": 24,
+      "total": 31,
+      "accuracy": 0.7741935483870968
+    },
+    "recommendation_movies": {
+      "correct": 18,
+      "total": 20,
+      "accuracy": 0.9
+    },
+    "social_post": {
+      "correct": 66,
+      "total": 81,
+      "accuracy": 0.8148148148148148
+    },
+    "social_query": {
+      "correct": 20,
+      "total": 25,
+      "accuracy": 0.8
+    },
+    "takeaway_order": {
+      "correct": 18,
+      "total": 22,
+      "accuracy": 0.8181818181818182
+    },
+    "takeaway_query": {
+      "correct": 26,
+      "total": 35,
+      "accuracy": 0.7428571428571429
+    },
+    "transport_query": {
+      "correct": 29,
+      "total": 51,
+      "accuracy": 0.5686274509803921
+    },
+    "transport_taxi": {
+      "correct": 23,
+      "total": 23,
+      "accuracy": 1.0
+    },
+    "transport_ticket": {
+      "correct": 30,
+      "total": 35,
+      "accuracy": 0.8571428571428571
+    },
+    "transport_traffic": {
+      "correct": 13,
+      "total": 15,
+      "accuracy": 0.8666666666666667
+    },
+    "weather_query": {
+      "correct": 141,
+      "total": 156,
+      "accuracy": 0.9038461538461539
+    }
+  }
+}
