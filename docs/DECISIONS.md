@@ -420,4 +420,67 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 
 ---
 
-<!-- 新決策從 D-016 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-016 — M14 使用 hierarchical paired bootstrap 與 exact McNemar
+
+- **日期**：2026-07-29
+- **狀態**：`accepted`
+- **決策**：從既有 `real_only`／`real_syn_filtered` seeds 42–44 的完整
+  2,974-row predictions 重建 paired statistical evidence。Effect interval
+  使用兩層 bootstrap：先重抽 training seeds，再於各 seed 內重抽相同 Test
+  rows；intent accuracy 與 exact match 另逐 seed 做 two-sided exact
+  McNemar，六項 p-values 使用 Holm correction。
+
+**理由**
+
+1. 同一 Test row 在兩個 adapter 間是配對觀察，paired 分析比把 aggregate
+   seed means 單獨做 t interval 更有效率。
+2. 同一 Test set 在三個 seeds 重複出現，不能把 8,922 個結果當成完全獨立；
+   hierarchical bootstrap 明確保留 seed 與 row 兩層。
+3. Prediction JSONL 已存在且有完整 expected rows，不需額外 GPU，也不需接觸
+   validation／Test 來挑選模型或資料。
+
+**限制**：這些檢定只支撐 frozen MASSIVE `zh-TW` Test 與 Gemma 4 contract
+內的 paired 差異，不自動變成跨模型、跨資料集或自然台灣口語的泛化證據。
+
+**重新審視的觸發條件**：發現 prediction indices／expected rows 不一致、
+評測 parser 有可重現錯誤，或取得更多真正獨立的 student families／datasets。
+
+---
+
+## D-017 — M15 第二 student 採 `microsoft/Phi-4-mini-instruct`
+
+- **日期**：2026-07-29
+- **狀態**：`pending`（待 revision freeze、token audit 與 one-step smoke）
+- **決策**：跨模型 replication 的第二 student 候選定為
+  `microsoft/Phi-4-mini-instruct`。只重跑主比較：
+  `real_only`／`real_syn_filtered` × seeds 42–44；資料、prompt、steps、
+  effective batch、max length 與 2,974-row Test contract 均保持一致。
+
+**考慮過的選項**
+
+| 選項 | 評估 |
+|---|---|
+| Qwen 3–4B student | 中文強，但與 Qwen teacher 同 family，較難排除 family affinity |
+| SmolLM3 3B | Apache-2.0、工具鏈乾淨，但官方原生語言不含 Chinese |
+| Llama 3.2 3B | 模型小，但 Chinese 不是主要支援語言且 license 義務較多 |
+| **Phi-4-mini-instruct（採用候選）** | 3.8B、MIT、官方列出 Chinese、約 7.7 GB，且與三個既有角色皆不同 family |
+
+**理由**
+
+1. 第二 family 的目的不是追最新榜單，而是測 synthetic augmentation 的方向
+   是否能跨 student architecture 重現。
+2. Phi 官方 model card 明列 24-language／Chinese support，且 3.8B QLoRA
+   適合單張 4090 24 GB。
+3. MIT 授權讓報告與可能的 adapter 發布沒有額外命名／AUP 義務。
+
+**硬性 gate**：下載前依 >2 GB 規則取得使用者明示同意；下載後固定 revision
+與 SHA、完成 tokenizer truncation audit、one-step QLoRA、checkpoint resume
+與小型 strict-output probe。任一項失敗就停，不為通關改資料或 primary config。
+
+**重新審視的觸發條件**：官方 revision／license 變更、Transformers 5.5
+無法穩定載入、24 GB OOM、繁中 zero-shot 接近亂猜且 SFT smoke 無法學習，
+或 checkpoint resume 不可驗證。
+
+---
+
+<!-- 新決策從 D-018 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->

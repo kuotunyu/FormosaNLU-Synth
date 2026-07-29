@@ -11,20 +11,22 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 19:45 +08:00（跨多次使用者回來後續作） |
-| 完成到 | 所有本機 GPU 階段、M12、Colab portability 與 M13 GitHub／Hugging Face public release |
-| 卡住的項目 | 無 |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 21:55 +08:00（跨多次使用者回來後續作） |
+| 完成到 | M13 public release；M14 paired statistics 已重建，release hardening 收尾中 |
+| 卡住的項目 | M15 下載 7.7 GB Phi-4-mini 前需依專案 >2 GB 規則取得使用者明示同意 |
 | GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
-### 🟢 目前不需你操作
+### 🟡 目前只需一項確認
 
 <!-- 逐條列出。每條要有：問題、背景、我建議的選項、以及不決定會擋住什麼 -->
 
 Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thresholds。
-目前 Codex 可繼續做本機驗收與 GPU-safe 工作；Colab 一組可攜性實跑已完成，
-GitHub、Hugging Face Dataset 與 LoRA adapter 均已公開並通過匿名驗證。
+M14 不需要 GPU，Codex 正在收尾。M15 擬使用
+`microsoft/Phi-4-mini-instruct` 做第二 student family；模型約 7.7 GB，
+需使用者明示同意下載。下載後會先做 token／VRAM／resume smoke，通過才排
+`real_only`／`real_syn_filtered` × seeds 42–44 的過夜批次。
 
 ### 👀 需要你 review 的產出
 
@@ -50,8 +52,8 @@ GitHub、Hugging Face Dataset 與 LoRA adapter 均已公開並通過匿名驗證
 
 ### ➡️ 接下來的建議起點
 
-公開交付已完成。後續若延伸研究，先從 `PLAN.md` 的研究限制與 Roadmap
-建立新里程碑；不要覆寫 v1 release corpus、frozen thresholds 或 primary runs。
+先完成 M14 總驗收與公開 cards，再執行 M15 第二 student paired replication。
+不要覆寫 v1 release corpus、frozen thresholds 或 Gemma primary runs。
 
 ---
 
@@ -59,6 +61,17 @@ GitHub、Hugging Face Dataset 與 LoRA adapter 均已公開並通過匿名驗證
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 21:55 +08:00] M14 paired statistics — 核心計算完成
+
+- 讀取六份 ignored prediction JSONL：2 groups × seeds 42–44，每份 2,974 rows；
+  paired expected rows 與連續 indices 全部一致，SHA-256 寫入 machine report
+- 5,000 次 hierarchical paired bootstrap：intent accuracy Δ +4.14 points，
+  95% CI [+2.60, +5.59]；exact Δ +3.86，CI [+2.75, +4.92]
+- 每 seed 的 intent accuracy／exact match exact McNemar tests 經六項 Holm
+  correction 後全部顯著，最大 adjusted p 約 0.00017
+- 統計適用 frozen MASSIVE `zh-TW` Test 與 Gemma contract，不宣稱跨模型泛化
+- 已新增 `CITATION.cff`、CI workflow、v1.0.0 metadata，總驗收尚未完成
 
 ### [2026-07-29 19:45 +08:00] M13 public release — 完成
 

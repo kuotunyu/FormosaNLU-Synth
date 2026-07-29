@@ -3,6 +3,7 @@ from __future__ import annotations
 from scripts.build_m12_artifacts import build_resource_ledger
 from scripts.verify_readme import (
     expected_main_rows,
+    expected_paired_markers,
     expected_publication_markers,
     expected_replicate_rows,
     expected_robustness_rows,
@@ -190,4 +191,31 @@ def test_expected_publication_markers_are_derived_from_report() -> None:
         "https://huggingface.co/datasets/example/data",
         "https://huggingface.co/example/model",
         "3,754-row",
+    ]
+
+
+def test_expected_paired_markers_are_derived_from_report() -> None:
+    report = {
+        "hierarchical_bootstrap": {
+            "repetitions": 5000,
+            "metrics": {
+                "intent_accuracy": {
+                    "mean_delta_percentage_points": 4.14,
+                    "hierarchical_bootstrap_95_ci_percentage_points": [2.60, 5.59],
+                },
+                "exact_match": {
+                    "mean_delta_percentage_points": 3.86,
+                    "hierarchical_bootstrap_95_ci_percentage_points": [2.75, 4.92],
+                },
+            },
+        }
+    }
+
+    assert expected_paired_markers(report) == [
+        "5,000 次",
+        "hierarchical paired",
+        "+4.14",
+        "[+2.60, +5.59]",
+        "+3.86",
+        "[+2.75, +4.92]",
     ]

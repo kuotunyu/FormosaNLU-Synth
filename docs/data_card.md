@@ -58,8 +58,10 @@ Val/Test.
 | `filtered` | 3,754 release rows: 3,760 frozen F1–F6 candidates minus 6 sampled rows rejected by F7 |
 | `unfiltered` | 11,264 generated samples, including rejected rows and diagnostics |
 
-Both remain pre-release artifacts. The rejected samples are informative because
-they show what the filter pipeline actually catches.
+The 3,754-row filtered version is public on Hugging Face. The unfiltered corpus
+and rejected rows remain research artifacts and are not part of the release;
+they are informative because they show what the filter pipeline actually
+catches.
 
 ## Dataset Creation
 
@@ -169,8 +171,10 @@ a natural ASR-error or code-switching distribution.
   frozen 20-shot train manifest.
 - Decontamination against Val/Test was **exclusion-only**: near-duplicates were
   removed, and Val/Test were never used to rank, weight, or select anything.
-- The planned decontamination audit log records removed ids, similarity scores,
-  and matched evaluation ids; it will be released alongside the dataset.
+- Decontamination outputs record removed ids, similarity scores, and matched
+  evaluation ids. Public reports expose hashes and aggregate counts; row-level
+  Val/Test matches remain local so the release does not redistribute evaluation
+  utterances.
 
 ### Known limitations
 
@@ -211,7 +215,7 @@ the student are the same family, so of course it works" objection.
 | Seed utterances (MASSIVE `zh-TW`) | CC BY 4.0 — attribution required |
 | Teacher model | Apache-2.0 — no restriction on use of outputs |
 | Generation / filtering code | MIT |
-| **This synthetic dataset** | CC BY 4.0 (planned; retains upstream attribution) |
+| **This synthetic dataset** | CC BY 4.0 (released; retains upstream attribution) |
 | Released LoRA adapter (separate repo) | Apache-2.0, inherited from the student base model |
 
 Because the seed utterances are CC BY 4.0, derivative synthetic data carries the
@@ -222,14 +226,18 @@ the published adapter, not this dataset.
 
 ## Citation
 
-No archival citation or DOI exists while the dataset remains pre-release. Until
-M13, cite the repository commit plus MASSIVE:
+The public v1 release does not currently have a DOI. Cite the repository,
+Hugging Face dataset, and upstream MASSIVE source:
 
 ```text
-FormosaNLU contributors. FormosaNLU Synthetic Data Distillation for
-Traditional Chinese (Taiwan) NLU. Pre-release software and dataset card.
-Upstream seed data: FitzGerald et al., MASSIVE (CC BY 4.0).
+kuotunyu. FormosaNLU Synthetic Data Distillation for Traditional Chinese
+(Taiwan) NLU, version 1.0.0. 2026.
+https://github.com/kuotunyu/FormosaNLU-Synth
+Dataset: https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1
+Upstream: FitzGerald et al., MASSIVE, ACL 2023 (CC BY 4.0).
 ```
+
+Machine-readable citation metadata is available in `CITATION.cff`.
 
 ## Cost and reproducibility
 

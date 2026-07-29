@@ -105,6 +105,26 @@ seeds 42、43、44 訓練與評估；每個 run 都使用完整 2,974-row Test�
 95% intervals 使用 Student's t（df=2）；完整逐 seed 報告與原始統計在
 [`reports/m9_replicate_summary.md`](reports/m9_replicate_summary.md)。
 
+### Paired statistical evidence
+
+另外使用 frozen row-level predictions 做 5,000 次 hierarchical paired
+bootstrap：先重抽三個 training seeds，再於各 seed 內重抽相同 Test rows。
+這保留了 adapter 間的逐列配對，也不把同一 Test row 在三個 seeds 的結果
+誤當成九千筆獨立樣本。
+
+| Metric | 平均提升 | Hierarchical bootstrap 95% CI |
+| --- | ---: | ---: |
+| Intent accuracy | +4.14 個百分點 | **[+2.60, +5.59]** |
+| Intent macro-F1 | +2.01 個百分點 | **[+0.35, +3.69]** |
+| Slot micro-F1 | +2.92 個百分點 | **[+0.87, +4.68]** |
+| Exact match | +3.86 個百分點 | **[+2.75, +4.92]** |
+
+Intent accuracy 與 exact match 另在每個 seed 執行 two-sided exact McNemar
+test；六項比較經 Holm correction 後全部 `p ≤ 0.00017`。這是 frozen
+MASSIVE `zh-TW` Test 與目前 Gemma 4 contract 內的 paired evidence，不等同
+跨模型或跨資料集泛化。完整方法、input SHA-256 與結果見
+[`reports/m14_paired_statistics.md`](reports/m14_paired_statistics.md)。
+
 ### 各 intent 的變化
 
 進步最多的是 `qa_factoid`（+51.77 個百分點）、`qa_definition`（+33.33）
@@ -338,8 +358,9 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## 限制
 
-- 三種子摘要只有 `n=3`；95% intervals 是 descriptive uncertainty，
-  不支撐廣泛統計顯著性、跨模型或跨資料集泛化宣稱。
+- Training-seed 摘要只有 `n=3`；M14 hierarchical bootstrap 與 paired
+  McNemar tests 強化了 frozen Test 上的證據，但仍不支撐跨模型或跨資料集
+  泛化宣稱。
 - F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
   為 6.0%，但樣本僅 50 筆，95% interval 很寬。
 - Robustness 只比較 seed-42 adapters，且三種擾動是 deterministic probes；
@@ -364,8 +385,10 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## Roadmap
 
-M13 public release 與匿名驗證已完成。後續可將同一 pipeline
-延伸至台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval` 等工具評估。
+M13 public release 與 M14 paired statistics 已完成。下一個研究里程碑是用
+第二個 3–4B student family 重複 `real_only`／`real_syn_filtered` 三種子
+paired contract；後續再延伸台灣在地知識 distillation，並以 TMMLU+ 與
+`twinkle-eval` 等工具評估。
 
 ## 專案文件
 

@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 19:45 +08:00 |
-| **目前里程碑** | **M13 public release 完成**：GitHub、HF Dataset、HF LoRA adapter 均公開且匿名驗證通過 |
-| **下一步動作** | 無必要發布工作；後續研究可延伸台灣在地知識 distillation 或跨模型驗證 |
-| **球在誰身上** | 無；專案已完成公開交付 |
+| **最後更新** | 2026-07-29 21:55 +08:00 |
+| **目前里程碑** | **M14 收尾中**：paired statistics 已重建；release metadata、CI、citation 待總驗收 |
+| **下一步動作** | 完成 M14 commit/public cards；準備 Phi-4-mini 第二 student paired pipeline 與 smoke gate |
+| **球在誰身上** | Codex；下載 7.7 GB Phi-4-mini 前依 >2 GB 規則取得使用者明示同意 |
 | **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h（F7、M11、extra seeds、robustness）；可追溯 local total 23.124 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | 三種子 intervals 僅為 descriptive uncertainty；robustness 只用 seed 42；這些是研究限制而非發布阻塞 |
-| **目前範圍** | GitHub source、3,754-row HF Dataset 與 filtered seed-42 HF LoRA adapter 均已公開；不發布完整 base weights、checkpoints 或 rejected rows |
-| **阻塞項** | 無 |
+| **待決事項** | robustness 仍只用 seed 42；第二 student runtime 尚待 smoke 驗證 |
+| **目前範圍** | M14 只重算既有 predictions；M15 僅新增 Phi-4-mini `real_only`／`real_syn_filtered` 三種子，不改 v1 corpus 或 Gemma primary |
+| **阻塞項** | M15 model download 需使用者明示同意；M14 無阻塞 |
 
 ---
 
@@ -186,6 +186,28 @@
 | HF 上傳 | dataset `steven0226/formosa-nlu-synth-v1`、model `steven0226/gemma-4-e4b-formosanlu-lora`，雙語 card |
 | GitHub | 使用 `kuotunyu/FormosaNLU-Synth`（先 Private，D-005）；**commit 不帶 `Co-Authored-By`** |
 | 一頁驗收報告 | 通過項／修正項／殘留風險；**使用者說 OK 才轉 public** |
+
+## Phase 3 — M14/M15 證據強化
+
+### M14 · Paired statistics 與 release hardening
+
+| 交付物 | 驗證方法 | 狀態 |
+|---|---|---|
+| 三種子 hierarchical paired bootstrap | frozen 6 份 prediction JSONL 的 row count、expected rows、SHA-256 全部一致；固定 5,000 repetitions／seed 20260729 | ✅ 已產生 |
+| Intent／exact exact McNemar + Holm correction | 六項 paired tests 全部由 row-level correctness 重算；不把三個 seeds 當獨立 Test rows | ✅ 已產生 |
+| `CITATION.cff`、v1.0.0 metadata、public data card 修正 | YAML／TOML parse、移除 pre-release placeholders | 🟡 待總驗收 |
+| GitHub Actions CI | clean checkout 執行 Ruff、pytest、README 與 sole-contributor audit | 🟡 待首次遠端 run |
+| GitHub／HF v1.0.0 tags 與 Release | tags 指向經驗證 commits；匿名複驗檔案與 Contributors | ⬜ 待 M14 commit |
+
+### M15 · 第二 student family paired replication
+
+| 交付物 | 驗證方法 | 狀態 |
+|---|---|---|
+| Student 選型與授權 | `microsoft/Phi-4-mini-instruct`：3.8B、MIT、官方 Chinese support；與 teacher／Gemma／judge 不同 family | ✅ CPU 查證 |
+| Frozen data/config contract | 同一 1,176 real、3,760 F1–F6 synthetic、2,033 Val、2,974 Test；500 steps／effective batch 16／max length 512 | ⬜ |
+| Model revision、token audit、one-step smoke | revision + artifact SHA；prompt 不截斷；24 GB VRAM gate；checkpoint resume | ⬜ |
+| 六組 paired runs | `real_only` 與 `real_syn_filtered` × seeds 42–44，完整 training + 2,974-row evaluation | ⬜ |
+| Cross-model report | Gemma 與 Phi 各自 paired delta／CI；不事後更動 corpus、prompt 或 threshold | ⬜ |
 
 ### Phase 2 資源預估
 

@@ -63,7 +63,10 @@ Untouched MASSIVE `zh-TW` Test，2,974 rows：
 
 Paired seeds 42–44 中，filtered 相對 real-only 的 intent accuracy 平均提升
 +4.14 ± 1.39 個百分點，exact match 平均提升 +3.86 ± 0.73 個百分點。
-只有三個 seeds，因此 intervals 只作 descriptive uncertainty。
+5,000 次 hierarchical paired bootstrap 的 95% CI 分別為
+[+2.60, +5.59] 與 [+2.75, +4.92] 個百分點；每個 seed 的 exact McNemar
+tests 經 Holm correction 後均 `p ≤ 0.00017`。這些是 frozen Test 與目前
+Gemma 4 contract 內的證據，不代表跨模型泛化。
 
 Seed-42 的 8,922-row deterministic robustness probe：
 

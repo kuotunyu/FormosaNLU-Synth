@@ -13,6 +13,7 @@ M10 = REPO_ROOT / "reports" / "m10_main_results.json"
 M9_REPLICATES = REPO_ROOT / "reports" / "m9_replicate_summary.json"
 M10_ROBUSTNESS = REPO_ROOT / "reports" / "m10_robustness.json"
 M13_PUBLICATION = REPO_ROOT / "reports" / "m13_publication.json"
+M14_PAIRED = REPO_ROOT / "reports" / "m14_paired_statistics.json"
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
@@ -98,6 +99,25 @@ def expected_publication_markers(report: dict[str, Any]) -> list[str]:
     ]
 
 
+def expected_paired_markers(report: dict[str, Any]) -> list[str]:
+    """Return formatted M14 markers that must be visible in README."""
+    metrics = report["hierarchical_bootstrap"]["metrics"]
+    markers = [
+        f"{int(report['hierarchical_bootstrap']['repetitions']):,} 次",
+        "hierarchical paired",
+    ]
+    for metric in ("intent_accuracy", "exact_match"):
+        item = metrics[metric]
+        lower, upper = item["hierarchical_bootstrap_95_ci_percentage_points"]
+        markers.extend(
+            [
+                f"{item['mean_delta_percentage_points']:+.2f}",
+                f"[{lower:+.2f}, {upper:+.2f}]",
+            ]
+        )
+    return markers
+
+
 def verify_readme(
     *,
     readme: str,
@@ -108,6 +128,7 @@ def verify_readme(
     replicates: dict[str, Any] | None = None,
     robustness: dict[str, Any] | None = None,
     publication: dict[str, Any] | None = None,
+    paired: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
@@ -141,6 +162,18 @@ def verify_readme(
         )
         for marker in expected_publication_markers(publication):
             checks.append((f"public marker {marker}", marker in readme))
+    if paired is not None:
+        tests = paired["exact_mcnemar"]["tests"]
+        checks.append(("paired statistics complete", paired.get("status") == "complete"))
+        checks.append(
+            (
+                "paired Holm tests all significant",
+                len(tests) == 6
+                and all(item.get("holm_adjusted_p_value", 1.0) < 0.05 for item in tests.values()),
+            )
+        )
+        for marker in expected_paired_markers(paired):
+            checks.append((f"paired marker {marker}", marker in readme))
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
     comparisons = m11["comparisons"]
@@ -233,6 +266,7 @@ def main() -> int:
         replicates=_load(M9_REPLICATES),
         robustness=_load(M10_ROBUSTNESS) if M10_ROBUSTNESS.is_file() else None,
         publication=_load(M13_PUBLICATION) if M13_PUBLICATION.is_file() else None,
+        paired=_load(M14_PAIRED) if M14_PAIRED.is_file() else None,
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:

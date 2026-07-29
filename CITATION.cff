@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, dataset, or adapter, please cite it using this metadata."
+title: "FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU"
+type: software
+version: 1.0.0
+date-released: 2026-07-29
+authors:
+  - name: kuotunyu
+repository-code: "https://github.com/kuotunyu/FormosaNLU-Synth"
+url: "https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1"
+license: MIT
+keywords:
+  - synthetic data
+  - Traditional Chinese
+  - zh-TW
+  - natural language understanding
+  - intent classification
+  - slot filling
+identifiers:
+  - type: url
+    value: "https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1"
+    description: "Public dataset"
+  - type: url
+    value: "https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora"
+    description: "Public LoRA adapter"

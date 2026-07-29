@@ -93,6 +93,13 @@ QLoRA 三個 paired seeds（42–44）顯示：
 
 `n=3` intervals 是 descriptive uncertainty，不代表廣泛統計顯著性。
 
+使用 frozen row-level predictions 執行 5,000 次 hierarchical paired
+bootstrap 後，intent accuracy 的平均提升為 +4.14 個百分點（95% CI
+[+2.60, +5.59]），exact match 為 +3.86（[+2.75, +4.92]）。每個 seed
+的 intent accuracy 與 exact match exact McNemar tests 經 Holm correction
+後均 `p ≤ 0.00017`。這些結果只適用目前的 frozen Test 與 Gemma 4 contract，
+不代表跨模型泛化。
+
 ## 適合用途
 
 - 正體中文 intent classification／slot filling 研究
@@ -121,6 +128,14 @@ MASSIVE：
 
 > Jack FitzGerald et al. MASSIVE: A 1M-Example Multilingual Natural Language
 > Understanding Dataset with 51 Typologically-Diverse Languages. ACL 2023.
+
+FormosaNLU Synth：
+
+```text
+kuotunyu. FormosaNLU Synthetic Data Distillation for Traditional Chinese
+(Taiwan) NLU, version 1.0.0. 2026.
+https://github.com/kuotunyu/FormosaNLU-Synth
+```
 
 ## 可重現性
 

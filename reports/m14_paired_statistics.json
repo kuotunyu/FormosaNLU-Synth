@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "created_at": "2026-07-29T13:52:59.475282+00:00",
+  "comparison": "real_syn_filtered minus real_only",
+  "test_rows_per_seed": 2974,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "input_files": {
+    "real_only_seed_42": {
+      "path": "results/m9/real_only_seed_42.jsonl",
+      "rows": 2974,
+      "sha256": "e058c4a85726b24f13454085077f38a083aeac005f9a9d1ddabdf58423b6eed7"
+    },
+    "real_syn_filtered_seed_42": {
+      "path": "results/m9/real_syn_filtered_seed_42.jsonl",
+      "rows": 2974,
+      "sha256": "bdaeeb98847b981c0e8eeb34eb55aecd1f3ffc4c0ee68b1152bb62fdd09a6209"
+    },
+    "real_only_seed_43": {
+      "path": "results/m9/real_only_seed_43.jsonl",
+      "rows": 2974,
+      "sha256": "9e6cbac28054ed5857d67ebdb50c2ec0ef7e825c32e8a65329b92543ac1c78a6"
+    },
+    "real_syn_filtered_seed_43": {
+      "path": "results/m9/real_syn_filtered_seed_43.jsonl",
+      "rows": 2974,
+      "sha256": "ac2c010923a5d0513519927c0c06f5d64396b177b7a351e684d81d6a8da1581d"
+    },
+    "real_only_seed_44": {
+      "path": "results/m9/real_only_seed_44.jsonl",
+      "rows": 2974,
+      "sha256": "06aaafc9fee159e116094cef7c363507d79551f13ee7e8c7355965b70441bcf4"
+    },
+    "real_syn_filtered_seed_44": {
+      "path": "results/m9/real_syn_filtered_seed_44.jsonl",
+      "rows": 2974,
+      "sha256": "da42731cbe0eea4c4d558b0319db5e5878dd26f7668a9b3bff3f1b6e82017548"
+    }
+  },
+  "hierarchical_bootstrap": {
+    "repetitions": 5000,
+    "random_seed": 20260729,
+    "method": "Resample three seeds with replacement, then resample paired Test rows with replacement within each selected seed; average per-seed deltas.",
+    "metrics": {
+      "intent_accuracy": {
+        "by_seed_percentage_points": {
+          "42": 2.656355077336914,
+          "43": 4.337592468056495,
+          "44": 5.413584398117011
+        },
+        "mean_delta_percentage_points": 4.13584398117014,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          2.6000336247478084,
+          5.592916386460434
+        ]
+      },
+      "intent_macro_f1": {
+        "by_seed_percentage_points": {
+          "42": 0.8934036591906058,
+          "43": 1.44942842116359,
+          "44": 3.696804165411416
+        },
+        "mean_delta_percentage_points": 2.013212081921871,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          0.34982083603934605,
+          3.689849340800807
+        ]
+      },
+      "slot_micro_f1": {
+        "by_seed_percentage_points": {
+          "42": 4.401524913349364,
+          "43": 3.6036171816126616,
+          "44": 0.745856794785571
+        },
+        "mean_delta_percentage_points": 2.916999629915866,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          0.8664184126942173,
+          4.677029330936847
+        ]
+      },
+      "exact_match": {
+        "by_seed_percentage_points": {
+          "42": 3.059852051109613,
+          "43": 4.5057162071284464,
+          "44": 4.001344989912581
+        },
+        "mean_delta_percentage_points": 3.855637749383547,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          2.746021071508635,
+          4.920701636404393
+        ]
+      },
+      "json_valid_rate": {
+        "by_seed_percentage_points": {
+          "42": -0.03362474781438696,
+          "43": 3.8332212508406127,
+          "44": 0.90786819098857
+        },
+        "mean_delta_percentage_points": 1.569154898004932,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          -0.011208249271462318,
+          3.7662519614436207
+        ]
+      }
+    }
+  },
+  "exact_mcnemar": {
+    "method": "Two-sided exact McNemar/binomial test on paired row correctness; Holm correction across six intent/exact tests.",
+    "tests": {
+      "intent_accuracy_seed_42": {
+        "baseline_only_correct": 175,
+        "filtered_only_correct": 254,
+        "discordant": 429,
+        "p_value": 0.00015960052304061316,
+        "holm_adjusted_p_value": 0.00017027004078787677,
+        "reject_at_0_05": true
+      },
+      "exact_match_seed_42": {
+        "baseline_only_correct": 218,
+        "filtered_only_correct": 309,
+        "discordant": 527,
+        "p_value": 8.513502039393839e-05,
+        "holm_adjusted_p_value": 0.00017027004078787677,
+        "reject_at_0_05": true
+      },
+      "intent_accuracy_seed_43": {
+        "baseline_only_correct": 150,
+        "filtered_only_correct": 279,
+        "discordant": 429,
+        "p_value": 4.783501334358935e-10,
+        "holm_adjusted_p_value": 2.3917506671794676e-09,
+        "reject_at_0_05": true
+      },
+      "exact_match_seed_43": {
+        "baseline_only_correct": 173,
+        "filtered_only_correct": 307,
+        "discordant": 480,
+        "p_value": 9.996454624979932e-10,
+        "holm_adjusted_p_value": 3.998581849991973e-09,
+        "reject_at_0_05": true
+      },
+      "intent_accuracy_seed_44": {
+        "baseline_only_correct": 127,
+        "filtered_only_correct": 288,
+        "discordant": 415,
+        "p_value": 1.7861881212037385e-15,
+        "holm_adjusted_p_value": 1.0717128727222432e-14,
+        "reject_at_0_05": true
+      },
+      "exact_match_seed_44": {
+        "baseline_only_correct": 191,
+        "filtered_only_correct": 310,
+        "discordant": 501,
+        "p_value": 1.1847727168832841e-07,
+        "holm_adjusted_p_value": 3.5543181506498523e-07,
+        "reject_at_0_05": true
+      }
+    }
+  },
+  "interpretation_scope": "Evidence applies to the frozen MASSIVE zh-TW Test set and this Gemma 4 training contract. It does not establish cross-model or cross-dataset generalization."
+}
