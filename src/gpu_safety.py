@@ -10,6 +10,14 @@ from typing import Any
 from src.training.train import REPO_ROOT
 
 SIBLING_MARKERS = ("1_DefectForge", "2_SafeSynth")
+BLOCKING_PROCESS_NAMES = {
+    "cmd.exe",
+    "ollama.exe",
+    "powershell.exe",
+    "pwsh.exe",
+    "python.exe",
+    "pythonw.exe",
+}
 MAX_IDLE_GPU_USED_MIB = 3_000
 MAX_IDLE_GPU_UTILIZATION = 10
 MIN_GPU_TOTAL_MIB = 24_000
@@ -48,7 +56,8 @@ def gpu_snapshot() -> dict[str, Any]:
 def _windows_processes() -> list[dict[str, Any]]:
     command = (
         "Get-CimInstance Win32_Process | "
-        "Select-Object ProcessId,Name,CommandLine | ConvertTo-Json -Compress"
+        "Select-Object ProcessId,ParentProcessId,Name,CommandLine | "
+        "ConvertTo-Json -Compress"
     )
     completed = subprocess.run(
         ["powershell", "-NoProfile", "-Command", command],
@@ -64,11 +73,36 @@ def _windows_processes() -> list[dict[str, Any]]:
     return decoded if isinstance(decoded, list) else [decoded]
 
 
-def sibling_processes() -> list[dict[str, Any]]:
-    if os.name != "nt":
-        return []
+def _ancestor_pids(
+    processes: list[dict[str, Any]],
+    *,
+    current_pid: int,
+) -> set[int]:
+    parent_by_pid = {
+        int(process["ProcessId"]): int(process.get("ParentProcessId") or 0)
+        for process in processes
+        if process.get("ProcessId") is not None
+    }
+    ancestors: set[int] = set()
+    candidate = parent_by_pid.get(current_pid, 0)
+    while candidate and candidate not in ancestors:
+        ancestors.add(candidate)
+        candidate = parent_by_pid.get(candidate, 0)
+    return ancestors
+
+
+def _matching_sibling_processes(
+    processes: list[dict[str, Any]],
+    *,
+    current_pid: int,
+) -> list[dict[str, Any]]:
+    ignored_pids = _ancestor_pids(processes, current_pid=current_pid) | {current_pid}
     matches = []
-    for process in _windows_processes():
+    for process in processes:
+        pid = int(process["ProcessId"])
+        process_name = str(process.get("Name") or "").lower()
+        if pid in ignored_pids or process_name not in BLOCKING_PROCESS_NAMES:
+            continue
         command_line = str(process.get("CommandLine") or "")
         marker = next(
             (candidate for candidate in SIBLING_MARKERS if candidate in command_line),
@@ -78,13 +112,22 @@ def sibling_processes() -> list[dict[str, Any]]:
             continue
         matches.append(
             {
-                "pid": int(process["ProcessId"]),
+                "pid": pid,
                 "name": process.get("Name"),
                 "project": marker,
                 "command_line": command_line,
             }
         )
     return matches
+
+
+def sibling_processes() -> list[dict[str, Any]]:
+    if os.name != "nt":
+        return []
+    return _matching_sibling_processes(
+        _windows_processes(),
+        current_pid=os.getpid(),
+    )
 
 
 def safety_status() -> dict[str, Any]:
