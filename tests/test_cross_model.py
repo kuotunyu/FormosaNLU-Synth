@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from src.training.cross_model import (
     GROUPS,
     SEEDS,
@@ -27,6 +29,7 @@ def test_phi_eval_paths_are_isolated_from_gemma_results() -> None:
     assert all("phi4mini" in spec.output.parts for spec in plans)
 
 
+@pytest.mark.requires_local_artifacts
 def test_phi_contract_reuses_exact_frozen_rows() -> None:
     validation = validate_contract()
     assert validation["status"] == "validated"
