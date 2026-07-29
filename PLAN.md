@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 22:14 +08:00 |
-| **目前里程碑** | **M14 遠端 CI 收尾、M15 CPU preflight 完成**：HF cards/tags 已同步；Phi 六組 pipeline 與跨模型判準已凍結 |
-| **下一步動作** | 讓 CI contributor gate 全綠；取得同意後下載 Phi、執行 resume／VRAM／strict-output smoke |
+| **最後更新** | 2026-07-29 22:24 +08:00 |
+| **目前里程碑** | **M14 完成、M15 CPU preflight 完成**：GitHub/HF `v1.0.0`、CI、cards、citation 均完成；Phi 六組 pipeline 與跨模型判準已凍結 |
+| **下一步動作** | 取得同意後下載 Phi；等 sibling GPU 空閒再執行 resume／VRAM／strict-output smoke |
 | **球在誰身上** | Codex；下載 7.7 GB Phi-4-mini 前依 >2 GB 規則取得使用者明示同意 |
 | **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h（F7、M11、extra seeds、robustness）；可追溯 local total 23.124 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
 | **待決事項** | robustness 仍只用 seed 42；第二 student runtime 尚待下載與 smoke 驗證 |
 | **目前範圍** | M14 只重算既有 predictions；M15 僅新增 Phi-4-mini `real_only`／`real_syn_filtered` 三種子，不改 v1 corpus 或 Gemma primary |
-| **阻塞項** | M15 model download 需使用者明示同意；M14 無阻塞 |
+| **阻塞項** | M15 model download 需使用者明示同意 |
 
 ---
 
@@ -196,8 +196,8 @@
 | 三種子 hierarchical paired bootstrap | frozen 6 份 prediction JSONL 的 row count、expected rows、SHA-256 全部一致；固定 5,000 repetitions／seed 20260729 | ✅ 已產生 |
 | Intent／exact exact McNemar + Holm correction | 六項 paired tests 全部由 row-level correctness 重算；不把三個 seeds 當獨立 Test rows | ✅ 已產生 |
 | `CITATION.cff`、v1.0.0 metadata、public data card 修正 | YAML／TOML parse、移除 pre-release placeholders | ✅ |
-| GitHub Actions CI | clean checkout 執行 Ruff、pytest、README 與 sole-contributor audit | 🟡 Ruff／117 tests／README 已過；修正 runner identity gate 中 |
-| GitHub／HF v1.0.0 tags 與 Release | tags 指向經驗證 commits；匿名複驗檔案與 Contributors | 🟡 HF tags 已完成；GitHub Release 待 CI 全綠 |
+| GitHub Actions CI | clean checkout 執行 Ruff、pytest、README 與 sole-contributor audit | ✅ [run 30460498184](https://github.com/kuotunyu/FormosaNLU-Synth/actions/runs/30460498184) 全綠 |
+| GitHub／HF v1.0.0 tags 與 Release | tags 指向經驗證 commits；匿名複驗檔案與 Contributors | ✅ [GitHub Release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.0.0)；兩個 HF tags 完成 |
 
 ### M15 · 第二 student family paired replication
 

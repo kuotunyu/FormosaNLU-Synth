@@ -11,8 +11,8 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 22:14 +08:00（跨多次使用者回來後續作） |
-| 完成到 | M13 public release；M14 paired statistics／HF v1.0.0 tags；M15 CPU pipeline 與判準 |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 22:24 +08:00（跨多次使用者回來後續作） |
+| 完成到 | M14 GitHub/HF v1.0.0 release 完成；M15 CPU pipeline 與判準完成 |
 | 卡住的項目 | M15 下載 7.7 GB Phi-4-mini 前需依專案 >2 GB 規則取得使用者明示同意 |
 | GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
@@ -61,6 +61,18 @@ M14 不需要 GPU，Codex 正在收尾。M15 擬使用
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 22:24 +08:00] M14 v1.0.0 — 完成
+
+- GitHub Actions run
+  [30460498184](https://github.com/kuotunyu/FormosaNLU-Synth/actions/runs/30460498184)
+  在 clean Linux checkout 全綠：Node 24 actions、Ruff、127 tests、README
+  evidence、sole-contributor history
+- GitHub annotated tag `v1.0.0` 指向
+  `fceaef1c2b9b742b115fd45ca82ceec2f1ac0fc6`，tagger 為 `kuotunyu`
+- GitHub Release：
+  <https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.0.0>
+- GitHub Contributors API 複驗仍只有 `kuotunyu`
 
 ### [2026-07-29 22:14 +08:00] M14/M15 — release hardening 與 CPU preflight
 
