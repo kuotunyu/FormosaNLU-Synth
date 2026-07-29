@@ -33,7 +33,7 @@ jobs:
         run: uv run ruff check .
 
       - name: Unit tests
-        run: uv run pytest
+        run: uv run pytest -m "not requires_local_artifacts"
 
       - name: Verify README evidence
         run: uv run python -m scripts.verify_readme

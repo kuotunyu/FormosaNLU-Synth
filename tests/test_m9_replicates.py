@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from src.training import replicates
 
 
@@ -21,6 +23,7 @@ def test_replicate_eval_paths_do_not_overlap_primary_or_each_other() -> None:
     assert all("seed_42" not in str(plan.output) for plan in plans)
 
 
+@pytest.mark.requires_local_artifacts
 def test_replicate_inputs_change_random_seed_not_training_rows() -> None:
     validation = replicates.validate_replicate_inputs()
     assert validation["status"] == "validated"

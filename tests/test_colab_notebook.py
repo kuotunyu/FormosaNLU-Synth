@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from scripts.prepare_colab_bundle import REQUIRED_ARTIFACTS, bundle_files
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +33,7 @@ def test_colab_notebook_is_clean_valid_python_wrapper() -> None:
     assert "M9-LOCAL-4090" not in joined
 
 
+@pytest.mark.requires_local_artifacts
 def test_colab_bundle_covers_every_local_training_artifact() -> None:
     members = set(bundle_files())
     assert set(REQUIRED_ARTIFACTS).issubset(members)

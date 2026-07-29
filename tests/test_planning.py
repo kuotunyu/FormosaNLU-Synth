@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from collections import Counter
 
+import pytest
+
 from src.synthetic.planning import build_generation_plans
 
 
+@pytest.mark.requires_local_artifacts
 def test_pilot_plan_has_exact_recipe_mix_and_is_deterministic() -> None:
     plans_a = build_generation_plans(500)
     plans_b = build_generation_plans(500)
@@ -24,6 +27,7 @@ def test_pilot_plan_has_exact_recipe_mix_and_is_deterministic() -> None:
     assert signature_a == signature_b
 
 
+@pytest.mark.requires_local_artifacts
 def test_noise_plans_are_colloquial_and_hard_negatives_have_pairs() -> None:
     plans = build_generation_plans(100)
     for plan in plans:
