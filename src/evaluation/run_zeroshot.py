@@ -1,4 +1,4 @@
-"""Resumable, unconstrained Gemma 4 zero-shot evaluation on real MASSIVE Test."""
+"""Resumable, unconstrained zero-shot evaluation on real MASSIVE Test."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from src.evaluation.metrics import (
     per_intent_accuracy,
 )
 from src.synthetic.checkpoint import JsonlCheckpoint
-from src.training.model import load_quantized_text_model
+from src.training.model import load_quantized_causal_model
 from src.training.prompt_template import TEMPLATE_VERSION, build_prompt_messages
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -72,6 +72,8 @@ def _write_report(
     adapter_dir: Path | None = None,
     group: str | None = None,
     seed: int | None = None,
+    model_id: str = "google/gemma-4-E4B-it",
+    text_only_class: str = "Gemma4ForCausalLM",
 ) -> None:
     metrics = aggregate_metrics(
         [record["raw_prediction"] for record in records],
@@ -91,8 +93,8 @@ def _write_report(
     payload = {
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "model": "google/gemma-4-E4B-it",
-        "text_only_class": "Gemma4ForCausalLM",
+        "model": model_id,
+        "text_only_class": text_only_class,
         "quantization": "NF4 double-quant, bf16 compute",
         "prompt_template_version": TEMPLATE_VERSION,
         "evaluation_mode": evaluation_mode,
@@ -145,7 +147,7 @@ def _write_report(
                 f"# {evaluation_name}",
                 "",
                 f"- Completed: {len(records)}/{target_count}",
-                "- Model: `google/gemma-4-E4B-it` via text-only `Gemma4ForCausalLM`",
+                f"- Model: `{model_id}` via text-only `{text_only_class}`",
                 (
                     f"- Adapter: `{adapter_dir}` (group `{group}`, seed `{seed}`)"
                     if adapter_dir is not None
@@ -200,6 +202,8 @@ def run(args: argparse.Namespace) -> None:
             max_new_tokens=int(config["inference"]["max_new_tokens"]),
             report_json=args.report_json,
             report_markdown=args.report_markdown,
+            model_id=config["model"]["hub_id"],
+            text_only_class=config["model"]["class"],
         )
         return
 
@@ -210,15 +214,20 @@ def run(args: argparse.Namespace) -> None:
     quant = config["quantization"]
     inference = config["inference"]
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_path,
+        local_files_only=True,
+        trust_remote_code=False,
+    )
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=quant["load_in_4bit"],
         bnb_4bit_quant_type=quant["quant_type"],
         bnb_4bit_use_double_quant=quant["double_quant"],
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
-    model = load_quantized_text_model(
+    model = load_quantized_causal_model(
         model_path,
+        model_class=config["model"]["class"],
         quantization_config=quantization_config,
         dtype=torch.bfloat16,
     )
@@ -279,6 +288,8 @@ def run(args: argparse.Namespace) -> None:
         max_new_tokens=int(inference["max_new_tokens"]),
         report_json=args.report_json,
         report_markdown=args.report_markdown,
+        model_id=config["model"]["hub_id"],
+        text_only_class=config["model"]["class"],
     )
 
 

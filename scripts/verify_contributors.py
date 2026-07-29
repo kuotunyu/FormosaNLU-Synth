@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 import subprocess
 from dataclasses import dataclass
@@ -71,6 +72,13 @@ def _git(*args: str) -> str:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--history-only",
+        action="store_true",
+        help="Audit committed identities and trailers without requiring local Git config.",
+    )
+    args = parser.parse_args()
     raw = _git(
         "log",
         "--all",
@@ -78,12 +86,17 @@ def main() -> int:
     )
     records = parse_git_log(raw)
     errors = audit_history(records)
-    local_name = _git("config", "--local", "user.name").strip()
-    local_email = _git("config", "--local", "user.email").strip()
-    if local_name != ALLOWED_NAME:
-        errors.append(f"local user.name must be {ALLOWED_NAME!r}, got {local_name!r}")
-    if local_email != REQUIRED_LOCAL_EMAIL:
-        errors.append(f"local user.email must be {REQUIRED_LOCAL_EMAIL!r}, got {local_email!r}")
+    if not args.history_only:
+        local_name = _git("config", "--local", "user.name").strip()
+        local_email = _git("config", "--local", "user.email").strip()
+        if local_name != ALLOWED_NAME:
+            errors.append(
+                f"local user.name must be {ALLOWED_NAME!r}, got {local_name!r}"
+            )
+        if local_email != REQUIRED_LOCAL_EMAIL:
+            errors.append(
+                f"local user.email must be {REQUIRED_LOCAL_EMAIL!r}, got {local_email!r}"
+            )
     if errors:
         print("Contributor audit FAILED:")
         for error in errors:

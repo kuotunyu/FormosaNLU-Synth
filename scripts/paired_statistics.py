@@ -31,6 +31,12 @@ DEFAULT_REPETITIONS = 5_000
 DEFAULT_BOOTSTRAP_SEED = 20260729
 DEFAULT_JSON = REPO_ROOT / "reports" / "m14_paired_statistics.json"
 DEFAULT_MARKDOWN = REPO_ROOT / "reports" / "m14_paired_statistics.md"
+DEFAULT_RESULTS_ROOT = REPO_ROOT / "results" / "m9"
+DEFAULT_SCOPE = (
+    "Evidence applies to the frozen MASSIVE zh-TW Test set and this Gemma 4 "
+    "training contract. It does not establish cross-model or cross-dataset "
+    "generalization."
+)
 
 
 @dataclass(frozen=True)
@@ -254,6 +260,9 @@ def build_report(
     *,
     repetitions: int = DEFAULT_REPETITIONS,
     bootstrap_seed: int = DEFAULT_BOOTSTRAP_SEED,
+    results_root: Path = DEFAULT_RESULTS_ROOT,
+    experiment: str = "M14 Gemma 4",
+    interpretation_scope: str = DEFAULT_SCOPE,
 ) -> dict[str, Any]:
     pairs: dict[int, tuple[Components, Components]] = {}
     input_files: dict[str, dict[str, Any]] = {}
@@ -264,8 +273,8 @@ def build_report(
     for seed in SEEDS:
         group_rows: dict[str, list[dict[str, Any]]] = {}
         for group in GROUPS:
-            relative = Path("results") / "m9" / f"{group}_seed_{seed}.jsonl"
-            path = REPO_ROOT / relative
+            path = results_root / f"{group}_seed_{seed}.jsonl"
+            relative = path.relative_to(REPO_ROOT)
             rows = load_prediction_rows(path)
             group_rows[group] = rows
             input_files[f"{group}_seed_{seed}"] = {
@@ -300,6 +309,7 @@ def build_report(
         "schema_version": 1,
         "status": "complete",
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "experiment": experiment,
         "comparison": "real_syn_filtered minus real_only",
         "test_rows_per_seed": expected_rows,
         "seeds": list(SEEDS),
@@ -324,18 +334,14 @@ def build_report(
             ),
             "tests": exact_tests,
         },
-        "interpretation_scope": (
-            "Evidence applies to the frozen MASSIVE zh-TW Test set and this Gemma 4 "
-            "training contract. It does not establish cross-model or cross-dataset "
-            "generalization."
-        ),
+        "interpretation_scope": interpretation_scope,
     }
 
 
 def render_markdown(report: dict[str, Any]) -> str:
     metrics = report["hierarchical_bootstrap"]["metrics"]
     lines = [
-        "# M14 Paired Statistical Evidence",
+        f"# {report.get('experiment', 'M14 Gemma 4')} Paired Statistical Evidence",
         "",
         f"- Comparison: `{report['comparison']}`",
         f"- Seeds: {', '.join(map(str, report['seeds']))}",

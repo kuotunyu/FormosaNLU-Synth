@@ -450,7 +450,8 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 ## D-017 — M15 第二 student 採 `microsoft/Phi-4-mini-instruct`
 
 - **日期**：2026-07-29
-- **狀態**：`pending`（待 revision freeze、token audit 與 one-step smoke）
+- **狀態**：`accepted_pending_runtime`（revision／paired claim 已凍結；待下載、
+  token audit 與 one-step smoke）
 - **決策**：跨模型 replication 的第二 student 候選定為
   `microsoft/Phi-4-mini-instruct`。只重跑主比較：
   `real_only`／`real_syn_filtered` × seeds 42–44；資料、prompt、steps、
@@ -476,6 +477,16 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 **硬性 gate**：下載前依 >2 GB 規則取得使用者明示同意；下載後固定 revision
 與 SHA、完成 tokenizer truncation audit、one-step QLoRA、checkpoint resume
 與小型 strict-output probe。任一項失敗就停，不為通關改資料或 primary config。
+
+**凍結 revision 與 claim（2026-07-29）**：
+
+- revision：`cfbefacb99257ffa30c83adab238a50856ac3083`
+- remote selected bytes：7,691,526,227；license：MIT
+- primary replication metrics：`intent_accuracy`、`exact_match`
+- 宣稱「跨 student families 重現」的必要條件：兩項 primary metrics 在 Gemma
+  與 Phi 各自 paired mean Δ 都為正，且各自 hierarchical 95% CI lower bound
+  都大於零；若未達標，固定回報
+  `not_replicated_under_preregistered_criterion`
 
 **重新審視的觸發條件**：官方 revision／license 變更、Transformers 5.5
 無法穩定載入、24 GB OOM、繁中 zero-shot 接近亂猜且 SFT smoke 無法學習，

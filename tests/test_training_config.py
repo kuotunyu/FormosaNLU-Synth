@@ -24,6 +24,22 @@ def test_training_contract_is_compute_matched_and_qlora() -> None:
     assert len(config["groups"]) == 6
 
 
+def test_phi_contract_changes_only_model_family_and_preregistered_groups() -> None:
+    primary = load_train_config()
+    phi = load_train_config(Path("configs/train_phi4mini.yaml"))
+    for section in ("quantization", "lora", "training", "inference"):
+        assert phi[section] == primary[section]
+    assert phi["groups"] == ["real_only", "real_syn_filtered"]
+    assert phi["model"] == {
+        "hub_id": "microsoft/Phi-4-mini-instruct",
+        "revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
+        "local_path": "data/models/Phi-4-mini-instruct",
+        "class": "AutoModelForCausalLM",
+        "text_only": True,
+        "prompt_template_version": "formosanlu_nlu.v1",
+    }
+
+
 def test_all_run_specs_share_one_config_digest() -> None:
     plans = build_run_plan()
     assert len(plans) == 6

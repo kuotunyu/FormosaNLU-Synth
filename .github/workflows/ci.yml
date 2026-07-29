@@ -39,4 +39,4 @@ jobs:
         run: uv run python -m scripts.verify_readme
 
       - name: Verify sole-contributor history
-        run: uv run python scripts/verify_contributors.py
+        run: uv run python scripts/verify_contributors.py --history-only

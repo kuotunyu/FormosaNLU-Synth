@@ -3,7 +3,12 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from scripts.paired_statistics import exact_mcnemar, holm_adjust, validate_pair
+from scripts.paired_statistics import (
+    DEFAULT_SCOPE,
+    exact_mcnemar,
+    holm_adjust,
+    validate_pair,
+)
 
 
 def test_validate_pair_requires_identical_expected_rows() -> None:
@@ -35,3 +40,7 @@ def test_holm_adjust_is_monotone_in_sorted_order() -> None:
         "b": pytest.approx(0.04),
         "c": pytest.approx(0.04),
     }
+
+
+def test_default_scope_does_not_overclaim_cross_model_generalization() -> None:
+    assert "does not establish cross-model" in DEFAULT_SCOPE

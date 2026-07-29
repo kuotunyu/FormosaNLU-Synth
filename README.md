@@ -386,9 +386,13 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 ## Roadmap
 
 M13 public release 與 M14 paired statistics 已完成。下一個研究里程碑是用
-第二個 3–4B student family 重複 `real_only`／`real_syn_filtered` 三種子
-paired contract；後續再延伸台灣在地知識 distillation，並以 TMMLU+ 與
-`twinkle-eval` 等工具評估。
+`microsoft/Phi-4-mini-instruct`（MIT，frozen revision
+`cfbefacb99257ffa30c83adab238a50856ac3083`）重複
+`real_only`／`real_syn_filtered` 三種子 paired contract。跨 family claim
+已預先限定為 intent accuracy 與 exact match 在兩個 model families 都呈正向
+paired mean，且 hierarchical 95% CI lower bound 都大於零；未達標就照實回報。
+後續再延伸台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval`
+等工具評估。
 
 ## 專案文件
 

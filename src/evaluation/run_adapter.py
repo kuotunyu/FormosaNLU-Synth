@@ -1,4 +1,4 @@
-"""Resumable evaluation of one trained Gemma adapter on real MASSIVE Test."""
+"""Resumable evaluation of one trained adapter on real MASSIVE Test."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import yaml
 from src.data.load_massive import decode_example, load_massive_split
 from src.evaluation.run_zeroshot import _expected, _gpu_used_mib, _write_report
 from src.synthetic.checkpoint import JsonlCheckpoint
-from src.training.model import load_quantized_text_model
+from src.training.model import load_quantized_causal_model
 from src.training.prompt_template import build_prompt_messages
 from src.training.train import DEFAULT_CONFIG, REPO_ROOT
 
@@ -34,6 +34,8 @@ def run(args: argparse.Namespace) -> None:
         "adapter_dir": args.adapter_dir,
         "group": args.group,
         "seed": args.seed,
+        "model_id": config["model"]["hub_id"],
+        "text_only_class": config["model"]["class"],
     }
     if args.report_only:
         if missing:
@@ -55,7 +57,11 @@ def run(args: argparse.Namespace) -> None:
     model_path = REPO_ROOT / config["model"]["local_path"]
     quant = config["quantization"]
     inference = config["inference"]
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_path,
+        local_files_only=True,
+        trust_remote_code=False,
+    )
     tokenizer.padding_side = "left"
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=quant["load_in_4bit"],
@@ -63,8 +69,9 @@ def run(args: argparse.Namespace) -> None:
         bnb_4bit_use_double_quant=quant["double_quant"],
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
-    base_model = load_quantized_text_model(
+    base_model = load_quantized_causal_model(
         model_path,
+        model_class=config["model"]["class"],
         quantization_config=quantization_config,
         dtype=torch.bfloat16,
     )

@@ -1,4 +1,4 @@
-"""Shared Gemma 4 text-tower loading contract."""
+"""Shared quantized causal-language-model loading contracts."""
 
 from __future__ import annotations
 
@@ -28,3 +28,31 @@ def load_quantized_text_model(
         dtype=dtype,
         device_map={"": 0},
     )
+
+
+def load_quantized_causal_model(
+    model_path: Path,
+    *,
+    model_class: str,
+    quantization_config: Any,
+    dtype: Any,
+) -> Any:
+    """Load a frozen local model without silently falling back to the network."""
+    if model_class == "Gemma4ForCausalLM":
+        return load_quantized_text_model(
+            model_path,
+            quantization_config=quantization_config,
+            dtype=dtype,
+        )
+    if model_class == "AutoModelForCausalLM":
+        from transformers import AutoModelForCausalLM
+
+        return AutoModelForCausalLM.from_pretrained(
+            model_path,
+            quantization_config=quantization_config,
+            dtype=dtype,
+            device_map={"": 0},
+            local_files_only=True,
+            trust_remote_code=False,
+        )
+    raise ValueError(f"Unsupported causal model class: {model_class}")

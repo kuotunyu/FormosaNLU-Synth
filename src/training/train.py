@@ -1,4 +1,4 @@
-"""Single-group Gemma 4 QLoRA training entry point."""
+"""Single-group QLoRA training entry point."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from src.training.data import (
     prompt_completion_rows,
     validation_examples,
 )
-from src.training.model import load_quantized_text_model
+from src.training.model import load_quantized_causal_model
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = REPO_ROOT / "configs" / "train.yaml"
@@ -162,7 +162,11 @@ def train_group(
     train_dataset = Dataset.from_list(prompt_completion_rows(train_examples))
     eval_dataset = Dataset.from_list(prompt_completion_rows(eval_examples))
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_path,
+        local_files_only=True,
+        trust_remote_code=False,
+    )
     tokenizer.padding_side = "right"
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=quantization["load_in_4bit"],
@@ -171,8 +175,9 @@ def train_group(
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
     torch.cuda.reset_peak_memory_stats()
-    model = load_quantized_text_model(
+    model = load_quantized_causal_model(
         model_path,
+        model_class=model_config["class"],
         quantization_config=quantization_config,
         dtype=torch.bfloat16,
     )

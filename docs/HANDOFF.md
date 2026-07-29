@@ -11,8 +11,8 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 21:55 +08:00（跨多次使用者回來後續作） |
-| 完成到 | M13 public release；M14 paired statistics 已重建，release hardening 收尾中 |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 22:14 +08:00（跨多次使用者回來後續作） |
+| 完成到 | M13 public release；M14 paired statistics／HF v1.0.0 tags；M15 CPU pipeline 與判準 |
 | 卡住的項目 | M15 下載 7.7 GB Phi-4-mini 前需依專案 >2 GB 規則取得使用者明示同意 |
 | GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
@@ -52,7 +52,7 @@ M14 不需要 GPU，Codex 正在收尾。M15 擬使用
 
 ### ➡️ 接下來的建議起點
 
-先完成 M14 總驗收與公開 cards，再執行 M15 第二 student paired replication。
+先讓 M14 GitHub CI／Release 全綠，再執行 M15 第二 student paired replication。
 不要覆寫 v1 release corpus、frozen thresholds 或 Gemma primary runs。
 
 ---
@@ -61,6 +61,21 @@ M14 不需要 GPU，Codex 正在收尾。M15 擬使用
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 22:14 +08:00] M14/M15 — release hardening 與 CPU preflight
+
+- HF Dataset／Model cards 已同步 M14 paired statistics，兩者各建立
+  `v1.0.0` tag；dataset 3,754 rows 與 adapter SHA-256 均未改
+- GitHub CI 已證明 clean Linux checkout 的 Ruff、117 項可重現 tests 與
+  README verifier 全綠；sole-contributor step 失敗只因 runner 沒有 local
+  Git identity，已改為 CI 僅 audit history，本機仍強制 audit identity + history
+- Phi remote metadata 已固定 revision
+  `cfbefacb99257ffa30c83adab238a50856ac3083`、MIT、
+  7,691,526,227 download bytes；下載後 C: 預估仍有 130.7 GiB
+- 新增隔離的 M15 config、generic causal-model loader、兩組 × 三 seeds
+  resumable training/evaluation pipeline、artifact／VRAM／resume／strict-output gates
+- 跨模型 claim 已在看結果前凍結：`intent_accuracy` 與 `exact_match` 在 Gemma
+  與 Phi 都須 mean Δ > 0 且 hierarchical 95% CI lower bound > 0；不 pooling families
 
 ### [2026-07-29 21:55 +08:00] M14 paired statistics — 核心計算完成
 
