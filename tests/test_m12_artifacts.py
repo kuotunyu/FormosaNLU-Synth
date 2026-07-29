@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from scripts.build_m12_artifacts import build_resource_ledger
-from scripts.verify_readme import expected_main_rows
+from scripts.verify_readme import (
+    expected_main_rows,
+    expected_replicate_rows,
+    expected_robustness_rows,
+)
 
 
 def test_resource_ledger_uses_measured_phase_times() -> None:
@@ -101,6 +105,70 @@ def test_expected_readme_row_is_formatted_from_metrics() -> None:
         }
     )
 
-    assert rows == [
-        "| `real_only` | 20-shot real | 73.54% | 75.20% | 62.14% | 49.06% | 98.02% |"
-    ]
+    assert rows == ["| `real_only` | 20-shot real | 73.54% | 75.20% | 62.14% | 49.06% | 98.02% |"]
+
+
+def test_expected_replicate_row_is_formatted_from_summary() -> None:
+    metric = {
+        "mean": 0.5,
+        "sample_std": 0.01,
+        "ci95_low": 0.47,
+        "ci95_high": 0.53,
+    }
+    summary = {
+        "metrics": {
+            group: {
+                name: metric
+                for name in (
+                    "intent_accuracy",
+                    "intent_macro_f1",
+                    "slot_micro_f1",
+                    "exact_match",
+                    "json_valid_rate",
+                )
+            }
+            for group in ("real_only", "real_syn_filtered")
+        },
+        "paired_filtered_minus_real_only": {
+            name: {
+                "mean": 0.04,
+                "sample_std": 0.02,
+                "ci95_low": 0.01,
+                "ci95_high": 0.07,
+            }
+            for name in (
+                "intent_accuracy",
+                "intent_macro_f1",
+                "slot_micro_f1",
+                "exact_match",
+                "json_valid_rate",
+            )
+        },
+    }
+
+    assert expected_replicate_rows(summary)[0] == (
+        "| Intent accuracy | 50.00% ± 1.00% | 50.00% ± 1.00% | +4.00% ± 2.00% | [+1.00%, +7.00%] |"
+    )
+
+
+def test_expected_robustness_row_is_formatted_from_report() -> None:
+    metrics = {
+        "intent_accuracy": 0.75,
+        "slot_micro_f1": 0.5,
+        "exact_match": 0.4,
+        "json_valid_rate": 0.95,
+    }
+    report = {
+        "groups": {
+            group: {
+                "metrics_by_probe_kind": {
+                    kind: metrics for kind in ("asr_noise", "colloquial", "lexical")
+                }
+            }
+            for group in ("real_only", "real_syn_filtered")
+        }
+    }
+
+    assert expected_robustness_rows(report)[0] == (
+        "| `real_only` | `asr_noise` | 75.00% | 50.00% | 40.00% | 95.00% |"
+    )

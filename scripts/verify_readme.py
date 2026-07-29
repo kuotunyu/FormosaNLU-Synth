@@ -10,6 +10,8 @@ from src.training.train import REPO_ROOT
 
 README = REPO_ROOT / "README.md"
 M10 = REPO_ROOT / "reports" / "m10_main_results.json"
+M9_REPLICATES = REPO_ROOT / "reports" / "m9_replicate_summary.json"
+M10_ROBUSTNESS = REPO_ROOT / "reports" / "m10_robustness.json"
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
@@ -44,6 +46,47 @@ def expected_main_rows(m10: dict[str, Any]) -> list[str]:
     return rows
 
 
+def expected_replicate_rows(summary: dict[str, Any]) -> list[str]:
+    """Format every three-seed metric row from the tracked summary."""
+    labels = {
+        "intent_accuracy": "Intent accuracy",
+        "intent_macro_f1": "Intent macro-F1",
+        "slot_micro_f1": "Slot micro-F1",
+        "exact_match": "Exact match",
+        "json_valid_rate": "JSON-valid rate",
+    }
+    rows = []
+    for metric, label in labels.items():
+        real = summary["metrics"]["real_only"][metric]
+        filtered = summary["metrics"]["real_syn_filtered"][metric]
+        paired = summary["paired_filtered_minus_real_only"][metric]
+        rows.append(
+            f"| {label} | "
+            f"{real['mean']:.2%} ± {real['sample_std']:.2%} | "
+            f"{filtered['mean']:.2%} ± {filtered['sample_std']:.2%} | "
+            f"{paired['mean']:+.2%} ± {paired['sample_std']:.2%} | "
+            f"[{paired['ci95_low']:+.2%}, {paired['ci95_high']:+.2%}] |"
+        )
+    return rows
+
+
+def expected_robustness_rows(report: dict[str, Any]) -> list[str]:
+    """Format the two-adapter, three-probe robustness table."""
+    rows = []
+    for group in ("real_only", "real_syn_filtered"):
+        group_report = report["groups"][group]
+        for kind in ("asr_noise", "colloquial", "lexical"):
+            metrics = group_report["metrics_by_probe_kind"][kind]
+            rows.append(
+                f"| `{group}` | `{kind}` | "
+                f"{metrics['intent_accuracy']:.2%} | "
+                f"{metrics['slot_micro_f1']:.2%} | "
+                f"{metrics['exact_match']:.2%} | "
+                f"{metrics['json_valid_rate']:.2%} |"
+            )
+    return rows
+
+
 def verify_readme(
     *,
     readme: str,
@@ -51,10 +94,30 @@ def verify_readme(
     generation: dict[str, Any],
     resources: dict[str, Any],
     m11: dict[str, Any],
+    replicates: dict[str, Any] | None = None,
+    robustness: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
         checks.append((f"main row {expected.split('|')[1].strip()}", expected in readme))
+    if replicates is not None:
+        checks.append(("three-seed summary complete", replicates.get("status") == "complete"))
+        for expected in expected_replicate_rows(replicates):
+            checks.append(
+                (
+                    f"three-seed row {expected.split('|')[1].strip()}",
+                    expected in readme,
+                )
+            )
+    if robustness is not None:
+        checks.append(("robustness report complete", robustness.get("status") == "complete"))
+        for expected in expected_robustness_rows(robustness):
+            checks.append(
+                (
+                    f"robustness row {' / '.join(expected.split('|')[1:3]).strip()}",
+                    expected in readme,
+                )
+            )
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
     comparisons = m11["comparisons"]
@@ -84,15 +147,11 @@ def verify_readme(
             ),
             (
                 "F7 random-stratum miss rate",
-                (
-                    f"{generation['f7_audit']['random_stratum']['observed_miss_rate']:.1%}"
-                    in readme
-                ),
+                (f"{generation['f7_audit']['random_stratum']['observed_miss_rate']:.1%}" in readme),
             ),
             (
                 "training hours",
-                f"{resources['phases']['primary_training_seed_42']['wall_hours']:.3f} h"
-                in readme,
+                f"{resources['phases']['primary_training_seed_42']['wall_hours']:.3f} h" in readme,
             ),
             (
                 "evaluation hours",
@@ -113,10 +172,7 @@ def verify_readme(
             ),
             (
                 "local total TDP envelope",
-                (
-                    f"{resources['gpu_tdp_total_energy_upper_bound_kwh']:.3f} kWh"
-                    in readme
-                ),
+                (f"{resources['gpu_tdp_total_energy_upper_bound_kwh']:.3f} kWh" in readme),
             ),
             (
                 "M11 base strict validity",
@@ -151,6 +207,8 @@ def main() -> int:
         generation=_load(GENERATION),
         resources=_load(RESOURCES),
         m11=_load(M11),
+        replicates=_load(M9_REPLICATES),
+        robustness=_load(M10_ROBUSTNESS) if M10_ROBUSTNESS.is_file() else None,
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:

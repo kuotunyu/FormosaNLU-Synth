@@ -11,10 +11,10 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 04:06 +08:00（跨多次使用者回來後續作） |
-| 完成到 | F7、M9/M10 primary seed-42、M11 real evidence、M12 README／圖表／資源帳本與 Colab portability 完成 |
-| 卡住的項目 | 技術上無；額外 seeds 與 robustness 只等待各階段的安全 GPU gate |
-| GPU 時數 | primary core 14.440 h；F7 + M11 auxiliary 0.766 h；目前可追溯 local total 15.205 h |
+| 執行區間 | 2026-07-27 03:14–2026-07-29 12:52 +08:00（跨多次使用者回來後續作） |
+| 完成到 | 所有本機 GPU 階段：F7、M9 primary 與 seeds 42–44 uncertainty、M10 robustness、M11 real evidence、M12 與 Colab portability |
+| 卡住的項目 | 技術上無；只剩 clean-environment M13 release audit 與使用者最終發佈 review |
+| GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
@@ -50,9 +50,9 @@ Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thres
 
 ### ➡️ 接下來的建議起點
 
-M11 real evidence 已完成。確認 sibling 程序都消失且 GPU 空閒後，補
-`real_only` / `real_syn_filtered` 的 seeds 43/44。額外 seeds 完成前，
-README 必須維持「primary seed-42、沒有信賴區間」的表述。
+所有本機 GPU evidence 已完成。更新 README／data card 後執行 final
+release preflight、commit/push 與 GitHub Contributors 稽核；使用者過目之前
+維持 Private、不發布 Hugging Face。
 
 ---
 
@@ -60,6 +60,32 @@ README 必須維持「primary seed-42、沒有信賴區間」的表述。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-29 12:52 +08:00] M10 robustness — 完成
+
+- `real_only` 與 `real_syn_filtered` seed-42 adapters 各完成 8,922-row
+  deterministic robustness probes；兩份 JSONL 都是 index 0–8,921、
+  8,922 unique indices 與 8,922 unique source/probe keys
+- `real_only` 整體 intent 71.61%、slot F1 60.59%、exact 46.33%；
+  filtered 為 73.27%、64.13%、48.79%
+- filtered 在 ASR-noise、colloquial、lexical 三種 probes 的 intent／slot／exact
+  全部高於 `real_only`；ASR-noise 是兩組最困難的 probe
+- Combined report、batch report、evaluation-only contract 與兩個 return code
+  全部驗證；GPU 正常釋放
+- robustness 耗時 2.102 GPU h；重建後可追溯 local total 23.124 h，
+  resource ledger `status=complete_all_local_gpu` 且 pending 為空
+
+### [2026-07-29 10:46 +08:00] M9 三種子 uncertainty — 完成
+
+- `real_only` 與 `real_syn_filtered` 的 seeds 43/44 四組訓練、各 2,974-row
+  Test evaluation 全部完成；資料/config SHA-256 與 primary contract 一致
+- 三種子 paired Δ：intent accuracy +4.14 ± 1.39 points（95% CI
+  [+0.68, +7.59]）；exact match +3.86 ± 0.73（[+2.03, +5.68]）
+- `n=3`、Student's t（df=2）interval 只作 descriptive uncertainty，
+  不宣稱廣泛統計顯著性
+- Ruff、pytest、README verifier、contributors audit 全綠後，以
+  `kuotunyu` 單一作者推送 commit `22a32b7`
+- 第二次 25 分鐘 GPU safety gate 通過後，robustness 已由 frozen 命令啟動
 
 ### [2026-07-29 04:02 +08:00] M11 real demo evidence — 完成
 

@@ -1,9 +1,10 @@
 # FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
 
-> **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、M10 評估、
+> **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣與 seeds 43/44
+> uncertainty runs、M10 評估、
 > M11 比較介面、M12 報告產物、Colab portability 與 F7 independent
-> judge audit 均已完成。seeds 43/44、robustness inference 與正式發佈
-> 仍在進行。
+> judge audit、robustness inference 均已完成。所有本機 GPU 階段已收尾；
+> 正式發佈仍待最終 review。
 
 在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
 language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
@@ -30,8 +31,11 @@ full-real training 差距的 **26.4%**；slot F1 提升 4.40 個百分點，補�
 46.6% 的差距。Filtered 組只使用約三分之一的 synthetic rows，表現仍優於
 unfiltered-full 組。
 
-這些是 primary single-seed 結果，不是 confidence interval。`real_only`
-與 `real_syn_filtered` 的 seeds 43/44 已預先登記，完成前不宣稱統計顯著性。
+三個 paired seeds（42–44）中，filtered 組相對 `real_only` 的 exact match
+平均提升 **+3.86 ± 0.73 個百分點**（descriptive 95% CI
+[+2.03, +5.68]），intent accuracy 平均提升 **+4.14 ± 1.39 個百分點**
+（[+0.68, +7.59]）。由於只有三個 seeds，這些 intervals 是描述性不確定性，
+不是廣泛統計顯著性或跨模型泛化宣稱。
 
 ![M9 primary 結果](assets/m12_main_results.png)
 
@@ -64,6 +68,22 @@ run 的變化如下：
 | Intent macro-F1 | +0.89 個百分點 | 13.8% |
 | Slot micro-F1 | +4.40 個百分點 | 46.6% |
 | Exact match | +3.06 個百分點 | 26.4% |
+
+### 三種子不確定性
+
+`real_only` 與 `real_syn_filtered` 使用完全相同的 frozen data/config，分別在
+seeds 42、43、44 訓練與評估；每個 run 都使用完整 2,974-row Test。
+
+| Metric | real-only mean ± SD | filtered mean ± SD | paired Δ mean ± SD | paired Δ 95% CI |
+| --- | ---: | ---: | ---: | ---: |
+| Intent accuracy | 73.34% ± 0.32% | 77.47% ± 1.14% | +4.14% ± 1.39% | [+0.68%, +7.59%] |
+| Intent macro-F1 | 74.55% ± 1.27% | 76.56% ± 0.41% | +2.01% ± 1.48% | [-1.67%, +5.70%] |
+| Slot micro-F1 | 62.95% ± 1.18% | 65.86% ± 0.76% | +2.92% ± 1.92% | [-1.86%, +7.69%] |
+| Exact match | 48.67% ± 0.65% | 52.52% ± 0.88% | +3.86% ± 0.73% | [+2.03%, +5.68%] |
+| JSON-valid rate | 96.54% ± 2.01% | 98.11% ± 0.14% | +1.57% ± 2.02% | [-3.44%, +6.58%] |
+
+95% intervals 使用 Student's t（df=2）；完整逐 seed 報告與原始統計在
+[`reports/m9_replicate_summary.md`](reports/m9_replicate_summary.md)。
 
 ### 各 intent 的變化
 
@@ -130,12 +150,15 @@ Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
 | **Measured primary core total** | **14.440 h** | 不含 extra seeds、F7 與 robustness |
 | F7 independent judge（auxiliary） | **0.756 h** | 376 筆逐列 model latency 加總 |
 | M11 real demo（auxiliary） | **0.010 h** | 10 次 generation latency 加總 |
-| **Measured auxiliary subtotal** | **0.766 h** | F7 + M11 |
-| **目前可追溯 local total** | **15.205 h** | primary core + 已完成 auxiliary |
+| Extra-seed training，seeds 43/44（auxiliary） | **4.188 h** | 四個 frozen-config runs |
+| Extra-seed evaluation，seeds 43/44（auxiliary） | **1.630 h** | 四個完整 2,974-row Test runs |
+| Robustness probe inference（auxiliary） | **2.102 h** | 兩組 × 8,922-row evaluation-only runs |
+| **Measured auxiliary subtotal** | **8.685 h** | F7 + M11 + extra seeds + robustness |
+| **可追溯 local total** | **23.124 h** | 所有本機 GPU 階段 |
 | **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
 若以 RTX 4090 的 450 W TDP 計算，primary core 14.440 小時對應
-6.498 kWh、目前可追溯 local total 15.205 小時對應 6.842 kWh 的保守
+6.498 kWh、local total 23.124 小時對應 10.406 kWh 的保守
 GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以
 TDP 運作。
 
@@ -151,8 +174,23 @@ python -m scripts.verify_readme
 ## Robustness probe
 
 Auxiliary perturbation manifest 含 8,922 筆 rows，涵蓋 typo、code-switching
-與 ASR-like noise。Manifest 已 frozen，推論尚未完成，因此 robustness
-結果不會出現在 headline table。
+與 ASR-like noise。兩個 seed-42 adapters 各完成 8,922-row inference；
+它是 auxiliary evaluation，不取代 untouched Test 的 headline table，也不
+回流 training。
+
+| Group | Probe | Intent acc | Slot F1 | Exact match | JSON valid |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `real_only` | `asr_noise` | 68.49% | 58.62% | 42.54% | 98.52% |
+| `real_only` | `colloquial` | 73.50% | 61.20% | 47.98% | 98.18% |
+| `real_only` | `lexical` | 72.83% | 61.97% | 48.49% | 97.98% |
+| `real_syn_filtered` | `asr_noise` | 70.24% | 61.25% | 44.08% | 97.88% |
+| `real_syn_filtered` | `colloquial` | 74.88% | 65.69% | 51.18% | 97.68% |
+| `real_syn_filtered` | `lexical` | 74.68% | 65.48% | 51.11% | 97.98% |
+
+ASR-like noise 對兩組都最具挑戰。Filtered adapter 在三種 probes 的 intent
+accuracy、slot F1 與 exact match 都高於 `real_only`；差距並非只存在於
+untouched Test。不過 robustness 只使用 seed 42，而且擾動是 deterministic
+evaluation probes，不等同真實語音辨識錯誤分布。
 
 ## 方法
 
@@ -280,10 +318,12 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## 限制
 
-- M9 headline table 目前只有 seed 42。Seeds 43/44 完成前不提供 variance、
-  confidence interval 或 significance claim。
+- 三種子摘要只有 `n=3`；95% intervals 是 descriptive uncertainty，
+  不支撐廣泛統計顯著性、跨模型或跨資料集泛化宣稱。
 - F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
-  為 6.0%，但樣本僅 50 筆，95% interval 很寬。Robustness inference 尚未完成。
+  為 6.0%，但樣本僅 50 筆，95% interval 很寬。
+- Robustness 只比較 seed-42 adapters，且三種擾動是 deterministic probes；
+  尚未涵蓋真實 ASR log、自然 code-switching corpus 或跨 seed robustness。
 - M11 的五句 real-runtime comparison 只證明 demo contract 與 adapter 可實際
   執行；它是 curated qualitative evidence，不可當成 Test-set 成效。
 - 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。
@@ -304,8 +344,8 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## Roadmap
 
-近期工作是完成 extra-seed uncertainty、robustness probe 與
-clean-environment M13 release audit。後續可將同一 pipeline
+近期工作是完成 clean-environment M13 release audit 與使用者發佈 review。
+後續可將同一 pipeline
 延伸至台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval` 等工具評估。
 
 ## 專案文件

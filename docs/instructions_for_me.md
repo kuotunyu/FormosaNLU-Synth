@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：本機 M9/M10、F7、M11 real evidence、M12 與 Colab portability 已完成；M13 外部操作待辦。**
+> **狀態：所有本機 GPU 階段、Colab portability 與 M12 證據均已完成；M13 最終 review 待辦。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -10,16 +10,20 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**目前不需要你操作。** 本機 primary 六組訓練、六組評估、M10、M11
+**目前不需要你操作。** 本機 primary 六組訓練、六組評估、seeds 43/44
+四組 uncertainty runs、M10、M11
 介面與五句 real evidence、M12 報告、F7 與 Colab `real_only` portability
-run 都已完成。Codex 正在等待第二次安全 GPU gate，再跑四個 extra-seed runs。
+run，以及兩組 robustness inference 都已完成。Codex 正在執行最終
+release audit；你醒來後只需 review 是否轉 Public／發布 Hugging Face。
 
 ---
 
 ## 0. 本機 M9 過夜批次
 
-狀態：**primary seed-42 已完成。** 六組訓練 6.540 h，六組全 Test 評估
-2.777 h；M10 七行主表已產生。技術報告在 `reports/m9_preflight.md` 與
+狀態：**primary seed-42 與 seeds 43/44 uncertainty 已完成。** 六組
+primary 訓練 6.540 h、六組全 Test 評估 2.777 h；另有四組 extra-seed
+訓練／評估。M10 七行主表與三種子摘要已產生。技術報告在
+`reports/m9_preflight.md`、`reports/m9_replicate_summary.md` 與
 `reports/m10_main_results.md`。
 
 原 primary 入口保留作重現與續跑；正常情況不需再啟動。額外 seeds 使用
@@ -120,7 +124,9 @@ Repository 已於使用者明確同意後建立：
 - [x] 先建為 **Private**
 - [x] Description 與 README 以正體中文（台灣，`zh-TW`）為主
 - [x] 首次 push；remote commits 與 GitHub Contributors 都只有 `kuotunyu`
-- [ ] 完成 extra seeds、robustness 與發佈前總驗收（真模型證據已完成）
+- [x] 完成 extra seeds 與三種子 uncertainty（真模型證據亦已完成）
+- [x] 完成 robustness
+- [ ] 完成發佈前總驗收並由使用者 review
 - [ ] **使用者過目後才轉 Public**
 
 > 提醒：commit 一律不帶 `Co-Authored-By` trailer，GitHub Contributors 只會有 `kuotunyu`。

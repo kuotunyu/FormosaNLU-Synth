@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 04:06 +08:00 |
-| **目前里程碑** | **F7、M11 real evidence、M12 與 Colab portability 完成**；M9 六組 seed-42 訓練與評估、M10 主報告已完成 |
-| **下一步動作** | M11 五句 real-runtime evidence 已驗證並推送；兩次 GPU safety gate 後執行 seeds 43/44 四組補跑，再做 robustness |
+| **最後更新** | 2026-07-29 12:52 +08:00 |
+| **目前里程碑** | **所有本機 GPU 階段完成**：F7、M9 三種子 uncertainty、M10 robustness、M11 real evidence、M12 與 Colab portability |
+| **下一步動作** | 更新最終文件並執行 clean-environment M13 release audit；使用者過目後才決定 Public／Hugging Face |
 | **球在誰身上** | Codex；只在最終發佈 review 時再需使用者操作 |
-| **累計 GPU 時數** | primary core 14.440 h；另有 F7 + M11 auxiliary 0.766 h，目前可追溯 local total 15.205 h |
+| **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h（F7、M11、extra seeds、robustness）；可追溯 local total 23.124 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | primary seed-42 結果為 provisional；額外 seeds 與 robustness 尚未完成；凍結 thresholds 不得放寬 |
+| **待決事項** | 三種子 intervals 僅為 descriptive uncertainty；robustness 只用 seed 42；Public／Hugging Face 發佈需使用者 review |
 | **目前範圍** | M11 Gradio 與 M12 README／五張圖／資源帳本已完成；Private GitHub repo 與正體中文 README 已首次 push，不啟動 Public 發佈或重生成 |
-| **阻塞項** | 技術上無；GPU 工作只在 sibling workloads 消失且顯卡安全空閒時啟動 |
+| **阻塞項** | 技術上無；只等 clean-environment audit 與使用者發佈 review |
 
 ---
 
@@ -130,16 +130,17 @@
 | 下載 `google/gemma-4-E4B-it` | ✅ **已預先授權**（D-009）；記錄實際大小與 VRAM 佔用（R-12：確認能否只載語言塔） |
 | **零樣本 baseline**（未微調 base model 跑真實 Test） | 2,974/2,974；JSON-valid 17.38%、intent accuracy 10.66%、macro-F1 23.12%、slot F1 0%、exact 8.10%；無 constrained decoding |
 
-### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　🟡 **primary 與 Colab 完成**
+### M9 · 六組訓練（本機批次）+ Colab 可攜性驗證　✅ **完成**
 
 > 六組 primary seed-42 訓練與評估已全部完成；3,760-row filtered corpus
 > 照實進入比較，沒有放寬 frozen thresholds。`real_only` 與
-> `real_syn_filtered` 的 seeds 43/44（四個額外 runs）仍待安全 GPU 時段。
+> `real_syn_filtered` 的 seeds 43/44 四個額外 runs 及 2,974-row Test
+> evaluation 均已完成。
 
 | 交付物 | 驗證方法 |
 |---|---|
 | 六組 × 1 seed，`runs/<group>/seed_<n>/` 各自獨立 | ✅ 六份 seed-42 adapter、snapshot、metrics 與環境證據完整 |
-| `real_only` 與最佳 filtered 組補到 3 seeds（合計 10 runs） | 🟡 seeds 43/44 四組待跑；完成前不宣稱變異或統計顯著性 |
+| `real_only` 與最佳 filtered 組補到 3 seeds（合計 10 runs） | ✅ seeds 42–44 完成；paired exact Δ +3.86 ± 0.73 points，descriptive 95% CI [+2.03, +5.68] |
 | Primary 過夜批次 | ✅ 六組訓練 6.540 h；六組評估 2.777 h；guard／resume 實際通過 |
 | `notebooks/01_sft_student.ipynb`（包裝同一份 `train.py`） | ✅ G4 實跑 `real_only` seed 42、500 steps；frozen config 與本機 contract 一致，正式稽核完成 |
 | `docs/instructions_for_me.md` 的 Colab 章節填實 | ✅ 上傳檔、GPU 門檻、Secrets、續跑、下載與成功確認皆已填實 |
@@ -152,7 +153,7 @@
 | **主表七行**（零樣本 + 六組）× 全指標 | ✅ `reports/m10_main_results.json` / `.md` 完整 |
 | 差距補回率 | ✅ filtered exact +3.06 points、補回 26.4%；slot +4.40 points、補回 46.6% |
 | per-intent 進步排序 | ✅ 最大進步與最大退步都已寫入 M10 與 README |
-| Robustness 探測集 | ✅ 2,974 Test × 3 種 slot-safe 擾動＝8,922 筆；manifest/hash 完成，明確 evaluation-only |
+| Robustness 探測集 | ✅ 2,974 Test × 3 種 slot-safe 擾動＝8,922 筆；兩組 seed-42 adapters 各完成 8,922-row inference，明確 evaluation-only |
 | 效能表 | tokens/s、VRAM 峰值、單筆 latency |
 | **不使用 constrained decoding** | code review 確認：JSON-valid rate 是要量的指標，強制合法會讓它恆等 100% |
 
@@ -168,7 +169,7 @@
 
 | 交付物 | 驗證方法 |
 |---|---|
-| README 依 D-008 排版（主標＝差距補回率 → 過濾管線價值 → $0/4090 → robustness 輔助） | ✅ primary seed-42 結果與 pending 工作均明確標示 |
+| README 依 D-008 排版（主標＝差距補回率 → 過濾管線價值 → $0/4090 → robustness 輔助） | ✅ primary、三種子 uncertainty 與 robustness 結果均有可追溯狀態 |
 | 方法流程圖、資料漏斗圖、七行主表、資源總帳、Limitations（含負面結果） | ✅ 五張圖可重建並已打開檢查；F5 mode collapse 未隱藏 |
 | `scripts/verify_readme.py` | ✅ 20 項原始 artifact 對照全部通過 |
 | 選配 roadmap 段落（台灣知識蒸餾 + TMMLU+ / twinkle-eval） | ✅ 只寫未來方向，未假裝已實作 |

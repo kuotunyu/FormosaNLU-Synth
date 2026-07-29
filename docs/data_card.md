@@ -1,8 +1,8 @@
 # Dataset Card — FormosaNLU Synthetic (`formosa_synth_v1`)
 
 > **Status: M12 evidence-backed pre-release draft.** Full-corpus F1–F7 and the
-> primary seed-42 utility experiment are populated. Finalize at **M13** after
-> extra-seed uncertainty, robustness, and release review. The five-row real
+> three-seed utility and robustness evidence are populated. Finalize at **M13**
+> after release review. The five-row real
 > model demo contract is also verified. Every number here
 > is traceable to a file under `reports/`. Bilingual: English first, 繁體中文
 > summary at the end.
@@ -134,15 +134,30 @@ and slot micro-F1 from 62.14% to 66.54% (+4.40 points). That closes 26.4% of the
 exact-match gap and 46.6% of the slot-F1 gap to full-real training.
 
 The filtered group also outperformed the equal-N unfiltered control by 1.11
-exact-match points and 2.17 slot-F1 points. These are single-seed primary
-results, not confidence intervals. Seeds 43 and 44 for `real_only` and
-`real_syn_filtered` are preregistered and pending.
+exact-match points and 2.17 slot-F1 points. These are the seed-42 primary
+results. The paired seeds 42–44 comparison is now complete: filtered minus
+`real_only` averaged +4.14 ± 1.39 intent-accuracy points (descriptive 95% CI
+[+0.68, +7.59]) and +3.86 ± 0.73 exact-match points
+([+2.03, +5.68]). With only three seeds, these Student's t intervals describe
+run-to-run uncertainty and do not support a broad significance or
+generalization claim.
 
 Separately, the M11 real-runtime demo ran five fixed Traditional Chinese
 utterances through the base model and filtered seed-42 adapter with unconstrained
 decoding. The base outputs passed the strict schema 0/5 times and the adapted
 outputs 5/5 times. This is qualitative execution evidence tied to an adapter
 tree hash, not an accuracy estimate or substitute for the 2,974-row Test set.
+
+### Robustness evidence
+
+Each seed-42 adapter was evaluated on the frozen 8,922-row probe
+(2,974 Test sources × deterministic ASR-noise, colloquial, and lexical
+perturbations). The filtered adapter scored 73.27% intent accuracy, 64.13% slot
+F1, and 48.79% exact match overall, versus 71.61%, 60.59%, and 46.33% for
+`real_only`. It was higher on all three task metrics for every probe kind;
+ASR-noise was the hardest perturbation for both adapters. This is
+evaluation-only auxiliary evidence. It uses seed 42 only and does not represent
+a natural ASR-error or code-switching distribution.
 
 ## Considerations for Using the Data
 
@@ -161,6 +176,8 @@ tree hash, not an accuracy estimate or substitute for the 2,974-row Test set.
 - Synthetic utterances are seeded from a 20-shot sample; coverage of rare intents
   and rare slot types is correspondingly thin.
 - No per-recipe ablation was run (see `docs/DECISIONS.md` D-004).
+- Robustness compares seed-42 adapters only; deterministic probes do not replace
+  evaluation on natural ASR logs or code-switching corpora.
 - The pilot's cheap filters rejected 63/500 rows; one additional incomplete
   request escaped those filters and was rejected by the independent judge.
 - The original 18,000-row plan projected to 6.44 GPU hours and was rejected.
@@ -221,9 +238,13 @@ seed-42 training runs 6.540 h, and six trained evaluations 2.777 h. At the
 GPU's 450 W TDP this is a conservative GPU-only upper-bound envelope of 6.498
 kWh, not a wall-socket measurement. The completed F7 judge (0.756 h) and M11
 real demo generation (0.010 h) are recorded separately as auxiliary time,
-bringing the currently traceable local total to 15.205 h. Extra seeds and
-robustness inference remain pending and will be added by the same resource-ledger
-builder. See `reports/m12_resource_ledger.json`.
+bringing the pre-replicate local total to 15.205 h. Four extra-seed training
+runs add 4.188 h and their four complete Test evaluations add 1.630 h, for a
+pre-robustness local total of 21.023 h. Two robustness evaluations add 2.102 h.
+The final traceable local total is 23.124 h (10.406 kWh at the same conservative
+450 W TDP upper-bound calculation). The resource ledger has no pending local
+GPU phase. See
+`reports/m12_resource_ledger.json`.
 
 ---
 
@@ -245,7 +266,14 @@ builder. See `reports/m12_resource_ledger.json`.
 random stratum 為 3/50（6.0%，Wilson 95% interval 2.06%–16.22%），
 已知不合格列已由 release-only corpus 排除。
 
-seed 42 的下游實驗顯示，filtered synthetic 相較 20-shot real baseline：
+seed 42 的 primary 下游實驗顯示，filtered synthetic 相較 20-shot real baseline：
 exact match 從 49.06% 提升到 52.12%（+3.06 個百分點），slot F1 從
-62.14% 提升到 66.54%（+4.40 個百分點）。但 seeds 43/44 尚未完成，
-所以目前不宣稱統計顯著性或跨 seed 穩定性。
+62.14% 提升到 66.54%（+4.40 個百分點）。Seeds 42–44 的 paired
+比較中，exact match 平均提升 +3.86 ± 0.73 個百分點（descriptive 95% CI
+[+2.03, +5.68]），intent accuracy 提升 +4.14 ± 1.39（[+0.68, +7.59]）。
+由於只有三個 seeds，不宣稱廣泛統計顯著性或跨模型穩定性。
+
+Seed-42 robustness probe 每組各 8,922 筆。Filtered adapter 整體 intent
+accuracy 73.27%、slot F1 64.13%、exact match 48.79%，高於 `real_only`
+的 71.61%、60.59%、46.33%；三種 probes 都維持同方向，但這是 deterministic
+auxiliary evidence，不等同自然 ASR 或 code-switching 分布。

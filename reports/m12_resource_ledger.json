@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "complete_primary_seed_42",
+  "status": "complete_all_local_gpu",
   "hardware": "NVIDIA GeForce RTX 4090 24 GB",
   "api_spend_usd": 0.0,
   "phases": {
@@ -31,18 +31,29 @@
       "wall_hours": 0.00984347200000002,
       "generations": 10,
       "basis": "reports/m11_demo_evidence.json summed generation latency_ms"
+    },
+    "replicate_training_seeds_43_44": {
+      "wall_hours": 4.187840000833333,
+      "runs": 4,
+      "basis": "runs/m9_replicates_batch_report.json started_at to finished_at"
+    },
+    "replicate_evaluation_seeds_43_44": {
+      "wall_hours": 1.629532450277778,
+      "runs": 4,
+      "basis": "results/m9_replicates_eval_batch_report.json started_at to finished_at"
+    },
+    "robustness_probe_inference": {
+      "wall_hours": 2.1017462491666667,
+      "runs": 2,
+      "basis": "results/m10_robustness_batch.json started_at to finished_at"
     }
   },
   "measured_core_gpu_hours": 14.439791908305544,
-  "measured_auxiliary_gpu_hours": 0.7655546231666679,
-  "measured_total_local_gpu_hours": 15.205346531472212,
+  "measured_auxiliary_gpu_hours": 8.684673323444446,
+  "measured_total_local_gpu_hours": 23.12446523174999,
   "gpu_tdp_watts": 450,
   "gpu_tdp_energy_upper_bound_kwh": 6.497906358737495,
-  "gpu_tdp_total_energy_upper_bound_kwh": 6.842405939162496,
+  "gpu_tdp_total_energy_upper_bound_kwh": 10.406009354287496,
   "energy_note": "Upper-bound GPU-only envelope using the RTX 4090 450 W TDP; not a wall-socket measurement. The core field remains the frozen primary comparison; total includes every completed local auxiliary phase whose timing artifact is available.",
-  "pending": [
-    "real_only and real_syn_filtered training seeds 43 and 44",
-    "four 2,974-row replicate evaluations",
-    "two 8,922-row robustness probe evaluations"
-  ]
+  "pending": []
 }
