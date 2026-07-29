@@ -55,6 +55,8 @@ def gpu_snapshot() -> dict[str, Any]:
 
 def _windows_processes() -> list[dict[str, Any]]:
     command = (
+        "$OutputEncoding = [Console]::OutputEncoding = "
+        "[System.Text.UTF8Encoding]::new($false); "
         "Get-CimInstance Win32_Process | "
         "Select-Object ProcessId,ParentProcessId,Name,CommandLine | "
         "ConvertTo-Json -Compress"
