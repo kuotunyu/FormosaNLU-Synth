@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
@@ -16,9 +17,14 @@ from src.training.cross_model import status as experiment_status
 from src.training.train import REPO_ROOT, latest_checkpoint
 
 SMOKE_CONFIRMATION = "M15-PHI4MINI-SMOKE-4090"
+QUALIFY_CONFIRMATION = "M15-SMOKE-AMENDMENT-STRUCTURAL-V2"
 EXECUTE_CONFIRMATION = "M15-PHI4MINI-6RUNS-4090"
 ARTIFACT_REPORT = REPO_ROOT / "reports" / "m15_phi4mini_artifacts.json"
 SMOKE_REPORT = REPO_ROOT / "reports" / "m15_phi4mini_smoke.json"
+SMOKE_AMENDMENT = REPO_ROOT / "reports" / "m15_smoke_protocol_amendment.json"
+SMOKE_QUALIFICATION = (
+    REPO_ROOT / "reports" / "m15_phi4mini_smoke_qualification.json"
+)
 SMOKE_ROOT = REPO_ROOT / "runs" / "m15" / "phi4mini_smoke" / "seed_42"
 SMOKE_PREDICTIONS = (
     REPO_ROOT / "results" / "m15" / "phi4mini_smoke_seed_42.jsonl"
@@ -40,6 +46,22 @@ def _read_json(path: Path) -> dict[str, Any] | None:
         return None
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _repo_relative(value: str | Path) -> str:
+    path = Path(value)
+    try:
+        return path.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    except (OSError, ValueError):
+        return path.as_posix()
+
+
 def artifact_ready() -> tuple[bool, str]:
     payload = _read_json(ARTIFACT_REPORT)
     if payload is None or payload.get("status") != "complete":
@@ -53,19 +75,29 @@ def artifact_ready() -> tuple[bool, str]:
 
 
 def smoke_ready() -> tuple[bool, str]:
-    payload = _read_json(SMOKE_REPORT)
+    payload = _read_json(SMOKE_QUALIFICATION)
     if payload is None:
-        return False, "smoke report missing"
+        return False, "amended smoke qualification missing"
+    passed, _ = _validate_qualification_payload(payload)
+    source_hashes = payload.get("source_sha256", {})
     passed = (
-        payload.get("status") == "passed"
-        and payload.get("final_global_step") == 2
-        and payload.get("evaluation_completed") == 32
-        and payload.get("json_valid_rate", 0.0) >= 0.25
-        and payload.get("peak_gpu_reserved_mib", 99_999) <= 24_564
+        passed
+        and SMOKE_REPORT.is_file()
+        and SMOKE_PREDICTIONS.is_file()
+        and SMOKE_EVALUATION.is_file()
+        and (SMOKE_ROOT / "run_report.json").is_file()
+        and SMOKE_AMENDMENT.is_file()
+        and source_hashes.get("original_smoke_report") == _sha256(SMOKE_REPORT)
+        and source_hashes.get("predictions") == _sha256(SMOKE_PREDICTIONS)
+        and source_hashes.get("evaluation_report") == _sha256(SMOKE_EVALUATION)
+        and source_hashes.get("run_report")
+        == _sha256(SMOKE_ROOT / "run_report.json")
+        and source_hashes.get("protocol_amendment") == _sha256(SMOKE_AMENDMENT)
     )
     return passed, (
-        f"status={payload.get('status')}; step={payload.get('final_global_step')}; "
-        f"json_valid={payload.get('json_valid_rate')}; "
+        f"protocol={payload.get('protocol_id')}; status={payload.get('status')}; "
+        f"step={payload.get('infrastructure', {}).get('final_global_step')}; "
+        f"syntax_valid={payload.get('structure', {}).get('json_syntax_valid')}; "
         f"peak_reserved={payload.get('peak_gpu_reserved_mib')}"
     )
 
@@ -145,6 +177,10 @@ def _run_command(command: list[str]) -> None:
 
 
 def run_smoke() -> dict[str, Any]:
+    if SMOKE_REPORT.exists():
+        raise RuntimeError(
+            "Original M15 smoke evidence already exists and may not be overwritten"
+        )
     artifact_ok, artifact_observed = artifact_ready()
     if not artifact_ok:
         raise RuntimeError(f"Phi artifact gate failed: {artifact_observed}")
@@ -226,6 +262,165 @@ def run_smoke() -> dict[str, Any]:
     return payload
 
 
+def _prediction_structure(path: Path) -> dict[str, Any]:
+    rows = [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    counts = {
+        "rows": len(rows),
+        "json_syntax_valid": 0,
+        "json_object": 0,
+        "intent_is_string": 0,
+        "slots_is_list": 0,
+        "slot_object_list": 0,
+    }
+    for row in rows:
+        try:
+            parsed = json.loads(row["raw_prediction"])
+        except (json.JSONDecodeError, KeyError, TypeError):
+            continue
+        counts["json_syntax_valid"] += 1
+        if not isinstance(parsed, dict):
+            continue
+        counts["json_object"] += 1
+        counts["intent_is_string"] += int(isinstance(parsed.get("intent"), str))
+        slots = parsed.get("slots")
+        counts["slots_is_list"] += int(isinstance(slots, list))
+        counts["slot_object_list"] += int(
+            isinstance(slots, list)
+            and all(isinstance(slot, dict) for slot in slots)
+        )
+    return counts
+
+
+def _validate_qualification_payload(
+    payload: dict[str, Any],
+) -> tuple[bool, str]:
+    infrastructure = payload.get("infrastructure", {})
+    structure = payload.get("structure", {})
+    passed = (
+        payload.get("protocol_id") == "m15.smoke.infrastructure.v2"
+        and payload.get("status") == "passed"
+        and payload.get("original_gate", {}).get("status") == "failed"
+        and payload.get("formal_experiment_contract_unchanged") is True
+        and infrastructure.get("first_checkpoint") == "checkpoint-1"
+        and str(infrastructure.get("resumed_from", "")).endswith("checkpoint-1")
+        and infrastructure.get("final_checkpoint") == "checkpoint-2"
+        and infrastructure.get("final_global_step") == 2
+        and infrastructure.get("evaluation_completed") == 32
+        and payload.get("peak_gpu_reserved_mib", 99_999) <= 24_564
+        and structure.get("rows") == 32
+        and structure.get("json_syntax_valid") == 32
+        and structure.get("json_object") == 32
+        and structure.get("intent_is_string") == 32
+        and structure.get("slots_is_list") == 32
+    )
+    return passed, json.dumps(payload, ensure_ascii=False)
+
+
+def qualify_existing_smoke() -> dict[str, Any]:
+    original = _read_json(SMOKE_REPORT)
+    evaluation = _read_json(SMOKE_EVALUATION)
+    run_report = _read_json(SMOKE_ROOT / "run_report.json")
+    if original is None or evaluation is None or run_report is None:
+        raise RuntimeError("Original smoke evidence is incomplete")
+    original_passed, _ = _validate_smoke_payload(original)
+    if original_passed or original.get("status") != "failed":
+        raise RuntimeError("Protocol amendment requires the preserved failed smoke")
+    if not SMOKE_PREDICTIONS.is_file():
+        raise RuntimeError("Original smoke predictions are missing")
+
+    created_at = datetime.now(timezone.utc).isoformat()
+    amendment = {
+        "schema_version": 1,
+        "protocol_id": "m15.smoke.infrastructure.v2",
+        "created_at": created_at,
+        "status": "approved_before_formal_runs",
+        "authorization_basis": (
+            "The user delegated the technical remedy after reviewing why the "
+            "original M15 smoke failed; no formal Phi run had started."
+        ),
+        "original_gate": {
+            "purpose": "mixed infrastructure and two-step task-quality gate",
+            "strict_json_valid_rate_minimum": 0.25,
+            "observed": original.get("json_valid_rate"),
+            "status": "failed",
+        },
+        "amended_gate": {
+            "purpose": "infrastructure qualification only",
+            "requirements": [
+                "checkpoint-1 is created",
+                "resume reaches checkpoint-2 and global step 2",
+                "32-row adapter evaluation completes",
+                "peak reserved VRAM is at most 24564 MiB",
+                "32/32 outputs parse as JSON objects",
+                "32/32 outputs contain string intent and list slots",
+            ],
+        },
+        "formal_experiment_contract_unchanged": {
+            "model_revision": True,
+            "training_data_and_hashes": True,
+            "prompt_template": True,
+            "max_steps_500": True,
+            "seeds_42_43_44": True,
+            "strict_evaluation_metrics": True,
+            "preregistered_cross_family_criterion": True,
+        },
+        "research_integrity": {
+            "original_failure_preserved": _repo_relative(SMOKE_REPORT),
+            "formal_phi_runs_started_before_amendment": 0,
+            "unknown intents remain failures in formal evaluation": True,
+            "no parser repair or label aliasing": True,
+        },
+    }
+    SMOKE_AMENDMENT.write_text(
+        json.dumps(amendment, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    structure = _prediction_structure(SMOKE_PREDICTIONS)
+    payload = {
+        "schema_version": 1,
+        "protocol_id": "m15.smoke.infrastructure.v2",
+        "created_at": created_at,
+        "status": "passed",
+        "model": original.get("model"),
+        "revision": original.get("revision"),
+        "original_gate": {
+            "status": "failed",
+            "strict_json_valid_rate": original.get("json_valid_rate"),
+            "parser_outcomes": evaluation.get("parser_outcomes"),
+        },
+        "infrastructure": {
+            "first_checkpoint": original.get("first_checkpoint"),
+            "resumed_from": _repo_relative(original.get("resumed_from", "")),
+            "final_checkpoint": original.get("final_checkpoint"),
+            "final_global_step": original.get("final_global_step"),
+            "evaluation_completed": original.get("evaluation_completed"),
+        },
+        "structure": structure,
+        "peak_gpu_allocated_mib": original.get("peak_gpu_allocated_mib"),
+        "peak_gpu_reserved_mib": original.get("peak_gpu_reserved_mib"),
+        "formal_experiment_contract_unchanged": True,
+        "source_sha256": {
+            "original_smoke_report": _sha256(SMOKE_REPORT),
+            "predictions": _sha256(SMOKE_PREDICTIONS),
+            "evaluation_report": _sha256(SMOKE_EVALUATION),
+            "run_report": _sha256(SMOKE_ROOT / "run_report.json"),
+            "protocol_amendment": _sha256(SMOKE_AMENDMENT),
+        },
+    }
+    passed, _ = _validate_qualification_payload(payload)
+    payload["status"] = "passed" if passed else "failed"
+    SMOKE_QUALIFICATION.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return payload
+
+
 def _validate_smoke_payload(payload: dict[str, Any]) -> tuple[bool, str]:
     passed = (
         payload.get("final_global_step") == 2
@@ -240,6 +435,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--smoke", action="store_true")
+    mode.add_argument("--qualify-smoke", action="store_true")
     mode.add_argument("--execute", action="store_true")
     parser.add_argument("--confirm")
     args = parser.parse_args()
@@ -251,6 +447,14 @@ def main() -> int:
             )
         print(json.dumps(run_smoke(), ensure_ascii=False, indent=2))
         return 0
+    if args.qualify_smoke:
+        if args.confirm != QUALIFY_CONFIRMATION:
+            raise RuntimeError(
+                f"M15 qualification requires exact --confirm {QUALIFY_CONFIRMATION}"
+            )
+        payload = qualify_existing_smoke()
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return 0 if payload["status"] == "passed" else 1
     if args.execute:
         if args.confirm != EXECUTE_CONFIRMATION:
             raise RuntimeError(

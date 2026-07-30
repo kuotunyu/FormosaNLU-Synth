@@ -11,22 +11,24 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-29 22:24 +08:00（跨多次使用者回來後續作） |
-| 完成到 | M14 GitHub/HF v1.0.0 release 完成；M15 CPU pipeline 與判準完成 |
-| 卡住的項目 | M15 下載 7.7 GB Phi-4-mini 前需依專案 >2 GB 規則取得使用者明示同意 |
+| 執行區間 | 2026-07-27 03:14–2026-07-30 11:00 +08:00（跨多次使用者回來後續作） |
+| 完成到 | M14 GitHub/HF v1.0.0 release；M15 artifact、resume smoke 與 infrastructure amendment qualification 完成 |
+| 卡住的項目 | 無研究決策阻塞；M15 正式六組只等兩次連續 GPU-safe 樣本 |
 | GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
 | 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
-### 🟡 目前只需一項確認
+### 🟢 目前不需使用者操作
 
 <!-- 逐條列出。每條要有：問題、背景、我建議的選項、以及不決定會擋住什麼 -->
 
 Primary 六組已用固定 3,760-row filtered corpus 完成，沒有放寬 thresholds。
-M14 不需要 GPU，Codex 正在收尾。M15 擬使用
-`microsoft/Phi-4-mini-instruct` 做第二 student family；模型約 7.7 GB，
-需使用者明示同意下載。下載後會先做 token／VRAM／resume smoke，通過才排
-`real_only`／`real_syn_filtered` × seeds 42–44 的過夜批次。
+Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict smoke
+因 `unknown_intent 32/32` 失敗，但 checkpoint/resume、32-row inference、
+32/32 JSON syntax 與頂層型別、6,674 MiB peak reserved VRAM 均正常。使用者將
+技術處置交由 Codex 後，正式六組開始前已登錄
+`m15.smoke.infrastructure.v2` amendment；原失敗不覆寫，正式 prompt、資料、
+500 steps、strict metrics 與跨 family criterion 全部不變。
 
 ### 👀 需要你 review 的產出
 
@@ -52,8 +54,9 @@ M14 不需要 GPU，Codex 正在收尾。M15 擬使用
 
 ### ➡️ 接下來的建議起點
 
-先讓 M14 GitHub CI／Release 全綠，再執行 M15 第二 student paired replication。
-不要覆寫 v1 release corpus、frozen thresholds 或 Gemma primary runs。
+完成 amendment 的品質門檻與 sole-contributor commit 後，重新取得兩次
+GPU-safe 樣本，再執行 M15 第二 student paired replication。不要覆寫原始
+smoke failure、v1 release corpus、frozen thresholds 或 Gemma primary runs。
 
 ---
 
@@ -61,6 +64,23 @@ M14 不需要 GPU，Codex 正在收尾。M15 擬使用
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-30 11:00 +08:00] M15 smoke protocol amendment — qualified
+
+- 原始 strict smoke 完整保留：checkpoint-1 建立、resume 至 checkpoint-2、
+  global step 2、32-row evaluation；peak allocated 6,068.81 MiB、reserved
+  6,674 MiB。
+- 原 strict gate 為失敗：Phi 在 2 steps 後輸出英文自由 intent labels，
+  evaluator 報 `unknown_intent 32/32`、strict JSON-valid `0/32`。
+- 原始輸出其實 `32/32` 可由 `json.loads` 解析、`32/32` 為 object、
+  intent 為 string、slots 為 list；`27/32` slots 亦為 object list。
+- 正式六組開始前建立 `m15.smoke.infrastructure.v2`：只把 checkpoint、
+  resume、evaluation、VRAM、JSON syntax 與必要頂層型別列為 smoke
+  infrastructure gate；catalog／slot／accuracy 仍由正式 strict evaluator
+  判定。
+- Amendment、qualification 與原始 artifacts 以 SHA-256 相互綁定；正式
+  model revision、資料 hashes、prompt、500 steps、seeds、metrics 與
+  preregistered criterion 均未改。
 
 ### [2026-07-29 22:24 +08:00] M14 v1.0.0 — 完成
 

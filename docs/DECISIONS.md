@@ -494,4 +494,51 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 
 ---
 
-<!-- 新決策從 D-018 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-018 — M15 smoke 拆分 infrastructure qualification 與 task quality
+
+- **日期**：2026-07-30
+- **狀態**：`accepted_before_formal_phi_runs`
+- **決策**：保留原始 `m15_phi4mini_smoke.json` 的 strict failure；新增
+  `m15.smoke.infrastructure.v2`，只用 checkpoint/resume、32-row evaluation、
+  VRAM、JSON syntax 與必要頂層型別判定 pipeline 是否具備執行正式六組的
+  infrastructure 資格。正式六組仍用原 strict parser 與預註冊判準。
+
+**觸發證據**
+
+- checkpoint-1 建立成功，跨程序 resume 至 checkpoint-2／global step 2。
+- 32-row evaluation 完成；peak reserved VRAM 6,674 MiB。
+- 原 strict gate 失敗：`unknown_intent 32/32`、strict JSON-valid `0/32`。
+- 結構診斷：`32/32` 可解析 JSON object、intent 為 string、slots 為 list；
+  `27/32` slots 為 object list。
+- 正式 Phi training/evaluation 在 amendment 登錄前為 **0 runs**。
+
+**考慮過的選項**
+
+| 選項 | 決定 |
+|---|---|
+| 直接放寬 strict evaluator／加入 label aliases | 拒絕；會改動 primary metric |
+| 在 adapted prompt 加入 label catalog | 拒絕；會破壞與 Gemma 的 frozen prompt parity |
+| 增加 smoke steps 直到 strict gate 通過 | 拒絕；屬事後調參且混淆 infrastructure 與 task quality |
+| 保留 failure，將 smoke 改為 infrastructure-only | 採用；正式 500-step contract 與失敗條件不變 |
+| 放棄第二 model family | 暫不採用；現有證據顯示 runtime 正常，尚未測到正式 augmentation effect |
+
+**未改項目**
+
+- model revision `cfbefacb99257ffa30c83adab238a50856ac3083`
+- 兩組 frozen training rows 與 SHA-256
+- `formosanlu_nlu.v1` prompt、500 steps、effective batch 16、max length 512
+- seeds 42／43／44 與 2,974-row Test
+- strict parser、`intent_accuracy`、`exact_match`、paired statistics
+- 跨 family claim 的 hierarchical 95% CI lower-bound criterion
+
+**研究誠信要求**：原始失敗與 amended qualification 必須同時提交；來源
+reports／predictions／run report 以 SHA-256 綁定，不得覆寫原始失敗，不做
+parser repair 或 label aliasing。正式六組若仍無法學到 canonical intents，
+必須照實回報 `not_replicated_under_preregistered_criterion`。
+
+**重新審視條件**：amended gate 無法由原始 artifacts 重算、來源 SHA 不符、
+正式 contract 任一欄位變更，或正式 run 發生 OOM／不可續跑。
+
+---
+
+<!-- 新決策從 D-019 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->

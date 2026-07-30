@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-29 22:24 +08:00 |
-| **目前里程碑** | **M14 完成、M15 CPU preflight 完成**：GitHub/HF `v1.0.0`、CI、cards、citation 均完成；Phi 六組 pipeline 與跨模型判準已凍結 |
-| **下一步動作** | 取得同意後下載 Phi；等 sibling GPU 空閒再執行 resume／VRAM／strict-output smoke |
-| **球在誰身上** | Codex；下載 7.7 GB Phi-4-mini 前依 >2 GB 規則取得使用者明示同意 |
+| **最後更新** | 2026-07-30 11:00 +08:00 |
+| **目前里程碑** | **M14 完成、M15 infrastructure qualified**：Phi 原始 strict smoke 失敗已保留；正式六組前完成 `m15.smoke.infrastructure.v2` amendment |
+| **下一步動作** | 完成 amendment 品質門檻與 sole-contributor commit；重新取得兩次 GPU-safe 樣本後執行 Phi 六組 |
+| **球在誰身上** | Codex；使用者已授權專業處置並繼續，正式 contract 不變 |
 | **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h（F7、M11、extra seeds、robustness）；可追溯 local total 23.124 h |
 | **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | robustness 仍只用 seed 42；第二 student runtime 尚待下載與 smoke 驗證 |
+| **待決事項** | robustness 仍只用 seed 42；Phi 正式六組尚待 GPU-safe window |
 | **目前範圍** | M14 只重算既有 predictions；M15 僅新增 Phi-4-mini `real_only`／`real_syn_filtered` 三種子，不改 v1 corpus 或 Gemma primary |
-| **阻塞項** | M15 model download 需使用者明示同意 |
+| **阻塞項** | 無研究決策阻塞；只等 GPU-safe window |
 
 ---
 
@@ -205,7 +205,7 @@
 |---|---|---|
 | Student 選型與授權 | `microsoft/Phi-4-mini-instruct`：3.8B、MIT、官方 Chinese support；與 teacher／Gemma／judge 不同 family | ✅ CPU 查證 |
 | Frozen data/config contract | 同一 1,176 real、3,760 F1–F6 synthetic、2,033 Val、2,974 Test；500 steps／effective batch 16／max length 512 | ✅ CPU contract 與 3 seeds SHA 全綠 |
-| Model revision、token audit、one-step smoke | revision + artifact SHA；prompt 不截斷；24 GB VRAM gate；checkpoint resume | 🟡 revision `cfbefac…083` 已凍結；待下載／GPU smoke |
+| Model revision、artifact audit、resume smoke | revision + artifact SHA；24 GB VRAM gate；checkpoint-1 → checkpoint-2；32-row probe | ✅ 原 strict gate `0/32` 已保留；amended infrastructure qualification `32/32` JSON syntax／top-level types 通過 |
 | 六組 paired runs | `real_only` 與 `real_syn_filtered` × seeds 42–44，完整 training + 2,974-row evaluation | ⬜ |
 | Cross-model report | Gemma 與 Phi 各自 paired delta／CI；不事後更動 corpus、prompt 或 threshold | 🟡 已凍結判準與自動報表；待 Phi 結果 |
 
@@ -213,7 +213,7 @@
 
 | 項目 | 估計 |
 |---|---|
-| 本機 GPU（10 runs） | 5–8 小時，過夜批次 |
+| 本機 GPU（M15 6 runs） | 約 8–15 小時，可續跑過夜批次 |
 | Colab units | 約 1.5 小時（只驗證一組），其餘配額留給專案一、二 |
 | API 花費 | **$0** |
 

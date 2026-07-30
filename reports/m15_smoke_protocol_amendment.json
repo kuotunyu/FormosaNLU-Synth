@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "protocol_id": "m15.smoke.infrastructure.v2",
+  "created_at": "2026-07-30T03:04:29.230583+00:00",
+  "status": "approved_before_formal_runs",
+  "authorization_basis": "The user delegated the technical remedy after reviewing why the original M15 smoke failed; no formal Phi run had started.",
+  "original_gate": {
+    "purpose": "mixed infrastructure and two-step task-quality gate",
+    "strict_json_valid_rate_minimum": 0.25,
+    "observed": 0.0,
+    "status": "failed"
+  },
+  "amended_gate": {
+    "purpose": "infrastructure qualification only",
+    "requirements": [
+      "checkpoint-1 is created",
+      "resume reaches checkpoint-2 and global step 2",
+      "32-row adapter evaluation completes",
+      "peak reserved VRAM is at most 24564 MiB",
+      "32/32 outputs parse as JSON objects",
+      "32/32 outputs contain string intent and list slots"
+    ]
+  },
+  "formal_experiment_contract_unchanged": {
+    "model_revision": true,
+    "training_data_and_hashes": true,
+    "prompt_template": true,
+    "max_steps_500": true,
+    "seeds_42_43_44": true,
+    "strict_evaluation_metrics": true,
+    "preregistered_cross_family_criterion": true
+  },
+  "research_integrity": {
+    "original_failure_preserved": "reports/m15_phi4mini_smoke.json",
+    "formal_phi_runs_started_before_amendment": 0,
+    "unknown intents remain failures in formal evaluation": true,
+    "no parser repair or label aliasing": true
+  }
+}

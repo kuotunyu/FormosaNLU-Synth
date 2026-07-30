@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "protocol_id": "m15.smoke.infrastructure.v2",
+  "created_at": "2026-07-30T03:04:29.230583+00:00",
+  "status": "passed",
+  "model": "microsoft/Phi-4-mini-instruct",
+  "revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
+  "original_gate": {
+    "status": "failed",
+    "strict_json_valid_rate": 0.0,
+    "parser_outcomes": {
+      "unknown_intent": 32
+    }
+  },
+  "infrastructure": {
+    "first_checkpoint": "checkpoint-1",
+    "resumed_from": "runs/m15/phi4mini_smoke/seed_42/checkpoint-1",
+    "final_checkpoint": "checkpoint-2",
+    "final_global_step": 2,
+    "evaluation_completed": 32
+  },
+  "structure": {
+    "rows": 32,
+    "json_syntax_valid": 32,
+    "json_object": 32,
+    "intent_is_string": 32,
+    "slots_is_list": 32,
+    "slot_object_list": 27
+  },
+  "peak_gpu_allocated_mib": 6068.80517578125,
+  "peak_gpu_reserved_mib": 6674.0,
+  "formal_experiment_contract_unchanged": true,
+  "source_sha256": {
+    "original_smoke_report": "8ff9beee7666e1b502024b96f3d3dc65fc419a29eba28af4b16a52c2fdf35a8b",
+    "predictions": "63a252c805fcfd12d0b5b7c5ae89dc8afc7cf46563a828405b99395ca01667f2",
+    "evaluation_report": "c7bd2a6480c1bf3bd48afc971cd25189cef344824f8583b0b5d53fb810ca22fc",
+    "run_report": "a65741efa7574b49257bb40ad295df6f456f95de2fe12529e909c3ca3f94e790",
+    "protocol_amendment": "9c5010c940ab9d061853cce367a5e59f09cf5579caf9de67d0274ec2840b3988"
+  }
+}

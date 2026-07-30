@@ -391,6 +391,18 @@ M13 public release 與 M14 paired statistics 已完成。下一個研究里程�
 `real_only`／`real_syn_filtered` 三種子 paired contract。跨 family claim
 已預先限定為 intent accuracy 與 exact match 在兩個 model families 都呈正向
 paired mean，且 hierarchical 95% CI lower bound 都大於零；未達標就照實回報。
+
+M15 原始 2-step smoke 的 strict label gate 為失敗（strict JSON-valid
+`0/32`），但 `32/32` 輸出均為可解析 JSON object，checkpoint-1、跨程序
+resume 至 checkpoint-2、32-row evaluation 與 6,674 MiB peak reserved VRAM
+皆正常。正式六組開始前已登錄
+[`m15.smoke.infrastructure.v2`](reports/m15_smoke_protocol_amendment.json)
+protocol amendment：smoke 僅判定 infrastructure 與頂層 JSON 結構；
+unknown intent、slot schema、accuracy 與 exact match 仍依原 strict evaluator
+計分。原始失敗證據保留於
+[`reports/m15_phi4mini_smoke.json`](reports/m15_phi4mini_smoke.json)，沒有
+parser repair、label aliasing，也沒有變更正式 500-step contract。
+
 後續再延伸台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval`
 等工具評估。
 
