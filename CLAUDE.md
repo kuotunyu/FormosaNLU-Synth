@@ -79,7 +79,7 @@
 - `.env` 在 **repo 外**的 `..\.env`（即 `mySyntheticData\.env`）。程式以 `python-dotenv` 明確指向該路徑讀取，**絕不複製進 repo**，也不要在 repo 內另建 `.env`。
 - **「>2GB 下載先問」包含 Ollama 模型 pull**：`qwen3:30b` 是 19GB、`gpt-oss:20b` 是 14GB，都要先問過才動。
 - 成本記帳（`logs/cost.json`）在本專案記的是 **GPU wall-clock 時數 + 估算電費 + 等值 API 成本對照**，不是美元 API 帳單。
-- **Commit 訊息不得帶 `Co-Authored-By` trailer**（或任何共同作者標記）。GitHub 會把 co-author 算進 Contributors 清單，而這個 repo 是作品集，Contributors 只能有 `kuotunyu` 一人。
+- **Commit 訊息不得帶 `Co-Authored-By` trailer**（或任何共同作者標記）。GitHub 會把 co-author 算進 Contributors 清單，這個 repo 的 Contributors 只能有 `kuotunyu` 一人。
 - 每個里程碑收尾的固定動作見下方 checklist，一項都不能跳。
 
 ---

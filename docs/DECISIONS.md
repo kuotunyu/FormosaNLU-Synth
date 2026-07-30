@@ -16,7 +16,7 @@
 
 | 選項 | 評估 |
 |---|---|
-| 遷移到 WSL2（原 portfolio plan 的預設） | 要搬 repo、重裝 Python 環境、重登 gh／hf、Ollama 要重來；`.env`、conda、uv 0.11.18、gh 2.96、git-lfs 全在 Windows 側 |
+| 遷移到 WSL2（原專案計畫的預設） | 要搬 repo、重裝 Python 環境、重登 gh／hf、Ollama 要重來；`.env`、conda、uv 0.11.18、gh 2.96、git-lfs 全在 Windows 側 |
 | **Windows 原生（採用）** | Phase 1 全部工作（本機 LLM 生成、資料處理、過濾）在 Windows 都可完成；Ollama 0.32.0 已裝在 Windows，CUDA 直通 4090 |
 
 **理由**
@@ -56,7 +56,7 @@ Gemini API Terms（effective **2026-03-23**）明文：
 **理由**
 
 1. Apache-2.0 對輸出無使用限制，公開發佈語料零法律灰區。
-2. 成本 $0，且**任何有一張 4090 的人都能完整重現**——這比「總共花了 $X」是更強的作品集敘事。
+2. 成本 $0，且**任何有一張 4090 的人都能完整重現**——這比「總共花了 $X」是更強的可重現性論述。
 3. Teacher 與 student 同為 Qwen3 家族，data card 上「family-internal distillation」的敘事乾淨。
 4. Judge 換家族（`gpt-oss:20b`，OpenAI 的開放權重模型，Apache-2.0）既達成原計畫「不同供應商以降低自我審查偏差」的目的，又把 judge 端的 ToS 灰區一併消掉。
 
@@ -127,7 +127,7 @@ Gemini API Terms（effective **2026-03-23**）明文：
 |---|---|
 | 全部走 Colab（照原規則） | 六組 + 複跑估 9–15 h L4，約吃 60–75 units。可平行開多本，但專案一、二會跟它搶同一個月的 100 units |
 | **本機為主 + 一本 Colab notebook（採用）** | 4090 對此級 QLoRA 約為 L4 的 2.5–3.5 倍，10 runs 估 5–8 h 可過夜；Colab 配額幾乎全留給專案一、二 |
-| 全部本機、不做 Colab notebook | 最省事，但少掉「會寫 Colab 訓練 notebook」這個可展示的工程能力，而原 portfolio 計畫是把它當交付物的 |
+| 全部本機、不做 Colab notebook | 最省事，但少掉「會寫 Colab 訓練 notebook」這個可展示的工程能力，而原專案規劃是把它當交付物的 |
 
 **理由**
 
@@ -192,7 +192,7 @@ Gemini API Terms（effective **2026-03-23**）明文：
 - 差距補回率是**單一數字、三秒看懂**，而且自帶上下界參照，比裸的 accuracy 有意義。
 - 過濾管線的三組對照是「資料工程能力」的直接證據，也是這個專案跟「呼叫一次 API 生資料」的差別所在。
 - $0 / 4090 是記憶點與可信度（任何人都能重現）。
-- 台味那一軸若因 R-2 在主表為負，就誠實列進 Limitations —— 負面結果加分析比選擇性報告更有面試價值（這本來就是實驗鐵律的要求）。
+- 台味那一軸若因 R-2 在主表為負，就誠實列進 Limitations —— 負面結果加分析比選擇性報告更有分析價值（這本來就是實驗鐵律的要求）。
 
 **誠實護欄**：`full_real − real_only` 若很小，差距補回率的分母趨近 0 會極不穩定。因此**一律同時報絕對差值**，分母低於門檻就明確標註「此比率不可靠」。
 
