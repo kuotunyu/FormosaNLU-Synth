@@ -104,7 +104,34 @@ primary runs，或 M15 的預先登記判準。
 - 修好 `D:\anaconda3` 的裸 `python` 啟動失敗（一個 cp950 編碼的失效 editable
   `.pth`，指向已刪除的專案）。原檔備份在暫存目錄
 
-**進行中：** T1 Gemma robustness seeds 43/44（背景批次）。
+**續作（2026-08-01 02:00–03:00 +08:00）：**
+
+- `scripts/check_gates.py`：CI 移除後的本機替代，一次跑完四道門檻。
+  `tests/test_check_gates.py` 釘住門檻清單不得被悄悄拿掉
+- **重現性抽驗**：split manifest 重新驗證得到相同 SHA256
+  `c3c9b568…`；`check_env` 十項全 PASS
+- `scripts/report_robustness_seeds.py`：跨 seed 的 robustness 彙總器。
+  delta 在**每個 seed 內**先算再平均，保留配對關係
+- `docs/instructions_for_me.md` 改成真正的待辦清單（三件事，含指令與成功確認）
+- `docs/RELEASE_NOTES_v1.1.0.md` 草稿
+- **T2 輸入預先驗證**：六份 Phi primary report 都有 `run_probe` 需要的欄位、
+  各 2,974 筆完整
+
+**兩個在夜間被抓到的問題（都已修，未放寬檢查）：**
+
+1. 彙總器對「只有 1/3 seed」的資料回報 `status=complete`。缺檔的 seed 從未
+   進入函式，所以完整性無法從輸入判斷。改為接受預期 seed 清單，全部到齊才
+   算 complete
+2. 單一 seed 的 sample SD 原本會是 `0.0`，那讀起來像「毫無變異」。改為 `null`
+
+**寫報告時要注意的誠實性細節**：seed-42 的 probe 上，filtered 相對 real_only
+在 `intent_macro_f1`（−0.40）與 `json_valid_rate`（−0.38）是**略遜**的。
+README 現有那句只列了正向的三項（並沒有寫錯），但三種子版本要**五項全列**。
+
+**GPU 排程**：02:51 啟動時 `2_SafeSynth` 正在跑 `benchmark_latency`，安全閘門
+擋下——若當時硬上，不只我的批次變慢，**那份 latency 數據會失真**。設了等待器
+輪詢，03:00 GPU 釋出後自動接續。`real_only/seed 43` 正確判定
+`skipped_complete`，沒有重跑已完成的 8,922 筆。
 
 **T3（Phi `full_real`）已永久取消**，理由與時間無關，見 D-019。
 
