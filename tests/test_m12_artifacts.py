@@ -35,6 +35,8 @@ def test_resource_ledger_uses_measured_phase_times() -> None:
         "real_only and real_syn_filtered training seeds 43 and 44",
         "four 2,974-row replicate evaluations",
         "two 8,922-row robustness probe evaluations",
+        "M15 Phi-4-mini training runs",
+        "M15 Phi-4-mini evaluations",
     ]
 
 
@@ -80,13 +82,69 @@ def test_resource_ledger_adds_completed_auxiliary_phases() -> None:
             "finished_at": "2026-01-01T05:00:00+00:00",
             "runs": [{}, {}],
         },
+        m15_training={
+            "status": "complete",
+            "runs": [
+                {
+                    "started_at": "2026-01-01T05:00:00+00:00",
+                    "finished_at": "2026-01-01T05:30:00+00:00",
+                },
+                {
+                    "started_at": "2026-01-01T05:30:00+00:00",
+                    "finished_at": "2026-01-01T06:00:00+00:00",
+                },
+            ],
+        },
+        m15_evaluation={
+            "status": "complete",
+            "started_at": "2026-01-01T06:00:00+00:00",
+            "finished_at": "2026-01-01T07:00:00+00:00",
+            "runs": [{}, {}],
+        },
     )
     assert ledger["status"] == "complete_all_local_gpu"
     assert ledger["pending"] == []
+    # The second student family is auxiliary, so the frozen primary core must
+    # not move when M15 is folded in.
     assert ledger["measured_core_gpu_hours"] == 4.0
-    assert ledger["measured_auxiliary_gpu_hours"] == 4.0
-    assert ledger["measured_total_local_gpu_hours"] == 8.0
-    assert ledger["gpu_tdp_total_energy_upper_bound_kwh"] == 3.6
+    assert ledger["measured_auxiliary_gpu_hours"] == 6.0
+    assert ledger["measured_total_local_gpu_hours"] == 10.0
+    assert ledger["gpu_tdp_total_energy_upper_bound_kwh"] == 4.5
+
+
+def test_m15_training_window_spans_unordered_runs() -> None:
+    """The M15 training batch stamps each run, not the batch, so the window is
+    bounded by the earliest start and the latest finish regardless of order."""
+    ledger = build_resource_ledger(
+        generation={"generation": {"wall_seconds": 0}},
+        training={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        evaluation={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        zero_shot={"wall_seconds": 0},
+        m15_training={
+            "status": "complete",
+            "runs": [
+                {
+                    "started_at": "2026-01-01T03:00:00+00:00",
+                    "finished_at": "2026-01-01T04:00:00+00:00",
+                },
+                {
+                    "started_at": "2026-01-01T01:00:00+00:00",
+                    "finished_at": "2026-01-01T02:00:00+00:00",
+                },
+            ],
+        },
+    )
+
+    assert ledger["phases"]["m15_phi4mini_training"]["wall_hours"] == 3.0
+    assert ledger["phases"]["m15_phi4mini_training"]["runs"] == 2
 
 
 def test_expected_readme_row_is_formatted_from_metrics() -> None:

@@ -27,6 +27,10 @@ REPLICATE_EVALUATION_REPORT = (
     REPO_ROOT / "results" / "m9_replicates_eval_batch_report.json"
 )
 ROBUSTNESS_BATCH_REPORT = REPO_ROOT / "results" / "m10_robustness_batch.json"
+M15_TRAINING_REPORT = REPO_ROOT / "runs" / "m15" / "phi4mini" / "training_batch.json"
+M15_EVALUATION_REPORT = (
+    REPO_ROOT / "results" / "m15" / "phi4mini" / "evaluation_batch.json"
+)
 RESOURCE_REPORT = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 ASSET_DIR = REPO_ROOT / "assets"
 
@@ -66,6 +70,8 @@ def build_resource_ledger(
     replicate_training: dict[str, Any] | None = None,
     replicate_evaluation: dict[str, Any] | None = None,
     robustness: dict[str, Any] | None = None,
+    m15_training: dict[str, Any] | None = None,
+    m15_evaluation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Summarize measured wall times without converting them into cloud costs."""
     generation_hours = float(generation["generation"]["wall_seconds"]) / 3600
@@ -182,6 +188,44 @@ def build_resource_ledger(
         }
     else:
         pending.append("two 8,922-row robustness probe evaluations")
+
+    # M15 is a second student family, so it is auxiliary: the frozen primary
+    # comparison stays the Gemma seed-42 core and is never diluted by it.
+    if m15_training is not None and m15_training.get("status") == "complete":
+        runs = m15_training["runs"]
+        # This batch report carries timestamps per run rather than at the top
+        # level, so bound the window with the earliest start and latest finish.
+        starts = [run["started_at"] for run in runs if run.get("started_at")]
+        finishes = [run["finished_at"] for run in runs if run.get("finished_at")]
+        hours = _elapsed_hours(min(starts), max(finishes))
+        auxiliary_hours += hours
+        phases["m15_phi4mini_training"] = {
+            "wall_hours": hours,
+            "runs": len(runs),
+            "basis": (
+                "runs/m15/phi4mini/training_batch.json "
+                "earliest run started_at to latest run finished_at"
+            ),
+        }
+    else:
+        pending.append("M15 Phi-4-mini training runs")
+
+    if m15_evaluation is not None and m15_evaluation.get("status") == "complete":
+        hours = _elapsed_hours(
+            m15_evaluation["started_at"],
+            m15_evaluation["finished_at"],
+        )
+        auxiliary_hours += hours
+        phases["m15_phi4mini_evaluation"] = {
+            "wall_hours": hours,
+            "runs": len(m15_evaluation["runs"]),
+            "basis": (
+                "results/m15/phi4mini/evaluation_batch.json "
+                "started_at to finished_at"
+            ),
+        }
+    else:
+        pending.append("M15 Phi-4-mini evaluations")
 
     total_hours = measured_gpu_hours + auxiliary_hours
     return {
@@ -457,6 +501,8 @@ def main() -> int:
     replicate_training = _load_optional(REPLICATE_TRAINING_REPORT)
     replicate_evaluation = _load_optional(REPLICATE_EVALUATION_REPORT)
     robustness = _load_optional(ROBUSTNESS_BATCH_REPORT)
+    m15_training = _load_optional(M15_TRAINING_REPORT)
+    m15_evaluation = _load_optional(M15_EVALUATION_REPORT)
     ledger = build_resource_ledger(
         generation=generation,
         training=training,
@@ -467,6 +513,8 @@ def main() -> int:
         replicate_training=replicate_training,
         replicate_evaluation=replicate_evaluation,
         robustness=robustness,
+        m15_training=m15_training,
+        m15_evaluation=m15_evaluation,
     )
     args.resource_report.write_text(
         json.dumps(ledger, ensure_ascii=False, indent=2) + "\n",

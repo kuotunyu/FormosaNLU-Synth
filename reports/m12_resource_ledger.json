@@ -46,14 +46,24 @@
       "wall_hours": 2.1017462491666667,
       "runs": 2,
       "basis": "results/m10_robustness_batch.json started_at to finished_at"
+    },
+    "m15_phi4mini_training": {
+      "wall_hours": 2.7175884830555557,
+      "runs": 6,
+      "basis": "runs/m15/phi4mini/training_batch.json earliest run started_at to latest run finished_at"
+    },
+    "m15_phi4mini_evaluation": {
+      "wall_hours": 1.0372734083333335,
+      "runs": 6,
+      "basis": "results/m15/phi4mini/evaluation_batch.json started_at to finished_at"
     }
   },
   "measured_core_gpu_hours": 14.439791908305544,
-  "measured_auxiliary_gpu_hours": 8.684673323444446,
-  "measured_total_local_gpu_hours": 23.12446523174999,
+  "measured_auxiliary_gpu_hours": 12.439535214833336,
+  "measured_total_local_gpu_hours": 26.87932712313888,
   "gpu_tdp_watts": 450,
   "gpu_tdp_energy_upper_bound_kwh": 6.497906358737495,
-  "gpu_tdp_total_energy_upper_bound_kwh": 10.406009354287496,
+  "gpu_tdp_total_energy_upper_bound_kwh": 12.095697205412495,
   "energy_note": "Upper-bound GPU-only envelope using the RTX 4090 450 W TDP; not a wall-socket measurement. The core field remains the frozen primary comparison; total includes every completed local auxiliary phase whose timing artifact is available.",
   "pending": []
 }
