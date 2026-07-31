@@ -5,6 +5,8 @@
 > M11 比較介面、M12 報告產物、Colab portability 與 F7 independent
 > judge audit、robustness inference 均已完成。所有本機 GPU 階段已收尾；
 > GitHub、Hugging Face Dataset 與 LoRA adapter 已公開，並通過匿名下載驗證。
+> **M15 已在第二個 student family（`microsoft/Phi-4-mini-instruct`）
+> 完成同一份 paired contract 的複製，預先登記的判準通過。**
 
 在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
 language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
@@ -55,7 +57,14 @@ unfiltered-full 組。
 平均提升 **+3.86 ± 0.73 個百分點**（descriptive 95% CI
 [+2.03, +5.68]），intent accuracy 平均提升 **+4.14 ± 1.39 個百分點**
 （[+0.68, +7.59]）。由於只有三個 seeds，這些 intervals 是描述性不確定性，
-不是廣泛統計顯著性或跨模型泛化宣稱。
+不是廣泛統計顯著性宣稱。
+
+**這個效果不只存在於一個 student family。** 以完全相同的 frozen corpus、
+prompt、500 steps 與 strict evaluator，在第二個 family
+`microsoft/Phi-4-mini-instruct` 重跑同一份三種子 paired contract 後，
+intent accuracy 與 exact match 在兩個 family 都是正向平均提升，且
+hierarchical 95% CI 下界都大於零——這正是**在看到 Phi 結果之前就凍結的
+判準**。詳見下方「跨 student family 複製」。
 
 ![M9 primary 結果](assets/m12_main_results.png)
 
@@ -124,6 +133,41 @@ test；六項比較經 Holm correction 後全部 `p ≤ 0.00017`。這是 frozen
 MASSIVE `zh-TW` Test 與目前 Gemma 4 contract 內的 paired evidence，不等同
 跨模型或跨資料集泛化。完整方法、input SHA-256 與結果見
 [`reports/m14_paired_statistics.md`](reports/m14_paired_statistics.md)。
+
+### 跨 student family 複製
+
+單一 student 上的提升，可能只是那個 model 的特性。為了排除這個解釋，M15 用
+第二個 student family 重跑**完全相同**的 paired contract：同一份 frozen
+corpus、同一個 prompt template、500 steps、相同 seeds 與相同 strict
+evaluator，只換 base model。
+
+判準在**看到任何 Phi 結果之前**就凍結：
+
+> 對 `intent_accuracy` 與 `exact_match` 兩項，paired mean delta 在每個
+> family 都必須為正，且各自的 hierarchical 95% CI 下界都必須大於零。
+
+| Metric | Gemma Δ [95% CI] | Phi Δ [95% CI] | 兩個 family 的 CI 都 > 0 |
+| --- | ---: | ---: | :---: |
+| `intent_accuracy` | +4.14 [+2.60, +5.59] | +5.09 [+1.83, +9.02] | ✅ |
+| `intent_macro_f1` | +2.01 [+0.35, +3.69] | +3.36 [+0.98, +5.56] | ✅ |
+| `slot_micro_f1` | +2.92 [+0.87, +4.68] | +1.80 [+0.29, +3.19] | ✅ |
+| `exact_match` | +3.86 [+2.75, +4.92] | +4.71 [+1.36, +7.59] | ✅ |
+| `json_valid_rate` | +1.57 [-0.01, +3.77] | +1.77 [+1.05, +2.63] | ❌ |
+
+兩項預先登記的 primary metrics 都通過，因此結論為
+`replicated_across_student_families`。
+
+**未達標的部分照實列出**：`json_valid_rate` 沒有通過同一條門檻，因為 Gemma
+側的 CI 跨越零；它不在預先登記的判準內，但不會因此被略過。Phi 的
+`exact_match_seed_42` 在 Holm 校正後 `p = 0.141` 不顯著，另外五項 paired
+tests 顯著。
+
+**範圍**：這是兩個 family、一份 frozen dataset、一種 training contract 的
+複製。兩個 family 分別彙總，**不 pooling**，也不宣稱推廣到其他 dataset、
+其他任務或任意 model。完整方法與逐 seed 數字見
+[`reports/m15_cross_model_replication.md`](reports/m15_cross_model_replication.md)
+與
+[`reports/m15_phi4mini_paired_statistics.md`](reports/m15_phi4mini_paired_statistics.md)。
 
 ### 各 intent 的變化
 
@@ -359,8 +403,14 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 ## 限制
 
 - Training-seed 摘要只有 `n=3`；M14 hierarchical bootstrap 與 paired
-  McNemar tests 強化了 frozen Test 上的證據，但仍不支撐跨模型或跨資料集
-  泛化宣稱。
+  McNemar tests 強化了 frozen Test 上的證據，但不支撐跨資料集泛化宣稱。
+- M15 的複製只涵蓋**兩個** student families，且共用同一份 frozen corpus、
+  同一種 training contract 與同一個 Test set。兩個 family 分別彙總、不
+  pooling。「在兩個 family 上複製成功」不等於「對任意 model 都成立」，
+  也不等於在其他任務或其他資料集上成立。
+- `json_valid_rate` 未通過 M15 的兩 family CI 門檻（Gemma 側 CI 跨越零），
+  Phi 的 `exact_match_seed_42` 在 Holm 校正後也不顯著。這兩項都不在預先
+  登記的判準內，但一併列出。
 - F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
   為 6.0%，但樣本僅 50 筆，95% interval 很寬。
 - Robustness 只比較 seed-42 adapters，且三種擾動是 deterministic probes；
@@ -385,12 +435,13 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 
 ## Roadmap
 
-M13 public release 與 M14 paired statistics 已完成。下一個研究里程碑是用
-`microsoft/Phi-4-mini-instruct`（MIT，frozen revision
+M13 public release、M14 paired statistics 與 **M15 跨 family 複製均已完成**。
+M15 使用 `microsoft/Phi-4-mini-instruct`（MIT，frozen revision
 `cfbefacb99257ffa30c83adab238a50856ac3083`）重複
-`real_only`／`real_syn_filtered` 三種子 paired contract。跨 family claim
-已預先限定為 intent accuracy 與 exact match 在兩個 model families 都呈正向
-paired mean，且 hierarchical 95% CI lower bound 都大於零；未達標就照實回報。
+`real_only`／`real_syn_filtered` 三種子 paired contract；跨 family claim
+在看到結果前就限定為 intent accuracy 與 exact match 在兩個 model families
+都呈正向 paired mean，且 hierarchical 95% CI lower bound 都大於零。
+該判準已通過，結果見上方「跨 student family 複製」。
 
 M15 原始 2-step smoke 的 strict label gate 為失敗（strict JSON-valid
 `0/32`），但 `32/32` 輸出均為可解析 JSON object，checkpoint-1、跨程序

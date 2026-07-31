@@ -14,6 +14,7 @@ M9_REPLICATES = REPO_ROOT / "reports" / "m9_replicate_summary.json"
 M10_ROBUSTNESS = REPO_ROOT / "reports" / "m10_robustness.json"
 M13_PUBLICATION = REPO_ROOT / "reports" / "m13_publication.json"
 M14_PAIRED = REPO_ROOT / "reports" / "m14_paired_statistics.json"
+M15_CROSS_MODEL = REPO_ROOT / "reports" / "m15_cross_model_replication.json"
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
@@ -118,6 +119,29 @@ def expected_paired_markers(report: dict[str, Any]) -> list[str]:
     return markers
 
 
+def expected_cross_model_rows(report: dict[str, Any]) -> list[str]:
+    """Return the M15 cross-model table rows that must appear verbatim.
+
+    Both families are formatted from the same raw report, so a README row can
+    never drift from the measured delta or its hierarchical interval.
+    """
+    rows = []
+    for metric, item in report["metrics"].items():
+        gemma, phi = item["gemma"], item["phi"]
+        gemma_low, gemma_high = gemma["ci"]
+        phi_low, phi_high = phi["ci"]
+        mark = "✅" if item["both_ci_exclude_zero_positive"] else "❌"
+        rows.append(
+            f"| `{metric}` "
+            f"| {gemma['mean_delta_percentage_points']:+.2f} "
+            f"[{gemma_low:+.2f}, {gemma_high:+.2f}] "
+            f"| {phi['mean_delta_percentage_points']:+.2f} "
+            f"[{phi_low:+.2f}, {phi_high:+.2f}] "
+            f"| {mark} |"
+        )
+    return rows
+
+
 def verify_readme(
     *,
     readme: str,
@@ -129,6 +153,7 @@ def verify_readme(
     robustness: dict[str, Any] | None = None,
     publication: dict[str, Any] | None = None,
     paired: dict[str, Any] | None = None,
+    cross_model: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
@@ -174,6 +199,47 @@ def verify_readme(
         )
         for marker in expected_paired_markers(paired):
             checks.append((f"paired marker {marker}", marker in readme))
+    if cross_model is not None:
+        criterion = cross_model["preregistered_replication_criterion"]
+        checks.append(
+            ("cross-model report complete", cross_model.get("status") == "complete")
+        )
+        # The verdict is only reportable if the preregistered rule actually held
+        # for both primary metrics, so tie the README wording to the raw flag.
+        checks.append(
+            (
+                "cross-model criterion passed",
+                criterion.get("passed") is True
+                and all(
+                    cross_model["metrics"][metric]["both_ci_exclude_zero_positive"]
+                    for metric in criterion["primary_metrics"]
+                ),
+            )
+        )
+        checks.append(
+            (
+                "cross-model verdict stated",
+                cross_model["conclusion"] == "replicated_across_student_families"
+                and "replicated_across_student_families" in readme,
+            )
+        )
+        checks.append(
+            (
+                "cross-model families named",
+                cross_model["models"]["gemma"] in readme
+                and cross_model["models"]["phi"] in readme,
+            )
+        )
+        checks.append(
+            (
+                "cross-model families not pooled",
+                "不 pooling" in readme or "不做 pooling" in readme,
+            )
+        )
+        for row in expected_cross_model_rows(cross_model):
+            checks.append(
+                (f"cross-model row {row.split('|')[1].strip()}", row in readme)
+            )
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
     comparisons = m11["comparisons"]
@@ -267,6 +333,7 @@ def main() -> int:
         robustness=_load(M10_ROBUSTNESS) if M10_ROBUSTNESS.is_file() else None,
         publication=_load(M13_PUBLICATION) if M13_PUBLICATION.is_file() else None,
         paired=_load(M14_PAIRED) if M14_PAIRED.is_file() else None,
+        cross_model=_load(M15_CROSS_MODEL) if M15_CROSS_MODEL.is_file() else None,
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:
