@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "created_at": "2026-07-31T00:00:09.757259+00:00",
+  "experiment": "M15 Phi-4-mini",
+  "comparison": "real_syn_filtered minus real_only",
+  "test_rows_per_seed": 2974,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "input_files": {
+    "real_only_seed_42": {
+      "path": "results/m15/phi4mini/real_only_seed_42.jsonl",
+      "rows": 2974,
+      "sha256": "ba2071ec8d7aa787755ef5128d7e55592eae87413fc3d7bbef7ecfb21886cb11"
+    },
+    "real_syn_filtered_seed_42": {
+      "path": "results/m15/phi4mini/real_syn_filtered_seed_42.jsonl",
+      "rows": 2974,
+      "sha256": "1abef4c0ae1a74f0f65e5be3f651e846f02a7ce24735055763bf23423267e007"
+    },
+    "real_only_seed_43": {
+      "path": "results/m15/phi4mini/real_only_seed_43.jsonl",
+      "rows": 2974,
+      "sha256": "91903a6b56c91d77f40d725cd34d9d55cd15dc2d31f20d7df0dca080a7d56169"
+    },
+    "real_syn_filtered_seed_43": {
+      "path": "results/m15/phi4mini/real_syn_filtered_seed_43.jsonl",
+      "rows": 2974,
+      "sha256": "529b9f0364da08077793e8df0adaee6bf13ac85cf9031f9fc35e97ab7310b539"
+    },
+    "real_only_seed_44": {
+      "path": "results/m15/phi4mini/real_only_seed_44.jsonl",
+      "rows": 2974,
+      "sha256": "b9c56e23ffbbe1cc47e73a0bf37397161879e1fc1494531a6c9f7c37b1fec9d6"
+    },
+    "real_syn_filtered_seed_44": {
+      "path": "results/m15/phi4mini/real_syn_filtered_seed_44.jsonl",
+      "rows": 2974,
+      "sha256": "d07d81d4b4a1afeca07ce67a0a9be7f8febaf7250d7f14631c5fe4fab09a2c10"
+    }
+  },
+  "hierarchical_bootstrap": {
+    "repetitions": 5000,
+    "random_seed": 20260729,
+    "method": "Resample three seeds with replacement, then resample paired Test rows with replacement within each selected seed; average per-seed deltas.",
+    "metrics": {
+      "intent_accuracy": {
+        "by_seed_percentage_points": {
+          "42": 1.7821116341627419,
+          "43": 9.17955615332885,
+          "44": 4.303967720242097
+        },
+        "mean_delta_percentage_points": 5.088545169244563,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          1.8269446312485986,
+          9.022920869760137
+        ]
+      },
+      "intent_macro_f1": {
+        "by_seed_percentage_points": {
+          "42": 0.8794006136195187,
+          "43": 5.398612742213171,
+          "44": 3.8157408201932475
+        },
+        "mean_delta_percentage_points": 3.364584725341979,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          0.9821965708839824,
+          5.564273960009285
+        ]
+      },
+      "slot_micro_f1": {
+        "by_seed_percentage_points": {
+          "42": 0.526948103377689,
+          "43": 2.7393714031695438,
+          "44": 2.118897567796796
+        },
+        "mean_delta_percentage_points": 1.7950723581146761,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          0.294907258642669,
+          3.191267735580941
+        ]
+      },
+      "exact_match": {
+        "by_seed_percentage_points": {
+          "42": 1.2104909213180914,
+          "43": 7.4310692669805,
+          "44": 5.480833893745796
+        },
+        "mean_delta_percentage_points": 4.707464694014796,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          1.3559179556153318,
+          7.587984756780991
+        ]
+      },
+      "json_valid_rate": {
+        "by_seed_percentage_points": {
+          "42": 1.210490921318097,
+          "43": 2.656355077336925,
+          "44": 1.445864156018839
+        },
+        "mean_delta_percentage_points": 1.770903384891287,
+        "hierarchical_bootstrap_95_ci_percentage_points": [
+          1.053295225285805,
+          2.633938578793989
+        ]
+      }
+    }
+  },
+  "exact_mcnemar": {
+    "method": "Two-sided exact McNemar/binomial test on paired row correctness; Holm correction across six intent/exact tests.",
+    "tests": {
+      "intent_accuracy_seed_42": {
+        "baseline_only_correct": 215,
+        "filtered_only_correct": 268,
+        "discordant": 483,
+        "p_value": 0.017886164356808457,
+        "holm_adjusted_p_value": 0.035772328713616915,
+        "reject_at_0_05": true
+      },
+      "exact_match_seed_42": {
+        "baseline_only_correct": 265,
+        "filtered_only_correct": 301,
+        "discordant": 566,
+        "p_value": 0.1411797772326079,
+        "holm_adjusted_p_value": 0.1411797772326079,
+        "reject_at_0_05": false
+      },
+      "intent_accuracy_seed_43": {
+        "baseline_only_correct": 134,
+        "filtered_only_correct": 407,
+        "discordant": 541,
+        "p_value": 5.461632377787428e-33,
+        "holm_adjusted_p_value": 3.276979426672457e-32,
+        "reject_at_0_05": true
+      },
+      "exact_match_seed_43": {
+        "baseline_only_correct": 197,
+        "filtered_only_correct": 418,
+        "discordant": 615,
+        "p_value": 2.985063630753465e-19,
+        "holm_adjusted_p_value": 1.4925318153767324e-18,
+        "reject_at_0_05": true
+      },
+      "intent_accuracy_seed_44": {
+        "baseline_only_correct": 191,
+        "filtered_only_correct": 319,
+        "discordant": 510,
+        "p_value": 1.58179640108671e-08,
+        "holm_adjusted_p_value": 4.74538920326013e-08,
+        "reject_at_0_05": true
+      },
+      "exact_match_seed_44": {
+        "baseline_only_correct": 222,
+        "filtered_only_correct": 385,
+        "discordant": 607,
+        "p_value": 3.7275825289060094e-11,
+        "holm_adjusted_p_value": 1.4910330115624038e-10,
+        "reject_at_0_05": true
+      }
+    }
+  },
+  "interpretation_scope": "Evidence applies to the frozen MASSIVE zh-TW Test set and the preregistered Phi-4-mini training contract. Cross-family conclusions must compare this report with M14 without pooling model families."
+}

@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-30T23:49:33.319571+00:00",
+  "model": "microsoft/Phi-4-mini-instruct",
+  "text_only_class": "AutoModelForCausalLM",
+  "quantization": "NF4 double-quant, bf16 compute",
+  "prompt_template_version": "formosanlu_nlu.v1",
+  "evaluation_mode": "trained_adapter",
+  "label_catalog_included": false,
+  "zero_shot_prompt_includes_label_catalog": false,
+  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m15\\phi4mini\\real_syn_filtered\\seed_43\\adapter",
+  "group": "real_syn_filtered",
+  "seed": 43,
+  "constrained_decoding": false,
+  "completed": 2974,
+  "target": 2974,
+  "wall_seconds": 576.2458479999914,
+  "timing_basis": "sum of model.generate batch elapsed; excludes model loading",
+  "output_tokens": 59590,
+  "output_tokens_per_second": 103.41072340359993,
+  "output_token_distribution": {
+    "p50": 21,
+    "p95": 35,
+    "p99": 45,
+    "maximum": 60,
+    "max_new_tokens": 128,
+    "at_generation_limit": 0
+  },
+  "peak_device_wide_gpu_memory_mib": 4604.0,
+  "gpu_memory_measurement": "nvidia-smi device-wide memory; concurrent project workloads may contribute",
+  "metrics": {
+    "samples": 2974.0,
+    "json_valid_rate": 0.9848688634835239,
+    "intent_accuracy": 0.7437794216543376,
+    "intent_macro_f1": 0.7362481747343996,
+    "slot_micro_f1": 0.5923275690717551,
+    "exact_match": 0.47209145931405516
+  },
+  "parser_outcomes": {
+    "unknown_intent": 33,
+    "unknown_slot_type": 12,
+    "valid": 2929
+  },
+  "conditional_on_strict_valid_json": {
+    "valid_rows": 2929,
+    "intent_correct": 2212,
+    "intent_accuracy": 0.7552065551382724
+  },
+  "per_intent": {
+    "alarm_query": {
+      "correct": 33,
+      "total": 34,
+      "accuracy": 0.9705882352941176
+    },
+    "alarm_remove": {
+      "correct": 21,
+      "total": 21,
+      "accuracy": 1.0
+    },
+    "alarm_set": {
+      "correct": 38,
+      "total": 41,
+      "accuracy": 0.926829268292683
+    },
+    "audio_volume_down": {
+      "correct": 11,
+      "total": 11,
+      "accuracy": 1.0
+    },
+    "audio_volume_mute": {
+      "correct": 29,
+      "total": 32,
+      "accuracy": 0.90625
+    },
+    "audio_volume_other": {
+      "correct": 5,
+      "total": 6,
+      "accuracy": 0.8333333333333334
+    },
+    "audio_volume_up": {
+      "correct": 12,
+      "total": 13,
+      "accuracy": 0.9230769230769231
+    },
+    "calendar_query": {
+      "correct": 61,
+      "total": 126,
+      "accuracy": 0.48412698412698413
+    },
+    "calendar_remove": {
+      "correct": 37,
+      "total": 67,
+      "accuracy": 0.5522388059701493
+    },
+    "calendar_set": {
+      "correct": 160,
+      "total": 209,
+      "accuracy": 0.7655502392344498
+    },
+    "cooking_query": {
+      "correct": 0,
+      "total": 0,
+      "accuracy": 0.0
+    },
+    "cooking_recipe": {
+      "correct": 50,
+      "total": 72,
+      "accuracy": 0.6944444444444444
+    },
+    "datetime_convert": {
+      "correct": 11,
+      "total": 15,
+      "accuracy": 0.7333333333333333
+    },
+    "datetime_query": {
+      "correct": 82,
+      "total": 88,
+      "accuracy": 0.9318181818181818
+    },
+    "email_addcontact": {
+      "correct": 11,
+      "total": 12,
+      "accuracy": 0.9166666666666666
+    },
+    "email_query": {
+      "correct": 92,
+      "total": 119,
+      "accuracy": 0.773109243697479
+    },
+    "email_querycontact": {
+      "correct": 19,
+      "total": 26,
+      "accuracy": 0.7307692307692307
+    },
+    "email_sendemail": {
+      "correct": 88,
+      "total": 114,
+      "accuracy": 0.7719298245614035
+    },
+    "general_greet": {
+      "correct": 0,
+      "total": 1,
+      "accuracy": 0.0
+    },
+    "general_joke": {
+      "correct": 18,
+      "total": 19,
+      "accuracy": 0.9473684210526315
+    },
+    "general_quirky": {
+      "correct": 56,
+      "total": 169,
+      "accuracy": 0.33136094674556216
+    },
+    "iot_cleaning": {
+      "correct": 24,
+      "total": 26,
+      "accuracy": 0.9230769230769231
+    },
+    "iot_coffee": {
+      "correct": 36,
+      "total": 36,
+      "accuracy": 1.0
+    },
+    "iot_hue_lightchange": {
+      "correct": 34,
+      "total": 36,
+      "accuracy": 0.9444444444444444
+    },
+    "iot_hue_lightdim": {
+      "correct": 17,
+      "total": 21,
+      "accuracy": 0.8095238095238095
+    },
+    "iot_hue_lightoff": {
+      "correct": 39,
+      "total": 43,
+      "accuracy": 0.9069767441860465
+    },
+    "iot_hue_lighton": {
+      "correct": 3,
+      "total": 3,
+      "accuracy": 1.0
+    },
+    "iot_hue_lightup": {
+      "correct": 21,
+      "total": 27,
+      "accuracy": 0.7777777777777778
+    },
+    "iot_wemo_off": {
+      "correct": 16,
+      "total": 18,
+      "accuracy": 0.8888888888888888
+    },
+    "iot_wemo_on": {
+      "correct": 9,
+      "total": 10,
+      "accuracy": 0.9
+    },
+    "lists_createoradd": {
+      "correct": 32,
+      "total": 39,
+      "accuracy": 0.8205128205128205
+    },
+    "lists_query": {
+      "correct": 40,
+      "total": 51,
+      "accuracy": 0.7843137254901961
+    },
+    "lists_remove": {
+      "correct": 41,
+      "total": 52,
+      "accuracy": 0.7884615384615384
+    },
+    "music_dislikeness": {
+      "correct": 4,
+      "total": 4,
+      "accuracy": 1.0
+    },
+    "music_likeness": {
+      "correct": 26,
+      "total": 36,
+      "accuracy": 0.7222222222222222
+    },
+    "music_query": {
+      "correct": 27,
+      "total": 35,
+      "accuracy": 0.7714285714285715
+    },
+    "music_settings": {
+      "correct": 5,
+      "total": 6,
+      "accuracy": 0.8333333333333334
+    },
+    "news_query": {
+      "correct": 99,
+      "total": 124,
+      "accuracy": 0.7983870967741935
+    },
+    "play_audiobook": {
+      "correct": 28,
+      "total": 41,
+      "accuracy": 0.6829268292682927
+    },
+    "play_game": {
+      "correct": 32,
+      "total": 35,
+      "accuracy": 0.9142857142857143
+    },
+    "play_music": {
+      "correct": 101,
+      "total": 176,
+      "accuracy": 0.5738636363636364
+    },
+    "play_podcasts": {
+      "correct": 53,
+      "total": 63,
+      "accuracy": 0.8412698412698413
+    },
+    "play_radio": {
+      "correct": 51,
+      "total": 72,
+      "accuracy": 0.7083333333333334
+    },
+    "qa_currency": {
+      "correct": 39,
+      "total": 39,
+      "accuracy": 1.0
+    },
+    "qa_definition": {
+      "correct": 45,
+      "total": 57,
+      "accuracy": 0.7894736842105263
+    },
+    "qa_factoid": {
+      "correct": 79,
+      "total": 141,
+      "accuracy": 0.5602836879432624
+    },
+    "qa_maths": {
+      "correct": 25,
+      "total": 25,
+      "accuracy": 1.0
+    },
+    "qa_stock": {
+      "correct": 25,
+      "total": 26,
+      "accuracy": 0.9615384615384616
+    },
+    "recommendation_events": {
+      "correct": 24,
+      "total": 43,
+      "accuracy": 0.5581395348837209
+    },
+    "recommendation_locations": {
+      "correct": 25,
+      "total": 31,
+      "accuracy": 0.8064516129032258
+    },
+    "recommendation_movies": {
+      "correct": 14,
+      "total": 20,
+      "accuracy": 0.7
+    },
+    "social_post": {
+      "correct": 68,
+      "total": 81,
+      "accuracy": 0.8395061728395061
+    },
+    "social_query": {
+      "correct": 14,
+      "total": 25,
+      "accuracy": 0.56
+    },
+    "takeaway_order": {
+      "correct": 17,
+      "total": 22,
+      "accuracy": 0.7727272727272727
+    },
+    "takeaway_query": {
+      "correct": 30,
+      "total": 35,
+      "accuracy": 0.8571428571428571
+    },
+    "transport_query": {
+      "correct": 37,
+      "total": 51,
+      "accuracy": 0.7254901960784313
+    },
+    "transport_taxi": {
+      "correct": 21,
+      "total": 23,
+      "accuracy": 0.9130434782608695
+    },
+    "transport_ticket": {
+      "correct": 29,
+      "total": 35,
+      "accuracy": 0.8285714285714286
+    },
+    "transport_traffic": {
+      "correct": 13,
+      "total": 15,
+      "accuracy": 0.8666666666666667
+    },
+    "weather_query": {
+      "correct": 135,
+      "total": 156,
+      "accuracy": 0.8653846153846154
+    }
+  }
+}

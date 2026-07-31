@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-31T00:00:07.323905+00:00",
+  "model": "microsoft/Phi-4-mini-instruct",
+  "text_only_class": "AutoModelForCausalLM",
+  "quantization": "NF4 double-quant, bf16 compute",
+  "prompt_template_version": "formosanlu_nlu.v1",
+  "evaluation_mode": "trained_adapter",
+  "label_catalog_included": false,
+  "zero_shot_prompt_includes_label_catalog": false,
+  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m15\\phi4mini\\real_syn_filtered\\seed_44\\adapter",
+  "group": "real_syn_filtered",
+  "seed": 44,
+  "constrained_decoding": false,
+  "completed": 2974,
+  "target": 2974,
+  "wall_seconds": 613.5272680998753,
+  "timing_basis": "sum of model.generate batch elapsed; excludes model loading",
+  "output_tokens": 61391,
+  "output_tokens_per_second": 100.06238221510677,
+  "output_token_distribution": {
+    "p50": 21,
+    "p95": 37,
+    "p99": 47,
+    "maximum": 63,
+    "max_new_tokens": 128,
+    "at_generation_limit": 0
+  },
+  "peak_device_wide_gpu_memory_mib": 4604.0,
+  "gpu_memory_measurement": "nvidia-smi device-wide memory; concurrent project workloads may contribute",
+  "metrics": {
+    "samples": 2974.0,
+    "json_valid_rate": 0.9828513786146604,
+    "intent_accuracy": 0.7269670477471419,
+    "intent_macro_f1": 0.7225250547405382,
+    "slot_micro_f1": 0.5813549507817024,
+    "exact_match": 0.4546065904505716
+  },
+  "parser_outcomes": {
+    "unknown_intent": 23,
+    "unknown_slot_type": 28,
+    "valid": 2923
+  },
+  "conditional_on_strict_valid_json": {
+    "valid_rows": 2923,
+    "intent_correct": 2162,
+    "intent_accuracy": 0.7396510434485118
+  },
+  "per_intent": {
+    "alarm_query": {
+      "correct": 33,
+      "total": 34,
+      "accuracy": 0.9705882352941176
+    },
+    "alarm_remove": {
+      "correct": 21,
+      "total": 21,
+      "accuracy": 1.0
+    },
+    "alarm_set": {
+      "correct": 38,
+      "total": 41,
+      "accuracy": 0.926829268292683
+    },
+    "audio_volume_down": {
+      "correct": 11,
+      "total": 11,
+      "accuracy": 1.0
+    },
+    "audio_volume_mute": {
+      "correct": 26,
+      "total": 32,
+      "accuracy": 0.8125
+    },
+    "audio_volume_other": {
+      "correct": 4,
+      "total": 6,
+      "accuracy": 0.6666666666666666
+    },
+    "audio_volume_up": {
+      "correct": 11,
+      "total": 13,
+      "accuracy": 0.8461538461538461
+    },
+    "calendar_query": {
+      "correct": 88,
+      "total": 126,
+      "accuracy": 0.6984126984126984
+    },
+    "calendar_remove": {
+      "correct": 32,
+      "total": 67,
+      "accuracy": 0.47761194029850745
+    },
+    "calendar_set": {
+      "correct": 119,
+      "total": 209,
+      "accuracy": 0.569377990430622
+    },
+    "cooking_query": {
+      "correct": 0,
+      "total": 0,
+      "accuracy": 0.0
+    },
+    "cooking_recipe": {
+      "correct": 46,
+      "total": 72,
+      "accuracy": 0.6388888888888888
+    },
+    "datetime_convert": {
+      "correct": 11,
+      "total": 15,
+      "accuracy": 0.7333333333333333
+    },
+    "datetime_query": {
+      "correct": 84,
+      "total": 88,
+      "accuracy": 0.9545454545454546
+    },
+    "email_addcontact": {
+      "correct": 8,
+      "total": 12,
+      "accuracy": 0.6666666666666666
+    },
+    "email_query": {
+      "correct": 97,
+      "total": 119,
+      "accuracy": 0.8151260504201681
+    },
+    "email_querycontact": {
+      "correct": 22,
+      "total": 26,
+      "accuracy": 0.8461538461538461
+    },
+    "email_sendemail": {
+      "correct": 87,
+      "total": 114,
+      "accuracy": 0.7631578947368421
+    },
+    "general_greet": {
+      "correct": 0,
+      "total": 1,
+      "accuracy": 0.0
+    },
+    "general_joke": {
+      "correct": 18,
+      "total": 19,
+      "accuracy": 0.9473684210526315
+    },
+    "general_quirky": {
+      "correct": 49,
+      "total": 169,
+      "accuracy": 0.28994082840236685
+    },
+    "iot_cleaning": {
+      "correct": 25,
+      "total": 26,
+      "accuracy": 0.9615384615384616
+    },
+    "iot_coffee": {
+      "correct": 33,
+      "total": 36,
+      "accuracy": 0.9166666666666666
+    },
+    "iot_hue_lightchange": {
+      "correct": 35,
+      "total": 36,
+      "accuracy": 0.9722222222222222
+    },
+    "iot_hue_lightdim": {
+      "correct": 17,
+      "total": 21,
+      "accuracy": 0.8095238095238095
+    },
+    "iot_hue_lightoff": {
+      "correct": 34,
+      "total": 43,
+      "accuracy": 0.7906976744186046
+    },
+    "iot_hue_lighton": {
+      "correct": 3,
+      "total": 3,
+      "accuracy": 1.0
+    },
+    "iot_hue_lightup": {
+      "correct": 19,
+      "total": 27,
+      "accuracy": 0.7037037037037037
+    },
+    "iot_wemo_off": {
+      "correct": 17,
+      "total": 18,
+      "accuracy": 0.9444444444444444
+    },
+    "iot_wemo_on": {
+      "correct": 9,
+      "total": 10,
+      "accuracy": 0.9
+    },
+    "lists_createoradd": {
+      "correct": 34,
+      "total": 39,
+      "accuracy": 0.8717948717948718
+    },
+    "lists_query": {
+      "correct": 37,
+      "total": 51,
+      "accuracy": 0.7254901960784313
+    },
+    "lists_remove": {
+      "correct": 38,
+      "total": 52,
+      "accuracy": 0.7307692307692307
+    },
+    "music_dislikeness": {
+      "correct": 4,
+      "total": 4,
+      "accuracy": 1.0
+    },
+    "music_likeness": {
+      "correct": 28,
+      "total": 36,
+      "accuracy": 0.7777777777777778
+    },
+    "music_query": {
+      "correct": 25,
+      "total": 35,
+      "accuracy": 0.7142857142857143
+    },
+    "music_settings": {
+      "correct": 4,
+      "total": 6,
+      "accuracy": 0.6666666666666666
+    },
+    "news_query": {
+      "correct": 94,
+      "total": 124,
+      "accuracy": 0.7580645161290323
+    },
+    "play_audiobook": {
+      "correct": 28,
+      "total": 41,
+      "accuracy": 0.6829268292682927
+    },
+    "play_game": {
+      "correct": 31,
+      "total": 35,
+      "accuracy": 0.8857142857142857
+    },
+    "play_music": {
+      "correct": 94,
+      "total": 176,
+      "accuracy": 0.5340909090909091
+    },
+    "play_podcasts": {
+      "correct": 47,
+      "total": 63,
+      "accuracy": 0.746031746031746
+    },
+    "play_radio": {
+      "correct": 49,
+      "total": 72,
+      "accuracy": 0.6805555555555556
+    },
+    "qa_currency": {
+      "correct": 39,
+      "total": 39,
+      "accuracy": 1.0
+    },
+    "qa_definition": {
+      "correct": 43,
+      "total": 57,
+      "accuracy": 0.7543859649122807
+    },
+    "qa_factoid": {
+      "correct": 91,
+      "total": 141,
+      "accuracy": 0.6453900709219859
+    },
+    "qa_maths": {
+      "correct": 23,
+      "total": 25,
+      "accuracy": 0.92
+    },
+    "qa_stock": {
+      "correct": 24,
+      "total": 26,
+      "accuracy": 0.9230769230769231
+    },
+    "recommendation_events": {
+      "correct": 34,
+      "total": 43,
+      "accuracy": 0.7906976744186046
+    },
+    "recommendation_locations": {
+      "correct": 26,
+      "total": 31,
+      "accuracy": 0.8387096774193549
+    },
+    "recommendation_movies": {
+      "correct": 17,
+      "total": 20,
+      "accuracy": 0.85
+    },
+    "social_post": {
+      "correct": 66,
+      "total": 81,
+      "accuracy": 0.8148148148148148
+    },
+    "social_query": {
+      "correct": 16,
+      "total": 25,
+      "accuracy": 0.64
+    },
+    "takeaway_order": {
+      "correct": 19,
+      "total": 22,
+      "accuracy": 0.8636363636363636
+    },
+    "takeaway_query": {
+      "correct": 28,
+      "total": 35,
+      "accuracy": 0.8
+    },
+    "transport_query": {
+      "correct": 29,
+      "total": 51,
+      "accuracy": 0.5686274509803921
+    },
+    "transport_taxi": {
+      "correct": 16,
+      "total": 23,
+      "accuracy": 0.6956521739130435
+    },
+    "transport_ticket": {
+      "correct": 31,
+      "total": 35,
+      "accuracy": 0.8857142857142857
+    },
+    "transport_traffic": {
+      "correct": 13,
+      "total": 15,
+      "accuracy": 0.8666666666666667
+    },
+    "weather_query": {
+      "correct": 137,
+      "total": 156,
+      "accuracy": 0.8782051282051282
+    }
+  }
+}

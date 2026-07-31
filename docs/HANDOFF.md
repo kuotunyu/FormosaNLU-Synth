@@ -11,11 +11,11 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-30 11:00 +08:00（跨多次使用者回來後續作） |
-| 完成到 | M14 GitHub/HF v1.0.0 release；M15 artifact、resume smoke 與 infrastructure amendment qualification 完成 |
-| 卡住的項目 | 無研究決策阻塞；M15 正式六組只等兩次連續 GPU-safe 樣本 |
-| GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；可追溯 local total 23.124 h |
-| 磁碟增加 | Gemma 4 14.924 GiB；BGE-M3 2.293GB；Marian 必要檔 630.6MB；另有可刪舊 venv |
+| 執行區間 | 2026-07-27 03:14–2026-07-31 23:30 +08:00（跨多次使用者回來後續作） |
+| 完成到 | **M15 完成**：Phi-4-mini 六組 paired runs 全數完成，cross-model 判定 `replicated_across_student_families`，預先登記判準通過 |
+| 卡住的項目 | 無 |
+| GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；M15 Phi 3.752 h（M16 併入帳本）；可追溯 local total 約 26.88 h |
+| 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB。C: 現剩 138.9 GB |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
 ### 🟢 目前不需使用者操作
@@ -54,9 +54,16 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 
 ### ➡️ 接下來的建議起點
 
-完成 amendment 的品質門檻與 sole-contributor commit 後，重新取得兩次
-GPU-safe 樣本，再執行 M15 第二 student paired replication。不要覆寫原始
-smoke failure、v1 release corpus、frozen thresholds 或 Gemma primary runs。
+**M16 夜間批次**，授權範圍與紅線在 `docs/AUTONOMOUS_RUN.md` §11：
+robustness 補齊（Gemma seeds 43/44、Phi seeds 42–44）＋ Phi `full_real`
+post-hoc 參照組 ＋ README 升級為跨 family 主張 ＋ 資源帳本 ＋ 四個 skill ＋
+v1.1.0 release notes 草稿。
+
+**留給使用者早上處理**：v1.1.0 tag 與 GitHub Release、HF Dataset／Model
+card 上傳。夜間**不得**執行這三項。
+
+不要覆寫原始 smoke failure、v1 release corpus、frozen thresholds、Gemma
+primary runs，或 M15 的預先登記判準。
 
 ---
 
@@ -64,6 +71,27 @@ smoke failure、v1 release corpus、frozen thresholds 或 Gemma primary runs。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-07-31 23:30 +08:00] M15 正式六組 — 完成並通過預先登記判準
+
+- Pipeline `runs/m15/phi4mini/pipeline.json` status=`complete`、
+  evaluation_status=`complete`；04:14:50 → 08:00:12 +08:00，共 3.752 h
+- 訓練 2.720 h（6 runs，第一組自 `checkpoint-100` 續跑故較短）、
+  評估 1.032 h（6 runs × 2,974 rows）
+- 資料契約：`real_only` 1,176 rows、`real_syn_filtered` 4,936 rows
+  （＝1,176 + 3,760 frozen filtered）；同組三個 seed 的 SHA-256 完全一致
+- Phi paired Δ：intent accuracy +5.09 [+1.83, +9.02]、exact match
+  +4.71 [+1.36, +7.59]；六項 McNemar 經 Holm 校正後五項顯著，
+  `exact_match_seed_42` 為 p=0.141 不顯著，照實保留
+- Cross-model 判定 **`replicated_across_student_families`**：
+  `intent_accuracy` 與 `exact_match` 在 Gemma 與 Phi 都是正 mean 且
+  hierarchical 95% CI 下界 > 0。`json_valid_rate` 在 Gemma 側 CI 跨 0，
+  不在判準內，照實記錄
+- 先前一次嘗試在 `real_only/seed_42` 約 step 107 停止（Codex 額度用盡，
+  stderr 無 traceback），保留為 `logs/m15_phi4mini.interrupted-*`；
+  正式 run 自 `checkpoint-100` 續跑，未重跑已完成部分
+- 四道品質門檻於 23:15 全綠：ruff 通過、pytest **136 passed**、
+  `verify_readme` **54/54**（exit 0）、contributors 51 commits 單一作者
 
 ### [2026-07-30 11:00 +08:00] M15 smoke protocol amendment — qualified
 

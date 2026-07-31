@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "created_at": "2026-07-31T00:00:12.789758+00:00",
+  "comparison": "real_syn_filtered minus real_only",
+  "models": {
+    "gemma": "google/gemma-4-E4B-it",
+    "phi": "microsoft/Phi-4-mini-instruct"
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "test_rows_per_seed": 2974,
+  "preregistered_replication_criterion": {
+    "primary_metrics": [
+      "intent_accuracy",
+      "exact_match"
+    ],
+    "rule": "For both intent_accuracy and exact_match, the paired mean delta must be positive in each family and each hierarchical 95% CI lower bound must exceed zero.",
+    "passed": true
+  },
+  "metrics": {
+    "intent_accuracy": {
+      "gemma": {
+        "mean_delta_percentage_points": 4.13584398117014,
+        "ci": [
+          2.6000336247478084,
+          5.592916386460434
+        ]
+      },
+      "phi": {
+        "mean_delta_percentage_points": 5.088545169244563,
+        "ci": [
+          1.8269446312485986,
+          9.022920869760137
+        ]
+      },
+      "direction_consistent": true,
+      "both_ci_exclude_zero_positive": true
+    },
+    "intent_macro_f1": {
+      "gemma": {
+        "mean_delta_percentage_points": 2.013212081921871,
+        "ci": [
+          0.34982083603934605,
+          3.689849340800807
+        ]
+      },
+      "phi": {
+        "mean_delta_percentage_points": 3.364584725341979,
+        "ci": [
+          0.9821965708839824,
+          5.564273960009285
+        ]
+      },
+      "direction_consistent": true,
+      "both_ci_exclude_zero_positive": true
+    },
+    "slot_micro_f1": {
+      "gemma": {
+        "mean_delta_percentage_points": 2.916999629915866,
+        "ci": [
+          0.8664184126942173,
+          4.677029330936847
+        ]
+      },
+      "phi": {
+        "mean_delta_percentage_points": 1.7950723581146761,
+        "ci": [
+          0.294907258642669,
+          3.191267735580941
+        ]
+      },
+      "direction_consistent": true,
+      "both_ci_exclude_zero_positive": true
+    },
+    "exact_match": {
+      "gemma": {
+        "mean_delta_percentage_points": 3.855637749383547,
+        "ci": [
+          2.746021071508635,
+          4.920701636404393
+        ]
+      },
+      "phi": {
+        "mean_delta_percentage_points": 4.707464694014796,
+        "ci": [
+          1.3559179556153318,
+          7.587984756780991
+        ]
+      },
+      "direction_consistent": true,
+      "both_ci_exclude_zero_positive": true
+    },
+    "json_valid_rate": {
+      "gemma": {
+        "mean_delta_percentage_points": 1.569154898004932,
+        "ci": [
+          -0.011208249271462318,
+          3.7662519614436207
+        ]
+      },
+      "phi": {
+        "mean_delta_percentage_points": 1.770903384891287,
+        "ci": [
+          1.053295225285805,
+          2.633938578793989
+        ]
+      },
+      "direction_consistent": true,
+      "both_ci_exclude_zero_positive": false
+    }
+  },
+  "conclusion": "replicated_across_student_families",
+  "scope": "This is a two-family replication on one frozen dataset and training contract. Model families are summarized separately and are not pooled."
+}

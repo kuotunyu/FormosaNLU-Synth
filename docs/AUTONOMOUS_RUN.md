@@ -8,6 +8,11 @@
 > 的目的。使用者之後另行指定睡覺時執行 M9；只有在使用者明確說
 > 「開始跑 M9」後，才依 `docs/M9_OVERNIGHT_RUNBOOK.md`、D-014 與 D-015 啟動。
 > 本檔其餘安全、誠實性與對外寫入禁令繼續有效。
+>
+> **2026-07-31 M16 修訂（今夜適用）**：使用者明示「希望一覺醒來專案幾乎完成，
+> 只剩下少數需要我操作的部分」，並授權睡眠期間自由使用 GPU（約 12 小時、
+> 無其他專案佔用）。今夜範圍見下方 §11。**§7 的對外寫入禁令部分放寬：
+> `git push` 已獲明確授權；HF 上傳、tag 與 Release 仍然禁止，留給使用者早上處理。**
 
 ---
 
@@ -217,3 +222,52 @@
 5. 寫完 `docs/HANDOFF.md` 的早晨摘要
 6. `git add -A && git commit`（不帶任何 co-author trailer）
 7. `git status` 確認乾淨
+
+---
+
+## 11. 2026-07-31 夜間範圍（M16 收尾 + robustness 補齊）
+
+**前提**：使用者重開機後、睡前才啟動；GPU 約 12 小時無人使用。先跑 GPU
+safety gate（沿用既有的兩次連續閒置取樣），沒過就等，不要硬開。
+
+### 11.1 GPU 工作（依序，估約 8 h）
+
+| # | 工作 | 估時 | 契約 |
+|---|---|---|---|
+| 1 | Gemma robustness 補 seeds 43/44 | 4.2 h | 用**現有 frozen 8,922-row probe**，evaluation-only，不回流訓練 |
+| 2 | Phi robustness seed 42 | 1.0 h | 同一 probe、同一 evaluator |
+| 3 | Phi robustness seeds 43/44 | 2.0 h | 同上 |
+| 4 | Phi `full_real` 上限組（訓練 + 評估） | 0.7 h | ⚠️ **post-hoc / exploratory**，預先登記範圍之外 |
+| 5 | README demo GIF（選配） | 數分鐘 | 非阻塞，跑不出來就跳過 |
+
+**第 4 項的紅線**：`full_real` 是**新增的參照組**，不得用來改動或重算 M15 預先
+登記的 `real_syn_filtered` vs `real_only` paired 判準。報告中必須明確標示為
+post-hoc，且與預先登記結果分開呈現。
+
+**任一項失敗**：照 §5 寫進 `docs/HANDOFF.md`，改做下一項，不要卡住整條。
+robustness 各組彼此獨立，單組失敗不影響其他組。
+
+### 11.2 非 GPU 工作
+
+1. README：TL;DR 升級為跨 family 複製；Roadmap 移除已完成的 M15；新增
+   cross-model 段落；**改完必須 `scripts/verify_readme.py` 全綠**，新增的
+   數字要一併加進 verifier 的檢查項（不准只改 README 不加檢查）。
+2. `reports/m12_resource_ledger.json` 補 M15（3.75 h）與今夜各階段實測時數。
+3. PLAN.md、HANDOFF.md、`docs/DECISIONS.md`、`docs/data_card.md` 同步。
+4. 補建 PLAN 排程但尚未建立的四個 skill：`formosanlu-generate`、
+   `formosanlu-filter`、`formosanlu-train`、`formosanlu-eval`。
+5. 起草 v1.1.0 release notes 與 HF card 更新內容，**只寫檔案、不發佈**。
+6. 每完成一塊就 commit + **push**（push 已獲授權）。
+
+### 11.3 今夜的硬性禁止（在 §7 之外額外強調）
+
+- ❌ **不得** `hf upload` / 更新 HF Dataset 或 Model card 的線上內容
+- ❌ **不得**建立 git tag 或 GitHub Release
+- ❌ **不得**動 v1 release corpus、frozen thresholds、Gemma primary runs、
+  M15 預先登記判準、或任何既有 prediction JSONL
+- ❌ **不得**新增第三個 student family（判準是兩個 family，事後擴充會傷敘事）
+
+### 11.4 早上留給使用者的
+
+`docs/HANDOFF.md` 的早晨摘要要把這幾項列成清單：v1.1.0 tag 與 Release、
+HF Dataset／Model card 上傳、以及任何需要判斷的殘留項。

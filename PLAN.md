@@ -7,15 +7,15 @@
 
 | 項目 | 現況 |
 |---|---|
-| **最後更新** | 2026-07-30 11:00 +08:00 |
-| **目前里程碑** | **M14 完成、M15 infrastructure qualified**：Phi 原始 strict smoke 失敗已保留；正式六組前完成 `m15.smoke.infrastructure.v2` amendment |
-| **下一步動作** | 完成 amendment 品質門檻與 sole-contributor commit；重新取得兩次 GPU-safe 樣本後執行 Phi 六組 |
-| **球在誰身上** | Codex；使用者已授權專業處置並繼續，正式 contract 不變 |
-| **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h（F7、M11、extra seeds、robustness）；可追溯 local total 23.124 h |
-| **累計 API 花費** | $0（D-002 走本機 teacher，全專案預期維持 $0） |
-| **待決事項** | robustness 仍只用 seed 42；Phi 正式六組尚待 GPU-safe window |
-| **目前範圍** | M14 只重算既有 predictions；M15 僅新增 Phi-4-mini `real_only`／`real_syn_filtered` 三種子，不改 v1 corpus 或 Gemma primary |
-| **阻塞項** | 無研究決策阻塞；只等 GPU-safe window |
+| **最後更新** | 2026-07-31 23:30 +08:00 |
+| **目前里程碑** | **M15 完成**：Phi-4-mini 六組 paired runs 全數完成，cross-model 報告判定 `replicated_across_student_families`，預先登記判準通過 |
+| **下一步動作** | 使用者重開機 → 睡前啟動 **M16 夜間批次**（範圍見 `docs/AUTONOMOUS_RUN.md` §11） |
+| **球在誰身上** | 使用者（重開機並啟動夜間批次）；之後換 agent |
+| **累計 GPU 時數** | primary core 14.440 h；auxiliary 8.685 h；M15 Phi 3.752 h（尚未併入帳本，M16 補）；可追溯 local total 約 26.88 h |
+| **累計 API 花費** | $0（D-002 走本機 teacher，全專案維持 $0） |
+| **待決事項** | robustness 仍只有 Gemma seed 42（M16 補齊）；v1.1.0 tag／Release 與 HF card 更新留給使用者早上處理 |
+| **目前範圍** | M16＝robustness 補齊（Gemma 43/44、Phi 42–44）＋ Phi `full_real` post-hoc 參照組 ＋ 文件收尾。**不改** v1 corpus、frozen thresholds、Gemma primary 或 M15 預先登記判準 |
+| **阻塞項** | 無 |
 
 ---
 
@@ -206,8 +206,32 @@
 | Student 選型與授權 | `microsoft/Phi-4-mini-instruct`：3.8B、MIT、官方 Chinese support；與 teacher／Gemma／judge 不同 family | ✅ CPU 查證 |
 | Frozen data/config contract | 同一 1,176 real、3,760 F1–F6 synthetic、2,033 Val、2,974 Test；500 steps／effective batch 16／max length 512 | ✅ CPU contract 與 3 seeds SHA 全綠 |
 | Model revision、artifact audit、resume smoke | revision + artifact SHA；24 GB VRAM gate；checkpoint-1 → checkpoint-2；32-row probe | ✅ 原 strict gate `0/32` 已保留；amended infrastructure qualification `32/32` JSON syntax／top-level types 通過 |
-| 六組 paired runs | `real_only` 與 `real_syn_filtered` × seeds 42–44，完整 training + 2,974-row evaluation | ⬜ |
-| Cross-model report | Gemma 與 Phi 各自 paired delta／CI；不事後更動 corpus、prompt 或 threshold | 🟡 已凍結判準與自動報表；待 Phi 結果 |
+| 六組 paired runs | `real_only` 與 `real_syn_filtered` × seeds 42–44，完整 training + 2,974-row evaluation | ✅ 2026-07-31 08:00 完成。`pipeline.json` status=complete；每組每 seed 資料 SHA-256 一致（`real_only` 1,176 rows／`real_syn_filtered` 4,936 rows）；訓練 2.72 h + 評估 1.03 h |
+| Cross-model report | Gemma 與 Phi 各自 paired delta／CI；不事後更動 corpus、prompt 或 threshold | ✅ **`replicated_across_student_families`**。`intent_accuracy` 與 `exact_match` 在兩個 family 都是正 mean 且 hierarchical 95% CI 下界 > 0；`json_valid_rate` 在 Gemma 側 CI 跨 0，照實記錄且不在判準內 |
+
+**M15 結果摘要**（`reports/m15_cross_model_replication.md`）
+
+| Metric | Gemma Δ [95% CI] | Phi Δ [95% CI] | 兩家 CI 皆 > 0 |
+|---|---:|---:|:---:|
+| `intent_accuracy` | +4.14 [+2.60, +5.59] | +5.09 [+1.83, +9.02] | ✅ |
+| `intent_macro_f1` | +2.01 [+0.35, +3.69] | +3.36 [+0.98, +5.56] | ✅ |
+| `slot_micro_f1` | +2.92 [+0.87, +4.68] | +1.80 [+0.29, +3.19] | ✅ |
+| `exact_match` | +3.86 [+2.75, +4.92] | +4.71 [+1.36, +7.59] | ✅ |
+| `json_valid_rate` | +1.57 [-0.01, +3.77] | +1.77 [+1.05, +2.63] | ❌ |
+
+### M16 · Robustness 補齊 + 文件收尾（夜間批次）
+
+> 授權範圍與紅線在 `docs/AUTONOMOUS_RUN.md` §11。
+
+| 交付物 | 驗證方法 | 狀態 |
+|---|---|---|
+| Gemma robustness seeds 43/44 | 現有 frozen 8,922-row probe、evaluation-only；每份 JSONL index 連續且唯一 | ⬜ |
+| Phi robustness seeds 42–44 | 同一 probe 與 evaluator；跨 family 比較不 pooling | ⬜ |
+| Phi `full_real` 參照組 | ⚠️ post-hoc／exploratory，與預先登記結果分開呈現，不重算 M15 判準 | ⬜ |
+| README 升級為跨 family 主張 | `scripts/verify_readme.py` 全綠，**新增數字必須一併加進 verifier** | ⬜ |
+| 資源帳本補 M15 與 M16 | 每個階段有可追溯的 started/finished 依據 | ⬜ |
+| 四個專案 skill 補建 | `formosanlu-generate` / `-filter` / `-train` / `-eval` | ⬜ |
+| v1.1.0 release notes 與 HF card 草稿 | **只寫檔案不發佈**，留給使用者早上執行 | ⬜ |
 
 ### Phase 2 資源預估
 
