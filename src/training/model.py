@@ -9,6 +9,12 @@ from typing import Any
 # same language weights without the intermediate `language_model` prefix.
 TEXT_CHECKPOINT_KEY_MAPPING = {r"^model\.language_model\.": "model."}
 
+# The classes load_quantized_causal_model can dispatch. Every configs/train*.yaml
+# must declare one of these, otherwise the mismatch only surfaces once a model
+# starts loading -- which is how the Gemma-only loader went unnoticed in the
+# probe path until a smoke run hit it.
+SUPPORTED_MODEL_CLASSES = frozenset({"Gemma4ForCausalLM", "AutoModelForCausalLM"})
+
 
 def load_quantized_text_model(
     model_path: Path,
@@ -38,6 +44,8 @@ def load_quantized_causal_model(
     dtype: Any,
 ) -> Any:
     """Load a frozen local model without silently falling back to the network."""
+    if model_class not in SUPPORTED_MODEL_CLASSES:
+        raise ValueError(f"Unsupported causal model class: {model_class}")
     if model_class == "Gemma4ForCausalLM":
         return load_quantized_text_model(
             model_path,
