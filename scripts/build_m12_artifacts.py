@@ -72,6 +72,7 @@ def build_resource_ledger(
     robustness: dict[str, Any] | None = None,
     m15_training: dict[str, Any] | None = None,
     m15_evaluation: dict[str, Any] | None = None,
+    robustness_backfill: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Summarize measured wall times without converting them into cloud costs."""
     generation_hours = float(generation["generation"]["wall_seconds"]) / 3600
@@ -226,6 +227,34 @@ def build_resource_ledger(
         }
     else:
         pending.append("M15 Phi-4-mini evaluations")
+
+    # M16 backfilled the probe to more seeds and to the second student family.
+    # Each batch is its own report, so they are summed rather than bounded by a
+    # single window: they ran at different times with gaps in between.
+    completed_backfill = [
+        report
+        for report in (robustness_backfill or [])
+        if report.get("status") == "complete"
+    ]
+    if completed_backfill:
+        hours = sum(
+            _elapsed_hours(report["started_at"], report["finished_at"])
+            for report in completed_backfill
+        )
+        auxiliary_hours += hours
+        phases["m16_robustness_backfill"] = {
+            "wall_hours": hours,
+            "batches": len(completed_backfill),
+            "runs": sum(len(report["runs"]) for report in completed_backfill),
+            "basis": (
+                "results/m16_robustness_batch_*.json summed started_at to "
+                "finished_at per batch"
+            ),
+        }
+    if robustness_backfill is not None and len(completed_backfill) < len(
+        robustness_backfill
+    ):
+        pending.append("M16 robustness backfill batches")
 
     total_hours = measured_gpu_hours + auxiliary_hours
     return {
@@ -503,6 +532,10 @@ def main() -> int:
     robustness = _load_optional(ROBUSTNESS_BATCH_REPORT)
     m15_training = _load_optional(M15_TRAINING_REPORT)
     m15_evaluation = _load_optional(M15_EVALUATION_REPORT)
+    robustness_backfill = [
+        _load(path)
+        for path in sorted((REPO_ROOT / "results").glob("m16_robustness_batch_*.json"))
+    ]
     ledger = build_resource_ledger(
         generation=generation,
         training=training,
@@ -515,6 +548,7 @@ def main() -> int:
         robustness=robustness,
         m15_training=m15_training,
         m15_evaluation=m15_evaluation,
+        robustness_backfill=robustness_backfill or None,
     )
     args.resource_report.write_text(
         json.dumps(ledger, ensure_ascii=False, indent=2) + "\n",

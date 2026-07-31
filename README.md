@@ -239,15 +239,16 @@ Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
 | Robustness probe inference（auxiliary） | **2.102 h** | 兩組 × 8,922-row evaluation-only runs |
 | M15 Phi-4-mini training（auxiliary） | **2.718 h** | 兩組 × 三種子，共六個 runs |
 | M15 Phi-4-mini evaluation（auxiliary） | **1.037 h** | 六個完整 2,974-row Test runs |
-| **Measured auxiliary subtotal** | **12.440 h** | F7 + M11 + extra seeds + robustness + M15 |
-| **可追溯 local total** | **26.879 h** | 所有本機 GPU 階段 |
+| M16 robustness backfill（auxiliary） | **3.616 h** | 逐批次加總，非單一時間窗 |
+| **Measured auxiliary subtotal** | **16.055 h** | F7 + M11 + extra seeds + robustness + M15 + M16 |
+| **可追溯 local total** | **30.495 h** | 所有本機 GPU 階段 |
 | **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
 M15 屬於 auxiliary：primary core 的 14.440 h 仍然只涵蓋凍結的 Gemma seed-42
 比較，不因為加入第二個 student family 而改變。
 
 若以 RTX 4090 的 450 W TDP 計算，primary core 14.440 小時對應
-6.498 kWh、local total 26.879 小時對應 12.096 kWh 的保守
+6.498 kWh、local total 30.495 小時對應 13.723 kWh 的保守
 GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以
 TDP 運作。
 

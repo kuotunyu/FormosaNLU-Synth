@@ -112,6 +112,73 @@ def test_resource_ledger_adds_completed_auxiliary_phases() -> None:
     assert ledger["gpu_tdp_total_energy_upper_bound_kwh"] == 4.5
 
 
+def test_robustness_backfill_sums_batches_rather_than_spanning_them() -> None:
+    """The backfill batches ran at different times with gaps between them, so
+    bounding them with one window would bill the idle time in between."""
+    ledger = build_resource_ledger(
+        generation={"generation": {"wall_seconds": 0}},
+        training={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        evaluation={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        zero_shot={"wall_seconds": 0},
+        robustness_backfill=[
+            {
+                "status": "complete",
+                "started_at": "2026-01-01T01:00:00+00:00",
+                "finished_at": "2026-01-01T02:00:00+00:00",
+                "runs": [{}, {}],
+            },
+            {
+                "status": "complete",
+                "started_at": "2026-01-01T09:00:00+00:00",
+                "finished_at": "2026-01-01T10:00:00+00:00",
+                "runs": [{}, {}],
+            },
+        ],
+    )
+
+    phase = ledger["phases"]["m16_robustness_backfill"]
+    assert phase["wall_hours"] == 2.0  # not the 9 hours a single window spans
+    assert phase["batches"] == 2
+    assert phase["runs"] == 4
+
+
+def test_incomplete_backfill_batches_are_excluded_and_flagged() -> None:
+    ledger = build_resource_ledger(
+        generation={"generation": {"wall_seconds": 0}},
+        training={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        evaluation={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        zero_shot={"wall_seconds": 0},
+        robustness_backfill=[
+            {
+                "status": "complete",
+                "started_at": "2026-01-01T01:00:00+00:00",
+                "finished_at": "2026-01-01T02:00:00+00:00",
+                "runs": [{}],
+            },
+            {"status": "running", "runs": [{}]},
+        ],
+    )
+
+    assert ledger["phases"]["m16_robustness_backfill"]["batches"] == 1
+    assert "M16 robustness backfill batches" in ledger["pending"]
+
+
 def test_m15_training_window_spans_unordered_runs() -> None:
     """The M15 training batch stamps each run, not the batch, so the window is
     bounded by the earliest start and the latest finish regardless of order."""
