@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "target": "gemma",
+  "status": "partial",
+  "expected_seeds": [
+    42,
+    43,
+    44
+  ],
+  "seeds": [
+    42
+  ],
+  "seeds_skipped": [],
+  "seeds_missing_report": [
+    43,
+    44
+  ],
+  "evaluation_only": true,
+  "groups": {
+    "real_only": {
+      "intent_accuracy": {
+        "values": [
+          0.716095045953822
+        ],
+        "mean": 0.716095045953822,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "intent_macro_f1": {
+        "values": [
+          0.7333397596989616
+        ],
+        "mean": 0.7333397596989616,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "slot_micro_f1": {
+        "values": [
+          0.6058573087343568
+        ],
+        "mean": 0.6058573087343568,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "exact_match": {
+        "values": [
+          0.4633490248823134
+        ],
+        "mean": 0.4633490248823134,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "json_valid_rate": {
+        "values": [
+          0.9822909661510872
+        ],
+        "mean": 0.9822909661510872,
+        "sample_std": null,
+        "seeds_used": 1
+      }
+    },
+    "real_syn_filtered": {
+      "intent_accuracy": {
+        "values": [
+          0.7326832548755884
+        ],
+        "mean": 0.7326832548755884,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "intent_macro_f1": {
+        "values": [
+          0.7293093742139957
+        ],
+        "mean": 0.7293093742139957,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "slot_micro_f1": {
+        "values": [
+          0.641284061216872
+        ],
+        "mean": 0.641284061216872,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "exact_match": {
+        "values": [
+          0.4878950907868191
+        ],
+        "mean": 0.4878950907868191,
+        "sample_std": null,
+        "seeds_used": 1
+      },
+      "json_valid_rate": {
+        "values": [
+          0.9784801613987895
+        ],
+        "mean": 0.9784801613987895,
+        "sample_std": null,
+        "seeds_used": 1
+      }
+    }
+  },
+  "paired_filtered_minus_real_only": {
+    "intent_accuracy": {
+      "values": [
+        0.01658820892176638
+      ],
+      "mean": 0.01658820892176638,
+      "sample_std": null,
+      "seeds_used": 1
+    },
+    "intent_macro_f1": {
+      "values": [
+        -0.004030385484965926
+      ],
+      "mean": -0.004030385484965926,
+      "sample_std": null,
+      "seeds_used": 1
+    },
+    "slot_micro_f1": {
+      "values": [
+        0.035426752482515145
+      ],
+      "mean": 0.035426752482515145,
+      "sample_std": null,
+      "seeds_used": 1
+    },
+    "exact_match": {
+      "values": [
+        0.0245460659045057
+      ],
+      "mean": 0.0245460659045057,
+      "sample_std": null,
+      "seeds_used": 1
+    },
+    "json_valid_rate": {
+      "values": [
+        -0.0038108047522977806
+      ],
+      "mean": -0.0038108047522977806,
+      "sample_std": null,
+      "seeds_used": 1
+    }
+  },
+  "note": "Deltas are computed within each seed and then averaged, so the pairing between adapters trained on identical data is preserved. The probe is evaluation-only and never re-enters training."
+}
