@@ -42,6 +42,7 @@
       "Bash(git ls-files*)",
       "Bash(git config --get *)",
       "Bash(git rev-parse*)",
+      "Bash(git push origin main)",
 
       "Bash(ollama list*)",
       "Bash(ollama ps*)",
@@ -86,7 +87,11 @@
       "Bash(cat ../.env*)",
       "Bash(type *.env*)",
 
-      "Bash(git push*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push --delete*)",
+      "Bash(git push --tags*)",
+      "Bash(git tag*)",
       "Bash(git remote*)",
       "Bash(git reset --hard*)",
       "Bash(git clean*)",
