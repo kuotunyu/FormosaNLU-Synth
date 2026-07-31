@@ -1,147 +1,176 @@
 {
   "schema_version": 1,
   "target": "gemma",
-  "status": "partial",
+  "status": "complete",
   "expected_seeds": [
     42,
     43,
     44
   ],
   "seeds": [
-    42
-  ],
-  "seeds_skipped": [],
-  "seeds_missing_report": [
+    42,
     43,
     44
   ],
+  "seeds_skipped": [],
+  "seeds_missing_report": [],
   "evaluation_only": true,
   "groups": {
     "real_only": {
       "intent_accuracy": {
         "values": [
-          0.716095045953822
+          0.716095045953822,
+          0.7053351266532167,
+          0.7049988791750729
         ],
-        "mean": 0.716095045953822,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.7088096839273706,
+        "sample_std": 0.006311548184398605,
+        "seeds_used": 3
       },
       "intent_macro_f1": {
         "values": [
-          0.7333397596989616
+          0.7333397596989616,
+          0.7198632543603843,
+          0.7031671624695394
         ],
-        "mean": 0.7333397596989616,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.7187900588429618,
+        "sample_std": 0.015114900507651262,
+        "seeds_used": 3
       },
       "slot_micro_f1": {
         "values": [
-          0.6058573087343568
+          0.6058573087343568,
+          0.6000374789181085,
+          0.6244725738396625
         ],
-        "mean": 0.6058573087343568,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.6101224538307093,
+        "sample_std": 0.01276370099054511,
+        "seeds_used": 3
       },
       "exact_match": {
         "values": [
-          0.4633490248823134
+          0.4633490248823134,
+          0.4519166106254203,
+          0.45180452813270566
         ],
-        "mean": 0.4633490248823134,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.45569005454681316,
+        "sample_std": 0.006633099620188742,
+        "seeds_used": 3
       },
       "json_valid_rate": {
         "values": [
-          0.9822909661510872
+          0.9822909661510872,
+          0.9426137637301053,
+          0.9747814391392065
         ],
-        "mean": 0.9822909661510872,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.966562056340133,
+        "sample_std": 0.021076972937003363,
+        "seeds_used": 3
       }
     },
     "real_syn_filtered": {
       "intent_accuracy": {
         "values": [
-          0.7326832548755884
+          0.7326832548755884,
+          0.7496077112754987,
+          0.7530822685496525
         ],
-        "mean": 0.7326832548755884,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.7451244115669132,
+        "sample_std": 0.010913520143675751,
+        "seeds_used": 3
       },
       "intent_macro_f1": {
         "values": [
-          0.7293093742139957
+          0.7293093742139957,
+          0.75037950852589,
+          0.7398675706871838
         ],
-        "mean": 0.7293093742139957,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.7398521511423565,
+        "sample_std": 0.010535075619191751,
+        "seeds_used": 3
       },
       "slot_micro_f1": {
         "values": [
-          0.641284061216872
+          0.641284061216872,
+          0.6502236421725239,
+          0.6212818153940509
         ],
-        "mean": 0.641284061216872,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.6375965062611489,
+        "sample_std": 0.014819105252423054,
+        "seeds_used": 3
       },
       "exact_match": {
         "values": [
-          0.4878950907868191
+          0.4878950907868191,
+          0.5113203317641785,
+          0.4751176866173504
         ],
-        "mean": 0.4878950907868191,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.4914443697227826,
+        "sample_std": 0.018360444292847184,
+        "seeds_used": 3
       },
       "json_valid_rate": {
         "values": [
-          0.9784801613987895
+          0.9784801613987895,
+          0.9838601210490922,
+          0.9820668011656579
         ],
-        "mean": 0.9784801613987895,
-        "sample_std": null,
-        "seeds_used": 1
+        "mean": 0.9814690278711798,
+        "sample_std": 0.0027393413703689145,
+        "seeds_used": 3
       }
     }
   },
   "paired_filtered_minus_real_only": {
     "intent_accuracy": {
       "values": [
-        0.01658820892176638
+        0.01658820892176638,
+        0.04427258462228201,
+        0.04808338937457968
       ],
-      "mean": 0.01658820892176638,
-      "sample_std": null,
-      "seeds_used": 1
+      "mean": 0.03631472763954269,
+      "sample_std": 0.01718959609057519,
+      "seeds_used": 3
     },
     "intent_macro_f1": {
       "values": [
-        -0.004030385484965926
+        -0.004030385484965926,
+        0.03051625416550563,
+        0.03670040821764442
       ],
-      "mean": -0.004030385484965926,
-      "sample_std": null,
-      "seeds_used": 1
+      "mean": 0.021062092299394708,
+      "sample_std": 0.021949607544421382,
+      "seeds_used": 3
     },
     "slot_micro_f1": {
       "values": [
-        0.035426752482515145
+        0.035426752482515145,
+        0.050186163254415384,
+        -0.0031907584456115634
       ],
-      "mean": 0.035426752482515145,
-      "sample_std": null,
-      "seeds_used": 1
+      "mean": 0.027474052430439655,
+      "sample_std": 0.027562801402096503,
+      "seeds_used": 3
     },
     "exact_match": {
       "values": [
-        0.0245460659045057
+        0.0245460659045057,
+        0.05940372113875814,
+        0.023313158484644714
       ],
-      "mean": 0.0245460659045057,
-      "sample_std": null,
-      "seeds_used": 1
+      "mean": 0.03575431517596952,
+      "sample_std": 0.02049026151543883,
+      "seeds_used": 3
     },
     "json_valid_rate": {
       "values": [
-        -0.0038108047522977806
+        -0.0038108047522977806,
+        0.04124635731898685,
+        0.00728536202645147
       ],
-      "mean": -0.0038108047522977806,
-      "sample_std": null,
-      "seeds_used": 1
+      "mean": 0.014906971531046845,
+      "sample_std": 0.023475597160879772,
+      "seeds_used": 3
     }
   },
   "note": "Deltas are computed within each seed and then averaged, so the pairing between adapters trained on identical data is preserved. The probe is evaluation-only and never re-enters training."
