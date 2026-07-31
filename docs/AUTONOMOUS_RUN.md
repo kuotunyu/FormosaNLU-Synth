@@ -243,11 +243,17 @@ safety gate（沿用既有的兩次連續閒置取樣），沒過就等，不要
 |---|---|---|---|---|
 | **T1** | Gemma robustness 補 seeds 43/44 | 把 `SEED` 與 adapter 路徑參數化 + 單元測試 | 4.2 h | 低（引擎、probe、config 全現成） |
 | **T2** | Phi robustness seeds 42–44 | 再加 `runs/m15/phi4mini/` layout 與 Phi base config 支援 | 3.0 h | 中 |
-| ~~T3~~ | ~~Phi `full_real` 參照組~~ | — | — | **本次取消** |
+| ~~T3~~ | ~~Phi `full_real` 參照組~~ | — | — | **永久取消（D-019）** |
 
-**T3 取消理由**：需要最多新程式（新資料備置 ＋ 動到已凍結的 M15 pipeline），
-又是預先登記範圍外的 post-hoc 組，價值最低。10 小時的預算下砍它，換 T1／T2
-的安全邊際。要做就留到有人看著的時段。
+**T3 取消理由**：使用者後來解除了時間限制，因此重新評估過。結論不變，但理由
+與時間無關——它要**改動已凍結的 M15 pipeline**，是預先登記範圍外的組，而且
+跨 family 的結論完全不依賴它。用「動凍結產物」換一個表格對稱不划算。詳見
+`docs/DECISIONS.md` D-019。
+
+**T1／T2 的前置已完成**（2026-08-01）：`scripts/eval_robustness.py` 已按
+target 與 seed 參數化，Gemma／seed 42 的路徑與 token 完全不變並有測試釘住；
+Phi 的 32-row smoke 找出 `run_probe` 呼叫寫死 Gemma 的 loader，已改為依 config
+的 `model.class` 分派。
 
 **每一層的放行條件（不得跳過）：**
 
@@ -272,6 +278,10 @@ safety gate（沿用既有的兩次連續閒置取樣），沒過就等，不要
    `formosanlu-filter`、`formosanlu-train`、`formosanlu-eval`。
 5. 起草 v1.1.0 release notes 與 HF card 更新內容，**只寫檔案、不發佈**。
 6. 每完成一塊就 commit + **push**（push 已獲授權）。
+   ⚠️ **CI 已於 2026-08-01 移除**（D-020），clean-checkout 的自動驗證不再存在。
+   因此 **每次 push 前必須先跑 `python -m scripts.check_gates` 且全綠**——
+   它會依序執行 ruff、pytest、`verify_readme`、`verify_contributors`。
+   沒跑就 push，等於沒有任何把關。
 
 ### 11.3 今夜的硬性禁止（在 §7 之外額外強調）
 

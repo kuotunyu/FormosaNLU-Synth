@@ -378,7 +378,15 @@ python -m scripts.m9_replicates \
   --execute --confirm M9-REPLICATES-43-44-4090
 python -m scripts.eval_robustness \
   --execute --confirm M10-ROBUSTNESS-8922-4090
+
+# 8. 推送前的完整把關（lint、測試、README 數字可追溯性、單一作者稽核）
+python -m scripts.check_gates
 ```
+
+`scripts.check_gates` 會依序執行 `ruff`、`pytest`、`scripts.verify_readme`
+與 `scripts.verify_contributors`，任何一項失敗即以非零狀態結束。README 的
+每個數字都必須能從 `reports/` 與 `runs/` 的原始檔重算，因此**修改 README
+的數字時必須同時更新 verifier 的檢查項**，不能只改文字。
 
 Colab notebook
 [`notebooks/01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) 使用相同

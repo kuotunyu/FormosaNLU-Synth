@@ -541,4 +541,44 @@ parser repair 或 label aliasing。正式六組若仍無法學到 canonical inte
 
 ---
 
-<!-- 新決策從 D-019 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-019 — 取消 Phi `full_real` 參照組
+
+- **日期**：2026-08-01
+- **狀態**：`accepted`
+- **決策**：不為 Phi-4-mini 增設 `full_real` 上限組。M15 維持兩組（`real_only`、`real_syn_filtered`）× 三種子。
+
+**背景**：這一組原本排在夜間批次第三層，理由是「Phi 也能算差距補回率，跨模型表格會對稱」。第一次取消是因為 10 小時預算不足；使用者之後解除時間限制，因此重新評估。
+
+**重新評估後仍取消，理由與時間無關：**
+
+1. **要改動已凍結的 pipeline。** `scripts/m15_phi4mini.py` 是為「兩組 × 三種子」凍結的，`full_real` 需要新的資料備置與新組別，等於在拿到結果之後回頭動 M15 的執行契約。
+2. **在預先登記範圍之外。** 判準只綁 `real_syn_filtered` vs `real_only` 的 paired delta，該結論**完全不依賴** `full_real`。
+3. **買到的是呈現，不是證據。** 差距補回率是易讀的包裝，但跨 family 主張已由 paired delta 與 CI 成立。用「動凍結產物」換表格對稱，代價高於收益。
+
+**什麼情況該推翻**：日後要為 Phi 做完整實驗矩陣（而非補一個參照組），且有人監督，並以**新的里程碑**重新登記契約，而不是追加到 M15 上。
+
+---
+
+## D-020 — 工作文件不進 GitHub，並以本機 gate 取代 CI
+
+- **日期**：2026-08-01
+- **狀態**：`accepted`
+- **決策**：`.claude/`、`.github/`、`CLAUDE.md`、`PLAN.md` 以 `git rm --cached` 移出版本控制並加進 `.gitignore`。**檔案保留在本機**繼續作為工作文件；**不重寫歷史**。
+
+**理由**：使用者要求這些不出現在公開 repo。保留本機是必要的——`.claude/settings.json` 提供無人監督執行的權限 allowlist，`CLAUDE.md` 與 `PLAN.md` 是規則與進度的來源。
+
+**不重寫歷史的取捨**：`git filter-repo` + force-push 可讓它們從舊 commit 也消失，但會改變所有 commit SHA，使 `v1.0.0` tag、GitHub Release 與 HF cards 引用的 commit hash 全部失效。使用者在知情下選擇保留歷史。**因此這四個路徑在舊 commit 中仍可見**，只是不再出現在 repo 首頁、檔案列表與 clone 內容中。
+
+**連帶影響與補救**
+
+| 影響 | 處置 |
+|---|---|
+| README 有兩個連到 `CLAUDE.md`／`PLAN.md` 的 markdown 連結會 404 | 已移除該兩列。其餘引用都是行文中的反引號提及，不會變成死連結 |
+| **移除 `.github/workflows/ci.yml` 等於關掉 CI** | 新增 `scripts/check_gates.py`，一次跑完 ruff、pytest、`verify_readme`、`verify_contributors`；push 前必跑。`tests/test_check_gates.py` 釘住四道門檻不得被悄悄拿掉 |
+| M14 引用的那次 CI 綠燈紀錄 | 仍存在且有效，但**之後的 push 不再有自動把關** |
+
+**什麼情況該推翻**：若日後希望恢復 clean-checkout 的自動驗證，可在不發佈工作文件的前提下加回一個精簡 workflow。
+
+---
+
+<!-- 新決策從 D-021 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
