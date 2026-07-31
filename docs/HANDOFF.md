@@ -133,6 +133,28 @@ README 現有那句只列了正向的三項（並沒有寫錯），但三種子�
 輪詢，03:00 GPU 釋出後自動接續。`real_only/seed 43` 正確判定
 `skipped_complete`，沒有重跑已完成的 8,922 筆。
 
+**T1 完成（06:32 +08:00）**：Gemma robustness seeds 43/44 四組各 8,922/8,922。
+seed 43 用 73 分、seed 44 用 144 分。三種子 paired delta（百分點）：
+
+| Metric | Mean Δ | SD | seed 42 單獨 |
+|---|---:|---:|---:|
+| `intent_accuracy` | **+3.63** | 1.72 | +1.66 |
+| `exact_match` | **+3.58** | 2.05 | +2.45 |
+| `slot_micro_f1` | +2.75 | 2.76 | +3.54 |
+| `intent_macro_f1` | +2.11 | 2.19 | **−0.40** |
+| `json_valid_rate` | +1.49 | 2.35 | **−0.38** |
+
+**五項平均皆正，但只有前兩項站得住腳**——其餘三項的 SD 與 mean 相當，`n=3`
+下無法與零區分。這個限制已寫進 README、data card 與 model card，沒有把五個
+正數當成五個結果。
+
+**Phi smoke 通過**（32/32、JSON-valid 100%），loader 修正在真實模型上驗證成功。
+**T2 進行中**：Phi robustness seeds 42–44，實測 318 rows/min，估 2.8 小時。
+
+**其他補強**：資源帳本納入 robustness backfill（逐批次加總，非單一時間窗，
+避免把批次間的閒置時間計為 GPU 時間）；`SUPPORTED_MODEL_CLASSES` 成為明確
+契約，新增 student family 時會在 config 階段就失敗，而不是等到載模型才炸。
+
 **T3（Phi `full_real`）已永久取消**，理由與時間無關，見 D-019。
 
 ### [2026-07-31 23:30 +08:00] M15 正式六組 — 完成並通過預先登記判準
