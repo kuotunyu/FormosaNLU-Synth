@@ -461,8 +461,6 @@ parser repair、label aliasing，也沒有變更正式 500-step contract。
 
 | 文件 | 用途 |
 | --- | --- |
-| [`CLAUDE.md`](CLAUDE.md) | Repository 工作規則 |
-| [`PLAN.md`](PLAN.md) | Milestones、驗證方法與目前狀態 |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Data pipeline 設計 |
 | [`docs/DESIGN_PHASE2.md`](docs/DESIGN_PHASE2.md) | Training、evaluation、demo 與 release 設計 |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | ADR-style decision log |

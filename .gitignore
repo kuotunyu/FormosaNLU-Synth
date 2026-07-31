@@ -50,6 +50,15 @@ htmlcov/
 # The frozen split manifest and the milestone reports are part of the
 # reproducibility claim and must live in git.
 
+# ---- Local working documents (kept on disk, not published) ----
+# These drive day-to-day work but are not part of the published artifact.
+# They were untracked deliberately; history was not rewritten, so earlier
+# commits still contain them.
+.claude/
+.github/
+CLAUDE.md
+PLAN.md
+
 # ---- OS / editor ----
 .DS_Store
 Thumbs.db
