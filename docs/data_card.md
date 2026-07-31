@@ -146,6 +146,37 @@ results. The paired seeds 42–44 comparison is now complete: filtered minus
 run-to-run uncertainty and do not support a broad significance or
 generalization claim.
 
+### Replication on a second student family
+
+A gain measured on one student could be a property of that model rather than of
+the data. To rule that out, the same frozen corpus was run through the same
+paired contract on `microsoft/Phi-4-mini-instruct`: identical prompt template,
+500 steps, seeds 42-44, and the same strict evaluator, with only the base model
+changed.
+
+The criterion was frozen before any Phi result was seen: for both intent
+accuracy and exact match, the paired mean delta had to be positive in each
+family and each hierarchical 95% CI lower bound had to exceed zero.
+
+| Metric | Gemma Δ [95% CI] | Phi Δ [95% CI] |
+| --- | ---: | ---: |
+| Intent accuracy | +4.14 [+2.60, +5.59] | +5.09 [+1.83, +9.02] |
+| Intent macro-F1 | +2.01 [+0.35, +3.69] | +3.36 [+0.98, +5.56] |
+| Slot micro-F1 | +2.92 [+0.87, +4.68] | +1.80 [+0.29, +3.19] |
+| Exact match | +3.86 [+2.75, +4.92] | +4.71 [+1.36, +7.59] |
+
+The criterion passed, so the benefit of this corpus is not specific to a single
+student model.
+
+Two results did not clear the same bar and are stated rather than omitted:
+`json_valid_rate` fails it because the Gemma interval crosses zero, and Phi's
+`exact_match_seed_42` is not significant after Holm correction (p = 0.141).
+Neither is part of the preregistered criterion.
+
+This is a two-family replication on one frozen dataset and one training
+contract. The families are summarized separately and are not pooled, and it is
+not a claim about other datasets, other tasks, or arbitrary models.
+
 Separately, the M11 real-runtime demo ran five fixed Traditional Chinese
 utterances through the base model and filtered seed-42 adapter with unconstrained
 decoding. The base outputs passed the strict schema 0/5 times and the adapted

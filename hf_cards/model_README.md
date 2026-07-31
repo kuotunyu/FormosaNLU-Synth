@@ -65,8 +65,17 @@ Paired seeds 42–44 中，filtered 相對 real-only 的 intent accuracy 平均�
 +4.14 ± 1.39 個百分點，exact match 平均提升 +3.86 ± 0.73 個百分點。
 5,000 次 hierarchical paired bootstrap 的 95% CI 分別為
 [+2.60, +5.59] 與 [+2.75, +4.92] 個百分點；每個 seed 的 exact McNemar
-tests 經 Holm correction 後均 `p ≤ 0.00017`。這些是 frozen Test 與目前
-Gemma 4 contract 內的證據，不代表跨模型泛化。
+tests 經 Holm correction 後均 `p ≤ 0.00017`。**上表所有數字都是這個
+Gemma 4 adapter 本身的成效。**
+
+訓練這個 adapter 所用的 corpus，其效益已在第二個 student family
+（`microsoft/Phi-4-mini-instruct`）以相同的 paired contract 複製成功：
+intent accuracy 與 exact match 在兩個 family 都是正向平均提升，且
+hierarchical 95% CI 下界都大於零，判準在看到結果前即凍結。那是**資料**
+的證據，不是這個 adapter 的成效；此處列出是為了說明 corpus 的效益不限於
+單一 student model。細節見
+[FormosaNLU-Synth](https://github.com/kuotunyu/FormosaNLU-Synth) 的
+cross-model 報告。
 
 Seed-42 的 8,922-row deterministic robustness probe：
 

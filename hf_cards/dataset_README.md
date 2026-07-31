@@ -97,8 +97,28 @@ QLoRA 三個 paired seeds（42–44）顯示：
 bootstrap 後，intent accuracy 的平均提升為 +4.14 個百分點（95% CI
 [+2.60, +5.59]），exact match 為 +3.86（[+2.75, +4.92]）。每個 seed
 的 intent accuracy 與 exact match exact McNemar tests 經 Holm correction
-後均 `p ≤ 0.00017`。這些結果只適用目前的 frozen Test 與 Gemma 4 contract，
-不代表跨模型泛化。
+後均 `p ≤ 0.00017`。
+
+### 第二個 student family 的複製
+
+同一份 corpus 以完全相同的 prompt、500 steps、seeds 與 strict evaluator，
+在 `microsoft/Phi-4-mini-instruct` 上重跑一次三種子 paired 比較：
+
+| Metric | Gemma Δ [95% CI] | Phi Δ [95% CI] |
+| --- | ---: | ---: |
+| Intent accuracy | +4.14 [+2.60, +5.59] | +5.09 [+1.83, +9.02] |
+| Exact match | +3.86 [+2.75, +4.92] | +4.71 [+1.36, +7.59] |
+
+判準在看到 Phi 結果之前就凍結：兩項 metric 在兩個 family 都必須是正向平均
+提升，且 hierarchical 95% CI 下界都大於零。該判準通過，因此這份 corpus 的
+效益**不是單一 student model 的特性**。
+
+未達標的部分一併說明：`json_valid_rate` 沒有通過同一條門檻（Gemma 側 CI
+跨越零），Phi 的 `exact_match_seed_42` 在 Holm 校正後 `p = 0.141` 不顯著。
+兩者都不在預先登記的判準內。
+
+**範圍**：兩個 family、一份 frozen dataset、一種 training contract；兩個
+family 分別彙總、不 pooling，不宣稱推廣到其他 dataset、任務或任意 model。
 
 ## 適合用途
 
