@@ -15,6 +15,9 @@ M10_ROBUSTNESS = REPO_ROOT / "reports" / "m10_robustness.json"
 M13_PUBLICATION = REPO_ROOT / "reports" / "m13_publication.json"
 M14_PAIRED = REPO_ROOT / "reports" / "m14_paired_statistics.json"
 M15_CROSS_MODEL = REPO_ROOT / "reports" / "m15_cross_model_replication.json"
+M16_ROBUSTNESS_SEEDS = (
+    REPO_ROOT / "reports" / "m16_robustness_summary_gemma.json"
+)
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
@@ -142,6 +145,20 @@ def expected_cross_model_rows(report: dict[str, Any]) -> list[str]:
     return rows
 
 
+def expected_robustness_seed_rows(summary: dict[str, Any]) -> list[str]:
+    """Return the across-seed paired-delta rows, in percentage points.
+
+    Formatted identically to the aggregator's own markdown so the README table
+    and reports/m16_robustness_summary_*.md cannot disagree.
+    """
+    rows = []
+    for metric, item in summary["paired_filtered_minus_real_only"].items():
+        std = item["sample_std"]
+        std_text = "—" if std is None else f"{std * 100:.2f}"
+        rows.append(f"| `{metric}` | {item['mean'] * 100:+.2f} | {std_text} |")
+    return rows
+
+
 def verify_readme(
     *,
     readme: str,
@@ -154,6 +171,7 @@ def verify_readme(
     publication: dict[str, Any] | None = None,
     paired: dict[str, Any] | None = None,
     cross_model: dict[str, Any] | None = None,
+    robustness_seeds: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
@@ -239,6 +257,28 @@ def verify_readme(
         for row in expected_cross_model_rows(cross_model):
             checks.append(
                 (f"cross-model row {row.split('|')[1].strip()}", row in readme)
+            )
+    # Only enforced once every expected seed has landed, so a partial summary
+    # cannot be quoted in README as if it were the finished evidence.
+    if robustness_seeds is not None and robustness_seeds.get("status") == "complete":
+        seeds = robustness_seeds["seeds"]
+        checks.append(
+            (
+                "robustness seeds stated",
+                len(seeds) >= 3
+                and all(f"seed {seed}" in readme or str(seed) in readme for seed in seeds),
+            )
+        )
+        checks.append(
+            (
+                "robustness no longer claims a single seed",
+                "robustness 只使用 seed 42" not in readme
+                and "Robustness 只比較 seed-42 adapters" not in readme,
+            )
+        )
+        for row in expected_robustness_seed_rows(robustness_seeds):
+            checks.append(
+                (f"robustness seed row {row.split('|')[1].strip()}", row in readme)
             )
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
@@ -334,6 +374,9 @@ def main() -> int:
         publication=_load(M13_PUBLICATION) if M13_PUBLICATION.is_file() else None,
         paired=_load(M14_PAIRED) if M14_PAIRED.is_file() else None,
         cross_model=_load(M15_CROSS_MODEL) if M15_CROSS_MODEL.is_file() else None,
+        robustness_seeds=(
+            _load(M16_ROBUSTNESS_SEEDS) if M16_ROBUSTNESS_SEEDS.is_file() else None
+        ),
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:

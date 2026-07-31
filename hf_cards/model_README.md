@@ -84,6 +84,12 @@ Seed-42 的 8,922-row deterministic robustness probe：
 | real-only | 71.61% | 60.59% | 46.33% |
 | 此 filtered adapter | **73.27%** | **64.13%** | **48.79%** |
 
+跨 seeds 42–44 的 paired delta（filtered − real-only，百分點）：intent
+accuracy **+3.63 ± 1.72**、exact match **+3.58 ± 2.05**、slot F1 +2.75 ± 2.76、
+intent macro-F1 +2.11 ± 2.19、JSON-valid +1.49 ± 2.35。五項平均皆為正，但只有
+前兩項的 mean 明顯大於 SD。**只看 seed 42 會誤導**——該 seed 的 intent
+macro-F1（−0.40）與 JSON-valid（−0.38）其實是負的。
+
 ## 載入方式
 
 Gemma 4 E4B 是 multimodal checkpoint；本專案只載入 text tower，使用與訓練
@@ -135,7 +141,9 @@ model.eval()
 - Test 來源具有翻譯語料特性，不等同所有自然台灣口語。
 - 可能輸出無效 JSON、錯誤 intent 或不在原句中的 slot value。
 - 沒有 constrained decoding；JSON-valid rate 是實測指標。
-- Robustness 只測 seed 42，且不是自然 ASR logs。
+- Robustness 已涵蓋 seeds 42–44，但五項指標中只有 intent accuracy 與 exact
+  match 的效果明顯大於 seed 間的變異；其餘三項在 `n=3` 下無法與零區分。擾動
+  是 deterministic probes，不是自然 ASR logs。
 - 不適用醫療、法律、金融或安全關鍵決策。
 
 ## Training data

@@ -263,9 +263,33 @@ python -m scripts.verify_readme
 ## Robustness probe
 
 Auxiliary perturbation manifest 含 8,922 筆 rows，涵蓋 typo、code-switching
-與 ASR-like noise。兩個 seed-42 adapters 各完成 8,922-row inference；
-它是 auxiliary evaluation，不取代 untouched Test 的 headline table，也不
-回流 training。
+與 ASR-like noise。`real_only` 與 `real_syn_filtered` 的 **seeds 42–44 共六個
+Gemma adapters** 各完成 8,922-row inference；它是 auxiliary evaluation，不取代
+untouched Test 的 headline table，也不回流 training。
+
+### 三種子 paired delta
+
+delta 在**每個 seed 內先計算再平均**，保留同資料訓練出的 adapter 之間的配對。
+
+| Metric | Mean Δ（百分點） | Sample SD |
+| --- | ---: | ---: |
+| `intent_accuracy` | +3.63 | 1.72 |
+| `intent_macro_f1` | +2.11 | 2.19 |
+| `slot_micro_f1` | +2.75 | 2.76 |
+| `exact_match` | +3.58 | 2.05 |
+| `json_valid_rate` | +1.49 | 2.35 |
+
+**五項的平均都是正的，但只有兩項站得住腳。** `intent_accuracy` 與
+`exact_match` 的 mean 明顯大於 sample SD；其餘三項的 SD 與 mean 相當甚至更大，
+在 `n=3` 下**無法與零區分**，不應被當成已確立的效果。
+
+**單一 seed 的畫面在兩個方向上都會誤導。** 只看 seed 42 時，
+`intent_macro_f1` 為 **−0.40**、`json_valid_rate` 為 **−0.38**（兩項皆為負）；
+補到三個 seed 後兩者的平均都轉正。這也是為什麼上表五項全列，而不是只挑正向的
+三項。完整逐 seed 數字見
+[`reports/m16_robustness_summary_gemma.md`](reports/m16_robustness_summary_gemma.md)。
+
+### Seed-42 的逐 probe 拆解
 
 | Group | Probe | Intent acc | Slot F1 | Exact match | JSON valid |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -276,10 +300,12 @@ Auxiliary perturbation manifest 含 8,922 筆 rows，涵蓋 typo、code-switchin
 | `real_syn_filtered` | `colloquial` | 74.88% | 65.69% | 51.18% | 97.68% |
 | `real_syn_filtered` | `lexical` | 74.68% | 65.48% | 51.11% | 97.98% |
 
-ASR-like noise 對兩組都最具挑戰。Filtered adapter 在三種 probes 的 intent
-accuracy、slot F1 與 exact match 都高於 `real_only`；差距並非只存在於
-untouched Test。不過 robustness 只使用 seed 42，而且擾動是 deterministic
-evaluation probes，不等同真實語音辨識錯誤分布。
+上表是 **seed 42** 的逐 probe 拆解。ASR-like noise 對兩組都最具挑戰。在這個
+seed 上，filtered adapter 於三種 probes 的 intent accuracy、slot F1 與 exact
+match 都高於 `real_only`——但如前所述，同一個 seed 的 `intent_macro_f1` 與
+`json_valid_rate` 反而略低，所以不要只看這三欄下結論。
+
+擾動是 deterministic evaluation probes，不等同真實語音辨識錯誤分布。
 
 ## 方法
 
@@ -426,8 +452,11 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
   登記的判準內，但一併列出。
 - F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
   為 6.0%，但樣本僅 50 筆，95% interval 很寬。
-- Robustness 只比較 seed-42 adapters，且三種擾動是 deterministic probes；
-  尚未涵蓋真實 ASR log、自然 code-switching corpus 或跨 seed robustness。
+- Robustness 已涵蓋 Gemma seeds 42–44，但三項指標（`intent_macro_f1`、
+  `slot_micro_f1`、`json_valid_rate`）的 sample SD 與 mean 相當，`n=3` 下無法
+  與零區分；只有 `intent_accuracy` 與 `exact_match` 的效果較穩固。
+- 三種擾動是 deterministic probes，尚未涵蓋真實 ASR log 或自然 code-switching
+  corpus。
 - M11 的五句 real-runtime comparison 只證明 demo contract 與 adapter 可實際
   執行；它是 curated qualitative evidence，不可當成 Test-set 成效。
 - 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。

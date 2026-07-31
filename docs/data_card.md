@@ -185,14 +185,34 @@ tree hash, not an accuracy estimate or substitute for the 2,974-row Test set.
 
 ### Robustness evidence
 
-Each seed-42 adapter was evaluated on the frozen 8,922-row probe
-(2,974 Test sources × deterministic ASR-noise, colloquial, and lexical
-perturbations). The filtered adapter scored 73.27% intent accuracy, 64.13% slot
-F1, and 48.79% exact match overall, versus 71.61%, 60.59%, and 46.33% for
-`real_only`. It was higher on all three task metrics for every probe kind;
-ASR-noise was the hardest perturbation for both adapters. This is
-evaluation-only auxiliary evidence. It uses seed 42 only and does not represent
-a natural ASR-error or code-switching distribution.
+Both groups were evaluated on the frozen 8,922-row probe (2,974 Test sources ×
+deterministic ASR-noise, colloquial, and lexical perturbations) for seeds 42-44,
+so this is six Gemma adapters rather than the two originally reported.
+
+Paired delta, filtered minus `real_only`, computed within each seed and then
+averaged (percentage points):
+
+| Metric | Mean Δ | Sample SD |
+| --- | ---: | ---: |
+| Intent accuracy | +3.63 | 1.72 |
+| Intent macro-F1 | +2.11 | 2.19 |
+| Slot micro-F1 | +2.75 | 2.76 |
+| Exact match | +3.58 | 2.05 |
+| JSON-valid rate | +1.49 | 2.35 |
+
+All five means are positive, but only two are on firm ground: intent accuracy
+and exact match have a mean clearly above their spread. For the other three the
+sample standard deviation is comparable to or larger than the mean, so at n=3
+they are not distinguishable from zero.
+
+The single-seed view was misleading in both directions. On seed 42 alone,
+intent macro-F1 was -0.40 and JSON-valid rate was -0.38; averaged over three
+seeds both turn positive. That is why all five metrics are listed here rather
+than only the favourable ones.
+
+ASR-noise was the hardest perturbation. This is evaluation-only auxiliary
+evidence and does not represent a natural ASR-error or code-switching
+distribution.
 
 ## Considerations for Using the Data
 
@@ -213,7 +233,9 @@ a natural ASR-error or code-switching distribution.
 - Synthetic utterances are seeded from a 20-shot sample; coverage of rare intents
   and rare slot types is correspondingly thin.
 - No per-recipe ablation was run (see `docs/DECISIONS.md` D-004).
-- Robustness compares seed-42 adapters only; deterministic probes do not replace
+- Robustness spans Gemma seeds 42-44, but three of its five metrics have a
+  sample SD comparable to their mean at n=3 and are not distinguishable from
+  zero; deterministic probes do not replace
   evaluation on natural ASR logs or code-switching corpora.
 - The pilot's cheap filters rejected 63/500 rows; one additional incomplete
   request escaped those filters and was rejected by the independent judge.
