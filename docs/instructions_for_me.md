@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：所有本機 GPU 階段、Colab portability、M12 與 M13 public release 均已完成。**
+> **狀態：M15 跨 family 複製已完成；M16（robustness 補齊 + 文件收尾）進行中。**
 > 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
@@ -10,11 +10,40 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**目前不需要你操作。** 本機 primary 六組訓練、六組評估、seeds 43/44
-四組 uncertainty runs、M10、M11
-介面與五句 real evidence、M12 報告、F7 與 Colab `real_only` portability
-run，以及兩組 robustness inference 都已完成。GitHub、Hugging Face Dataset
-與 LoRA adapter 亦已公開並通過匿名載入驗證。
+**三件，都要你本人執行**（`gh`、`git tag`、`hf upload` 都在 deny list 裡，
+夜間 agent 做不到，也不會誤觸）。前置條件：`python -m scripts.check_gates`
+全綠。
+
+### 1. 建 v1.1.0 annotated tag（約 1 分鐘）
+
+```powershell
+git tag -a v1.1.0 -m "v1.1.0: cross-family replication and robustness backfill"
+git push origin v1.1.0
+```
+
+確認成功：`git show v1.1.0 | head -5` 的 Tagger 是 `kuotunyu`。
+
+### 2. 發 GitHub Release（約 3 分鐘）
+
+內容直接用 [`docs/RELEASE_NOTES_v1.1.0.md`](RELEASE_NOTES_v1.1.0.md)。
+
+確認成功：Release 頁面指向 `v1.1.0` tag；Contributors API 仍只有 `kuotunyu`。
+
+### 3. 上傳兩張 Hugging Face card（約 5 分鐘）
+
+- `hf_cards/dataset_README.md` → `steven0226/formosa-nlu-synth-v1`
+- `hf_cards/model_README.md` → `steven0226/gemma-4-e4b-formosanlu-lora`
+
+**只更新 card，不動資料與權重**——dataset 仍是 3,754 rows、adapter 的
+SHA-256 未變，v1.1.0 是證據版本而非資料版本。
+
+確認成功：兩個 HF 頁面顯示新的跨 family 段落；Dataset Viewer 仍正常。
+
+### 另外一件要你判斷（不緊急、不擋任何事）
+
+`CLAUDE.md`【工作方式】原文寫「英文註解與 README」，但目前 README 是繁中的
+（Codex 改的，且已公開）。對台灣 NLU 專案而言繁中有其道理，但那是你定的原文
+規則。改回英文是大工程，我沒有自作主張。
 
 ---
 
