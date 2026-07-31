@@ -16,7 +16,7 @@ import yaml
 from src.evaluation.metrics import aggregate_metrics, diagnostic_counts
 from src.evaluation.run_zeroshot import _gpu_used_mib
 from src.synthetic.checkpoint import JsonlCheckpoint
-from src.training.model import load_quantized_text_model
+from src.training.model import load_quantized_causal_model
 from src.training.prompt_template import build_prompt_messages
 from src.training.train import DEFAULT_CONFIG, REPO_ROOT
 
@@ -216,8 +216,12 @@ def run(args: argparse.Namespace) -> None:
         bnb_4bit_use_double_quant=quant["double_quant"],
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
-    base_model = load_quantized_text_model(
+    # Dispatch on the config's declared class so the probe works for any
+    # student family. For Gemma this delegates to the same text-tower loader
+    # used before, so the existing Gemma results stay reproducible.
+    base_model = load_quantized_causal_model(
         model_path,
+        model_class=config["model"]["class"],
         quantization_config=quantization_config,
         dtype=torch.bfloat16,
     )

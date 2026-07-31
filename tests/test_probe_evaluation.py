@@ -4,7 +4,18 @@ import json
 
 import pytest
 
-from scripts.eval_robustness import GROUPS, build_plan
+from scripts.eval_robustness import (
+    CONFIRMATION,
+    DEFAULT_BATCH_REPORT,
+    DEFAULT_COMBINED_REPORT,
+    GEMMA_TARGET,
+    GROUPS,
+    PHI4MINI_TARGET,
+    build_plan,
+    confirmation_token,
+    default_batch_report,
+    default_combined_report,
+)
 from src.evaluation.run_probe import build_probe_report
 
 
@@ -62,3 +73,52 @@ def test_robustness_plan_is_two_primary_seed_adapters() -> None:
         (group, 42) for group in GROUPS
     ]
     assert len({plan.output for plan in plans}) == 2
+
+
+def test_default_plan_still_targets_the_original_gemma_paths() -> None:
+    """The M10 seed-42 batch must stay byte-identical after parameterization."""
+    plan = {spec.group: spec for spec in build_plan()}["real_only"]
+    assert plan.adapter_dir.parts[-4:] == ("runs", "real_only", "seed_42", "adapter")
+    assert plan.primary_report.parts[-3:] == ("reports", "m9", "real_only_seed_42.json")
+    assert plan.output.parts[-3:] == (
+        "results",
+        "robustness",
+        "real_only_seed_42.jsonl",
+    )
+    assert default_batch_report(GEMMA_TARGET, 42) == DEFAULT_BATCH_REPORT
+    assert default_combined_report(GEMMA_TARGET, 42) == DEFAULT_COMBINED_REPORT
+    assert confirmation_token(GEMMA_TARGET, 42) == CONFIRMATION
+
+
+def test_other_seeds_get_their_own_paths_and_token() -> None:
+    plans = build_plan(seed=43)
+    assert [spec.seed for spec in plans] == [43, 43]
+    for spec in plans:
+        assert spec.output.name.endswith("_seed_43.jsonl")
+        assert spec.adapter_dir.parts[-2] == "seed_43"
+    # A distinct token stops a seed-43 batch from running on the seed-42 phrase.
+    assert confirmation_token(GEMMA_TARGET, 43) != CONFIRMATION
+    assert default_batch_report(GEMMA_TARGET, 43) != DEFAULT_BATCH_REPORT
+    assert default_combined_report(GEMMA_TARGET, 43) != DEFAULT_COMBINED_REPORT
+
+
+def test_phi4mini_target_uses_the_m15_layout_and_config() -> None:
+    plans = build_plan(target=PHI4MINI_TARGET, seed=42)
+    assert [spec.group for spec in plans] == list(GROUPS)
+    for spec in plans:
+        assert spec.adapter_dir.parts[-5:-3] == ("m15", "phi4mini")
+        assert spec.primary_report.parts[-4:-1] == ("reports", "m15", "phi4mini")
+        assert spec.output.parts[-2] == "robustness_phi4mini"
+    assert PHI4MINI_TARGET.config.name == "train_phi4mini.yaml"
+    assert confirmation_token(PHI4MINI_TARGET, 42) != CONFIRMATION
+
+
+def test_targets_never_share_an_output_path() -> None:
+    """Gemma and Phi results must not overwrite each other."""
+    outputs = set()
+    for target in (GEMMA_TARGET, PHI4MINI_TARGET):
+        for seed in (42, 43, 44):
+            for spec in build_plan(target=target, seed=seed):
+                outputs.add(spec.output)
+                outputs.add(spec.report_json)
+    assert len(outputs) == 2 * 3 * 2 * 2
