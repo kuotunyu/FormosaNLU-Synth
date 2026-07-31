@@ -11,11 +11,11 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-07-31 23:30 +08:00（跨多次使用者回來後續作） |
-| 完成到 | **M15 完成**：Phi-4-mini 六組 paired runs 全數完成，cross-model 判定 `replicated_across_student_families`，預先登記判準通過 |
+| 執行區間 | 2026-07-27 03:14–2026-08-01（進行中） |
+| 完成到 | **M15 完成並收尾**；**M16 進行中**（robustness 補齊 + 文件收尾） |
 | 卡住的項目 | 無 |
-| GPU 時數 | primary core 14.440 h；auxiliary 8.685 h；M15 Phi 3.752 h（M16 併入帳本）；可追溯 local total 約 26.88 h |
-| 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB。C: 現剩 138.9 GB |
+| GPU 時數 | primary core 14.440 h（未變）；auxiliary 12.440 h；可追溯 local total **26.879 h** |
+| 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB。C: 現剩約 138 GB |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
 ### 🟢 目前不需使用者操作
@@ -59,8 +59,16 @@ robustness 補齊（Gemma seeds 43/44、Phi seeds 42–44）＋ Phi `full_real`
 post-hoc 參照組 ＋ README 升級為跨 family 主張 ＋ 資源帳本 ＋ 四個 skill ＋
 v1.1.0 release notes 草稿。
 
-**留給使用者早上處理**：v1.1.0 tag 與 GitHub Release、HF Dataset／Model
-card 上傳。夜間**不得**執行這三項。
+**留給使用者早上處理**（只有這三件，都在 deny list 裡擋著）：
+
+1. 建 annotated tag `v1.1.0`
+2. 用 `docs/RELEASE_NOTES_v1.1.0.md` 的內容發 GitHub Release
+3. 上傳更新後的 `hf_cards/dataset_README.md` 與 `hf_cards/model_README.md`
+
+**另外一件要你判斷、不緊急**：`CLAUDE.md` 的【工作方式】原文寫「英文註解與
+README」，但目前 README 是繁中的（Codex 改的，且已公開）。對台灣 NLU 專案而
+言繁中 README 有其道理，但那是你定的原文規則。要改回英文是大工程，我沒有自作
+主張，留給你決定。
 
 不要覆寫原始 smoke failure、v1 release corpus、frozen thresholds、Gemma
 primary runs，或 M15 的預先登記判準。
@@ -71,6 +79,34 @@ primary runs，或 M15 的預先登記判準。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-08-01 進行中] M16 — robustness 補齊與文件收尾
+
+**已完成並 push（commits `97ddea2` → `b1b12b6`）：**
+
+- M15 產出全數 commit（先前只存在本機硬碟，未進 git）
+- `eval_robustness` 依 target／seed 參數化。Gemma／seed 42 的路徑與 confirm
+  token 完全不變且有測試釘住；其他組合各有獨立輸出路徑與 token
+- **Phi 的 32-row smoke 抓出真 bug**：`run_probe` 呼叫寫死 Gemma 的
+  `load_quantized_text_model`，已改為依 config 的 `model.class` 分派。若沒先
+  smoke，這會是三小時的空轉
+- README 升級為跨 family 主張；`verify_readme` 54 → **64 項**，新增檢查把宣稱
+  綁在原始 JSON（判準旗標須為真、兩個 primary metric 的 CI 都須排除零、五行
+  表格由原始數字重新格式化比對）
+- 資源帳本經**產生器**加入 M15（未手改 JSON）：auxiliary 8.685 → 12.440 h，
+  local total 23.124 → **26.879 h**，primary core 維持 14.440 h
+- dataset card、data card、model card 補上跨 family 結果與範圍限制
+- 四個專案 skill 全數建立（generate／filter／train／eval，本機）
+- `docs/RELEASE_NOTES_v1.1.0.md` 草稿完成
+- 依使用者要求，`.claude/`、`.github/`、`CLAUDE.md`、`PLAN.md` 移出版本控制
+  （保留本機、不重寫歷史）；**CI 因此關閉**，新增 `scripts/check_gates.py`
+  作為本機替代，push 前必跑
+- 修好 `D:\anaconda3` 的裸 `python` 啟動失敗（一個 cp950 編碼的失效 editable
+  `.pth`，指向已刪除的專案）。原檔備份在暫存目錄
+
+**進行中：** T1 Gemma robustness seeds 43/44（背景批次）。
+
+**T3（Phi `full_real`）已永久取消**，理由與時間無關，見 D-019。
 
 ### [2026-07-31 23:30 +08:00] M15 正式六組 — 完成並通過預先登記判準
 
