@@ -230,22 +230,36 @@
 **前提**：使用者重開機後、睡前才啟動；GPU 約 12 小時無人使用。先跑 GPU
 safety gate（沿用既有的兩次連續閒置取樣），沒過就等，不要硬開。
 
-### 11.1 GPU 工作（依序，估約 8 h）
+### 11.1 GPU 工作（風險排序，先驗後跑，估約 7 h）
 
-| # | 工作 | 估時 | 契約 |
-|---|---|---|---|
-| 1 | Gemma robustness 補 seeds 43/44 | 4.2 h | 用**現有 frozen 8,922-row probe**，evaluation-only，不回流訓練 |
-| 2 | Phi robustness seed 42 | 1.0 h | 同一 probe、同一 evaluator |
-| 3 | Phi robustness seeds 43/44 | 2.0 h | 同上 |
-| 4 | Phi `full_real` 上限組（訓練 + 評估） | 0.7 h | ⚠️ **post-hoc / exploratory**，預先登記範圍之外 |
-| 5 | README demo GIF（選配） | 數分鐘 | 非阻塞，跑不出來就跳過 |
+> **2026-07-31 23:50 修訂的理由**：實際檢查發現
+> `scripts/eval_robustness.py` 的 `SEED` 是模組常數、adapter 路徑寫死
+> Gemma 的 `runs/<group>/seed_<n>` layout；`scripts/m15_phi4mini.py` 則是為
+> 「兩組 × 三種子」凍結的 pipeline，沒有 `full_real`。原本排的三項有兩項
+> 需要**新程式**。無人監督時「現寫 pipeline 就直接燒數小時 GPU」風險過高，
+> 故改為下列分層，**每一層都必須先通過小樣本 smoke 才可投入完整批次**。
 
-**第 4 項的紅線**：`full_real` 是**新增的參照組**，不得用來改動或重算 M15 預先
-登記的 `real_syn_filtered` vs `real_only` paired 判準。報告中必須明確標示為
-post-hoc，且與預先登記結果分開呈現。
+| 層 | 工作 | 前置（無 GPU） | GPU | 風險 |
+|---|---|---|---|---|
+| **T1** | Gemma robustness 補 seeds 43/44 | 把 `SEED` 與 adapter 路徑參數化 + 單元測試 | 4.2 h | 低（引擎、probe、config 全現成） |
+| **T2** | Phi robustness seeds 42–44 | 再加 `runs/m15/phi4mini/` layout 與 Phi base config 支援 | 3.0 h | 中 |
+| ~~T3~~ | ~~Phi `full_real` 參照組~~ | — | — | **本次取消** |
 
-**任一項失敗**：照 §5 寫進 `docs/HANDOFF.md`，改做下一項，不要卡住整條。
-robustness 各組彼此獨立，單組失敗不影響其他組。
+**T3 取消理由**：需要最多新程式（新資料備置 ＋ 動到已凍結的 M15 pipeline），
+又是預先登記範圍外的 post-hoc 組，價值最低。10 小時的預算下砍它，換 T1／T2
+的安全邊際。要做就留到有人看著的時段。
+
+**每一層的放行條件（不得跳過）：**
+
+1. 參數化改動有對應的 `pytest` 案例，且 `ruff` 與全套測試全綠
+2. 先用**極小樣本**（例如 32 rows）跑通一次，確認輸出 schema、index 連續性
+   與報告路徑都正確
+3. 才啟動完整批次
+
+**smoke 沒過就不要投 GPU**：把情況寫進 `docs/HANDOFF.md`，改做 §11.2 的文件
+工作。T1 與 T2 彼此獨立，一邊失敗不影響另一邊。
+
+**README demo GIF**：選配、非阻塞，有餘裕再做，做不出來就跳過。
 
 ### 11.2 非 GPU 工作
 
