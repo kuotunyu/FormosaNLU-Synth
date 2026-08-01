@@ -395,7 +395,9 @@ def chart_filter_comparison(m10: dict[str, Any], output: Path) -> None:
             fontsize=8,
         )
     axis.set_xticks(list(x_positions), labels)
-    axis.set_ylim(48, 79)
+    # Headroom above the tallest bar so the upper-left legend does not sit on
+    # top of the first bar's value label.
+    axis.set_ylim(48, 84)
     axis.set_ylabel("Score (%)")
     axis.set_title("Does filtering earn its keep?")
     legend = axis.legend(frameon=False, ncols=3, loc="upper left")
