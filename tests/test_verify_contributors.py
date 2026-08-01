@@ -47,3 +47,36 @@ def test_audit_rejects_other_identity_and_coauthor_trailer() -> None:
     )
     assert any("unexpected author name" in error for error in errors)
     assert any("co-author trailer" in error for error in errors)
+
+
+def test_unset_local_config_returns_none_instead_of_raising(monkeypatch) -> None:
+    """A fresh clone has no repo-local identity; that is an answer, not a crash.
+
+    `git config --local --get` exits 1 when the key is unset, and treating that
+    as an exception made the audit traceback for every third party.
+    """
+    import subprocess
+
+    import scripts.verify_contributors as module
+
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **k: subprocess.CompletedProcess(a[0], 1, "", "not set"),
+    )
+
+    assert module._git_optional("config", "--local", "user.name") is None
+
+
+def test_present_local_config_is_returned_stripped(monkeypatch) -> None:
+    import subprocess
+
+    import scripts.verify_contributors as module
+
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **k: subprocess.CompletedProcess(a[0], 0, "kuotunyu\n", ""),
+    )
+
+    assert module._git_optional("config", "--local", "user.name") == "kuotunyu"

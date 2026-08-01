@@ -71,6 +71,25 @@ def _git(*args: str) -> str:
     return completed.stdout
 
 
+def _git_optional(*args: str) -> str | None:
+    """Run git where a non-zero exit is an expected answer, not a crash.
+
+    `git config --local --get` exits 1 when the key is unset, which is the
+    normal state of a fresh clone. Treating that as an exception turned a
+    routine situation into a traceback.
+    """
+    completed = subprocess.run(
+        ["git", *args],
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -86,25 +105,40 @@ def main() -> int:
     )
     records = parse_git_log(raw)
     errors = audit_history(records)
+    identity_checked = False
     if not args.history_only:
-        local_name = _git("config", "--local", "user.name").strip()
-        local_email = _git("config", "--local", "user.email").strip()
-        if local_name != ALLOWED_NAME:
-            errors.append(
-                f"local user.name must be {ALLOWED_NAME!r}, got {local_name!r}"
+        local_name = _git_optional("config", "--local", "user.name")
+        local_email = _git_optional("config", "--local", "user.email")
+        if local_name is None and local_email is None:
+            # A fresh clone has no repo-local identity, and a third party's
+            # identity would never match this repository's. The history audit
+            # above is the claim that matters to them; the local identity guard
+            # exists to stop the maintainer committing under the wrong address.
+            print(
+                "note: no repo-local Git identity, so only the commit history "
+                "was audited. Set user.name and user.email locally before "
+                "committing to this repository."
             )
-        if local_email != REQUIRED_LOCAL_EMAIL:
-            errors.append(
-                f"local user.email must be {REQUIRED_LOCAL_EMAIL!r}, got {local_email!r}"
-            )
+        else:
+            identity_checked = True
+            if local_name != ALLOWED_NAME:
+                errors.append(
+                    f"local user.name must be {ALLOWED_NAME!r}, got {local_name!r}"
+                )
+            if local_email != REQUIRED_LOCAL_EMAIL:
+                errors.append(
+                    f"local user.email must be {REQUIRED_LOCAL_EMAIL!r}, "
+                    f"got {local_email!r}"
+                )
     if errors:
         print("Contributor audit FAILED:")
         for error in errors:
             print(f"- {error}")
         return 1
+    scope = "history and local identity" if identity_checked else "history"
     print(
-        f"Contributor audit passed: {len(records)} commits, author/committer "
-        f"{ALLOWED_NAME}, no co-author trailers."
+        f"Contributor audit passed ({scope}): {len(records)} commits, "
+        f"author/committer {ALLOWED_NAME}, no co-author trailers."
     )
     return 0
 
