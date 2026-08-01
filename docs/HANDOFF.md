@@ -12,7 +12,7 @@
 | 項目 | 內容 |
 |---|---|
 | 執行區間 | 2026-07-27 03:14–2026-08-01 09:50 +08:00 |
-| 完成到 | **M16 完成。所有本機 GPU 階段結束。** 只剩三件需要你本人執行的發佈動作 |
+| 完成到 | **v1.1.0 已發佈。專案完成。** tag、GitHub Release、兩張 HF card 均已上線並通過發佈後驗證 |
 | 卡住的項目 | 無 |
 | GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 19.035 h；可追溯 local total **33.475 h**；TDP 上限 15.064 kWh |
 | 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB |
@@ -61,11 +61,18 @@ per-recipe ablation（D-004 當初為成本砍掉）、Phi `full_real` 上限組
 為原則砍掉）、以及 README 裡寫的台灣知識蒸餾 + TMMLU+ roadmap。這些都是新的
 里程碑，不是收尾項目。
 
-**留給使用者早上處理**（只有這三件，都在 deny list 裡擋著）：
+**發佈已完成**（2026-08-01，使用者明確授權後由 agent 執行）：
 
-1. 建 annotated tag `v1.1.0`
-2. 用 `docs/RELEASE_NOTES_v1.1.0.md` 的內容發 GitHub Release
-3. 上傳更新後的 `hf_cards/dataset_README.md` 與 `hf_cards/model_README.md`
+| 項目 | 結果 |
+|---|---|
+| Tag `v1.1.0` | 指向 `2f2d69b`，tagger `kuotunyu` |
+| GitHub Release | 非 draft、非 prerelease |
+| HF dataset card | commit `dd6f3994` |
+| HF model card | commit `d9b6d010` |
+| 發佈後驗證 | `public_verified`；**dataset 仍 3,754 rows、adapter SHA 未變** |
+| Contributors | 仍只有 `kuotunyu` |
+
+發佈權限已重新鎖回 deny list。
 
 **另外一件要你判斷、不緊急**：`CLAUDE.md` 的【工作方式】原文寫「英文註解與
 README」，但目前 README 是繁中的（Codex 改的，且已公開）。對台灣 NLU 專案而

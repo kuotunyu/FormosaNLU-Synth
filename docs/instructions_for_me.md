@@ -10,9 +10,32 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**三件，都要你本人執行**（`gh`、`git tag`、`hf upload` 都在 deny list 裡，
-夜間 agent 做不到，也不會誤觸）。前置條件：`python -m scripts.check_gates`
-全綠。
+**無。v1.1.0 已於 2026-08-01 完成發佈。**
+
+三件動作在使用者明確授權後由 agent 代為執行，執行前後皆有驗證：
+
+| 動作 | 結果 |
+|---|---|
+| Annotated tag `v1.1.0` | ✅ 指向 `2f2d69b`，tagger `kuotunyu` |
+| GitHub Release | ✅ [v1.1.0](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.1.0)，非 draft |
+| HF dataset card | ✅ commit `dd6f3994` |
+| HF model card | ✅ commit `d9b6d010` |
+| 發佈後匿名驗證 | ✅ `public_verified`；dataset 仍 3,754 rows、adapter SHA `f70f4238…` 未變 |
+| Contributors 複驗 | ✅ 仍只有 `kuotunyu` |
+
+發佈用的權限（`gh release create`、`hf upload`、`git tag -a`、`git push origin v*`）
+**已在完成後重新鎖回 deny list**，只保留唯讀查詢。下次要發佈需再次明確授權。
+
+> ⚠️ 一個已知的小瑕疵：清理 release notes 的 commit（`a5926ad`）在建 tag 之後，
+> 所以 `v1.1.0` 標記的 tree 裡，那份文件的開頭仍有「草稿」字樣。程式碼、結果與
+> 報告完全相同，Release 頁面用的是清理後的內容。**已發佈的 tag 不移動**——移動
+> 公開 tag 比這個瑕疵更糟。
+
+---
+
+## 已完成的發佈步驟（保留作重現 SOP）
+
+前置條件：`python -m scripts.check_gates` 全綠。
 
 ### 1. 建 v1.1.0 annotated tag（約 1 分鐘）
 
