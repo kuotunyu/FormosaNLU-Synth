@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-31T23:32:49.396251+00:00",
+  "status": "complete",
+  "evaluation_mode": "trained_adapter_robustness_probe",
+  "group": "real_syn_filtered",
+  "seed": 42,
+  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m15\\phi4mini\\real_syn_filtered\\seed_42\\adapter",
+  "target": 8922,
+  "completed": 8922,
+  "probe_kind_counts": {
+    "asr_noise": 2974,
+    "colloquial": 2974,
+    "lexical": 2974
+  },
+  "metrics": {
+    "samples": 8922.0,
+    "json_valid_rate": 0.9815063887020847,
+    "intent_accuracy": 0.7088096839273705,
+    "intent_macro_f1": 0.7035864136264164,
+    "slot_micro_f1": 0.5735551663747811,
+    "exact_match": 0.42546514234476573
+  },
+  "metrics_by_probe_kind": {
+    "asr_noise": {
+      "samples": 2974.0,
+      "json_valid_rate": 0.9811701412239409,
+      "intent_accuracy": 0.6607262945527909,
+      "intent_macro_f1": 0.6544760848752901,
+      "slot_micro_f1": 0.5331347728965004,
+      "exact_match": 0.367182246133154
+    },
+    "colloquial": {
+      "samples": 2974.0,
+      "json_valid_rate": 0.9811701412239409,
+      "intent_accuracy": 0.7373907195696032,
+      "intent_macro_f1": 0.7329590848895419,
+      "slot_micro_f1": 0.5934438583270535,
+      "exact_match": 0.4613315400134499
+    },
+    "lexical": {
+      "samples": 2974.0,
+      "json_valid_rate": 0.9821788836583726,
+      "intent_accuracy": 0.7283120376597175,
+      "intent_macro_f1": 0.7244344615405244,
+      "slot_micro_f1": 0.5945742275810098,
+      "exact_match": 0.44788164088769333
+    }
+  },
+  "primary_test_metrics": {
+    "samples": 2974.0,
+    "json_valid_rate": 0.9788164088769334,
+    "intent_accuracy": 0.7427706792199058,
+    "intent_macro_f1": 0.7402433656112938,
+    "slot_micro_f1": 0.6008010680907877,
+    "exact_match": 0.46704774714189645
+  },
+  "delta_vs_primary_by_probe_kind": {
+    "asr_noise": {
+      "json_valid_rate": 0.00235373234700742,
+      "intent_accuracy": -0.08204438466711494,
+      "intent_macro_f1": -0.0857672807360037,
+      "slot_micro_f1": -0.06766629519428735,
+      "exact_match": -0.09986550100874247
+    },
+    "colloquial": {
+      "json_valid_rate": 0.00235373234700742,
+      "intent_accuracy": -0.005379959650302579,
+      "intent_macro_f1": -0.007284280721751912,
+      "slot_micro_f1": -0.007357209763734218,
+      "exact_match": -0.00571620712844656
+    },
+    "lexical": {
+      "json_valid_rate": 0.00336247478143914,
+      "intent_accuracy": -0.014458641560188279,
+      "intent_macro_f1": -0.015808904070769403,
+      "slot_micro_f1": -0.006226840509777953,
+      "exact_match": -0.01916610625420312
+    }
+  },
+  "diagnostics": {
+    "unknown_intent": 68,
+    "unknown_slot_type": 97,
+    "valid": 8757
+  },
+  "performance": {
+    "wall_seconds_sum": 1706.3866254000386,
+    "output_tokens": 189727,
+    "peak_observed_gpu_memory_mib": 5292.0
+  },
+  "evaluation_only": true
+}
