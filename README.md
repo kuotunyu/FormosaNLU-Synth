@@ -216,13 +216,47 @@ tests 顯著。
 
 ### 各 intent 的變化
 
-進步最多的是 `qa_factoid`（+51.77 個百分點）、`qa_definition`（+33.33）
-與 `transport_query`（+27.45）。退步最多的是 `general_quirky`（-31.95）、
-`transport_ticket`（-22.86）與 `transport_taxi`（-17.39）。
-
-Synthetic data 並未改善所有 intents，因此進步與退步都必須呈現。
+在 seed 42 上，進步最多的是 `qa_factoid`（+51.77 個百分點）、`qa_definition`
+（+33.33）與 `transport_query`（+27.45）；退步最多的是 `general_quirky`
+（-31.95）、`transport_ticket`（-22.86）與 `transport_taxi`（-17.39）。
 
 ![各 intent 的 accuracy 變化](assets/m12_intent_movement.png)
+
+#### ⚠️ 但這些極端值大多是種子變異，不是效果
+
+補到三個 seed 之後，上面那兩個最極端的數字都站不住：
+
+| Intent | n | 逐 seed paired Δ | 三種子平均 |
+| --- | ---: | --- | ---: |
+| `qa_factoid` | 141 | +51.1 / +1.4 / -4.3 | **+16.1** |
+| `general_quirky` | 169 | -32.5 / +3.6 / +13.0 | **-5.3** |
+
+`general_quirky` 在 seed 42 掉了 32.5 點，但在另外兩個 seed **反而上升**。
+把單一 seed 的 −31.95 當成「synthetic data 破壞了這個 intent」是錯的。
+
+原因是 20-shot 基線本身在這些 intent 上極不穩定，而 filtered 讓它收斂：
+
+| Intent | n | `real_only` 逐 seed | SD | `real_syn_filtered` 逐 seed | SD |
+| --- | ---: | --- | ---: | --- | ---: |
+| `qa_factoid` | 141 | 18.4% / 70.2% / 85.8% | **35.3** | 69.5% / 71.6% / 81.6% | **6.4** |
+| `calendar_set` | 209 | 80.4% / 70.8% / 39.2% | **21.5** | 73.7% / 78.9% / 76.6% | **2.6** |
+| `general_quirky` | 169 | 62.7% / 41.4% / 24.9% | **19.0** | 30.2% / 45.0% / 37.9% | **7.4** |
+
+**這才是 per-intent 層級最一致的效果：降低變異，而不是任何單一方向的漲跌。**
+基線最不穩的五個 intent，filtered 在每一個上的 SD 都更小；`calendar_set` 從
+21.5 降到 2.6。
+
+被搞混的例句也解釋了為什麼是這一對：`你幾歲`、`你聰明嗎`、
+`如果你變得有知覺我會怎樣` 這些 MASSIVE 標為 `general_quirky` 的句子，形式上
+就是事實問句，與 `qa_factoid` 的差別在語用（問的是助理本身還是外部事實），不在
+句法。20-shot 的真實資料不足以定下這條邊界。
+
+完整的 59 個 intent 分析（可重新產生）見
+[`reports/m17_intent_confusion.md`](reports/m17_intent_confusion.md)：
+
+```bash
+python -m scripts.analyse_intent_confusion
+```
 
 ## Filter pipeline 是否真的有價值？
 
@@ -525,6 +559,10 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
   corpus。
 - M11 的五句 real-runtime comparison 只證明 demo contract 與 adapter 可實際
   執行；它是 curated qualitative evidence，不可當成 Test-set 成效。
+- **單一 seed 的 per-intent 數字不可靠。** 基線在最不穩的 intent 上逐 seed
+  可以差到 67 個百分點（`qa_factoid`），所以本文所有 per-intent 的極端值都必須
+  配著三種子的離散度一起讀。這也意味著任何只跑一個 seed 的 per-intent 分析
+  （包含未來若要做的 per-recipe ablation）會有同樣的問題。
 - 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。
 - MASSIVE `zh-TW` 翻譯自 English SLURP，未必涵蓋自然台灣口語的完整分布。
 - Synthetic data 會繼承 teacher 的 biases 與台灣在地知識缺口。
