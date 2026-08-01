@@ -156,6 +156,13 @@ def group_examples(
                 f"{len(augmented)} != {len(filtered)}"
             )
         return _combine(real, augmented, group=group)
+    if group.startswith("abl_"):
+        # Imported late: ablation builds on the helpers defined here, so a
+        # module-level import would be circular.
+        from src.training.ablation import ABLATION_GROUPS, ablation_examples
+
+        if group in ABLATION_GROUPS:
+            return ablation_examples(group, seed=seed, filtered_path=filtered_path)
     raise ValueError(f"Unknown training group: {group}")
 
 
