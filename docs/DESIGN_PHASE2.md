@@ -263,3 +263,19 @@ README 末尾一段 roadmap：用同一套管線做**台灣在地知識蒸餾**�
 | **R-13** | 中 | **本機過夜批次中斷**（Windows 更新、當機、手滑） | `resume_from_checkpoint` 必須先驗證過才開跑；`train_all.py` 逐組獨立，單組失敗不影響其他組 |
 | **R-14** | 低 | Colab 那一組的結果與本機不完全一致（硬體、套件版本差異） | 預期之內。`env.json` 記錄兩邊環境；比對的目的是驗證**可攜性**，不是要求逐位元一致 |
 | **R-15** | 低 | 零樣本組與訓練組的 prompt 不同（前者需附 label 清單） | 主表明確註明此差異，不假裝條件一致 |
+
+### 11.1 事後結算（2026-08-01）
+
+風險登記表寫下來就要回頭結算，否則只是儀式。以下是每一項實際發生與否：
+
+| 風險 | 實際結果 |
+|---|---|
+| R-9 Gemma 繁中底子 | **未成真。** 零樣本 baseline 確實很低（intent 10.66%、JSON-valid 17.38%），但那是未微調模型的正常表現；微調後六組都到 73–85%，沒有出現「整體偏低而噪音大」的情況，也沒有動用換回 Qwen 的退場路徑 |
+| R-10 六組協定不一致 | **未成真。** 六份 `config.snapshot.yaml` 比對一致 |
+| R-11 gap-closed 分母過小 | **未成真。** `full_real − real_only` 的 exact match 差距 11.60 個百分點，分母充裕；仍照設計同時報絕對差值 |
+| R-12 多模態塔佔 VRAM | **已處理。** 確認可只載語言塔，`load_quantized_text_model` 用 key mapping remap 多模態 checkpoint。**但這個修法後來引發新問題**：該 loader 寫死 Gemma，第二個 student family 進來時在 probe 路徑炸掉，由 M16 的 32-row smoke 抓出（見 D-020 相關 commit） |
+| R-13 過夜批次中斷 | **成真兩次，兩次都被續跑機制接住。** M15 因驅動 agent 額度用盡停在 step 107，自 `checkpoint-100` 續跑；M16 因使用者要用 GPU 而主動中止，`real_only/seed 43` 已完成的 8,922 筆在重啟時被判定 `skipped_complete` 未重跑 |
+| R-14 Colab 與本機不一致 | **如預期。** frozen config 與十個 identity fields 相同，浮點結果不要求逐位元一致 |
+| R-15 零樣本 prompt 差異 | **已處理。** README 主表明確註明零樣本使用含 label catalog 的 prompt，是 deployment baseline 而非同 prompt 的 ablation |
+
+**最有價值的一課是 R-12**：一個為了省 VRAM 的合理修法，在一年後（實際是四天後）加入第二個 model family 時變成 bug。它沒有被任何既有測試抓到，是靠「投入完整批次前先跑 32 筆 smoke」的紀律擋下來的。M16 之後 `SUPPORTED_MODEL_CLASSES` 成為明確契約並有測試走遍所有 config，同類問題會在 config 階段就失敗。
