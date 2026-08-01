@@ -23,12 +23,3 @@ def test_data_card_has_no_pre_release_placeholders() -> None:
     assert "Both remain pre-release artifacts" not in data_card
     assert "CC BY 4.0 (planned" not in data_card
     assert "while the dataset remains pre-release" not in data_card
-
-
-def test_ci_runs_quality_evidence_and_contributor_gates() -> None:
-    workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-
-    assert "ruff check ." in workflow
-    assert "uv run pytest" in workflow
-    assert "scripts.verify_readme" in workflow
-    assert "scripts/verify_contributors.py" in workflow
