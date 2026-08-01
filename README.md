@@ -513,10 +513,24 @@ python -m scripts.eval_robustness \
 python -m scripts.check_gates
 ```
 
-`scripts.check_gates` 會依序執行 `ruff`、`pytest`、`scripts.verify_readme`
-與 `scripts.verify_contributors`，任何一項失敗即以非零狀態結束。README 的
-每個數字都必須能從 `reports/` 與 `runs/` 的原始檔重算，因此**修改 README
-的數字時必須同時更新 verifier 的檢查項**，不能只改文字。
+`scripts.check_gates` 會依序執行五道檢查：`ruff`、`pytest`、
+`scripts.verify_readme`（數字可追溯性）、`scripts.verify_contributors`
+（單一作者）、`scripts.verify_reproduce`（**本文件記載的每個指令都還存在且
+參數可解析**）。任何一項失敗即以非零狀態結束。
+
+README 的每個數字都必須能從 `reports/` 與 `runs/` 的原始檔重算，因此**修改
+README 的數字時必須同時更新 verifier 的檢查項**，不能只改文字。
+
+### 這份重現流程被實際驗證過
+
+2026-08-01 從 GitHub 做了一次乾淨 clone（5.3 MB），以 `uv.lock` 建出全新環境
+（4.9 GB，`uv sync --extra demo` 成功），並確認上列 21 個 `python -m` 指令
+全部解析成功。完整報告見
+[`reports/m18_reproduce_check.md`](reports/m18_reproduce_check.md)。
+
+**未在乾淨環境中完整重跑訓練與生成**——那需要約 33 GPU 小時與本機 Ollama
+模型。驗證的是「路徑走得通、指令都在」，不是「整條管線重跑一次得到同樣數字」。
+這個界線寫在這裡，以免被讀成後者。
 
 Colab notebook
 [`notebooks/01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) 使用相同

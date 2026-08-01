@@ -50,6 +50,11 @@ def build_gates() -> list[Gate]:
             description="Sole-contributor history and identity",
             command=[python, "-m", "scripts.verify_contributors"],
         ),
+        Gate(
+            name="verify_reproduce",
+            description="Every command the README documents still resolves",
+            command=[python, "-m", "scripts.verify_reproduce"],
+        ),
     ]
 
 

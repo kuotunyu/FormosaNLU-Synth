@@ -7,7 +7,13 @@ from scripts.check_gates import build_gates
 # The CI workflow that used to enforce these is no longer tracked, so the gate
 # list itself is now the only thing standing between a regression and a push.
 # These tests exist so a gate cannot be dropped quietly.
-REQUIRED_GATES = {"ruff", "pytest", "verify_readme", "verify_contributors"}
+REQUIRED_GATES = {
+    "ruff",
+    "pytest",
+    "verify_readme",
+    "verify_contributors",
+    "verify_reproduce",
+}
 
 
 def test_every_required_gate_is_present() -> None:
@@ -15,12 +21,13 @@ def test_every_required_gate_is_present() -> None:
 
 
 def test_gates_run_in_the_documented_order() -> None:
-    """Lint first, then tests, then the two evidence audits."""
+    """Lint first, then tests, then the evidence and instruction audits."""
     assert [gate.name for gate in build_gates()] == [
         "ruff",
         "pytest",
         "verify_readme",
         "verify_contributors",
+        "verify_reproduce",
     ]
 
 
