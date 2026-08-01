@@ -11,11 +11,11 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-08-01（進行中） |
-| 完成到 | **M15 完成並收尾**；**M16 進行中**（robustness 補齊 + 文件收尾） |
+| 執行區間 | 2026-07-27 03:14–2026-08-01 09:50 +08:00 |
+| 完成到 | **M16 完成。所有本機 GPU 階段結束。** 只剩三件需要你本人執行的發佈動作 |
 | 卡住的項目 | 無 |
-| GPU 時數 | primary core 14.440 h（未變）；auxiliary 12.440 h；可追溯 local total **26.879 h** |
-| 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB。C: 現剩約 138 GB |
+| GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 19.035 h；可追溯 local total **33.475 h**；TDP 上限 15.064 kWh |
+| 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
 ### 🟢 目前不需使用者操作
@@ -54,10 +54,12 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 
 ### ➡️ 接下來的建議起點
 
-**M16 夜間批次**，授權範圍與紅線在 `docs/AUTONOMOUS_RUN.md` §11：
-robustness 補齊（Gemma seeds 43/44、Phi seeds 42–44）＋ Phi `full_real`
-post-hoc 參照組 ＋ README 升級為跨 family 主張 ＋ 資源帳本 ＋ 四個 skill ＋
-v1.1.0 release notes 草稿。
+**專案的本機工作已全部完成。** 剩下的只有下面「留給使用者」那三件發佈動作。
+
+做完之後這個專案就是完整的 v1.1.0。若之後還想推進，未實作的方向有：
+per-recipe ablation（D-004 當初為成本砍掉）、Phi `full_real` 上限組（D-019
+為原則砍掉）、以及 README 裡寫的台灣知識蒸餾 + TMMLU+ roadmap。這些都是新的
+里程碑，不是收尾項目。
 
 **留給使用者早上處理**（只有這三件，都在 deny list 裡擋著）：
 
@@ -80,7 +82,38 @@ primary runs，或 M15 的預先登記判準。
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
 
-### [2026-08-01 進行中] M16 — robustness 補齊與文件收尾
+### [2026-08-01 09:50 +08:00] M16 — 完成
+
+**GPU 全部跑完**：Gemma robustness seeds 43/44（06:32）、Phi robustness
+seeds 42–44（09:33），十二個 adapter 各 8,922/8,922，全部 rc=0。
+
+**robustness paired delta**（百分點，delta 在每個 seed 內先算再平均）：
+
+| Metric | Gemma Δ ± SD | Phi Δ ± SD |
+|---|---:|---:|
+| `intent_accuracy` | +3.63 ± 1.72 | +6.22 ± 3.46 |
+| `intent_macro_f1` | +2.11 ± 2.19 | +4.69 ± 2.73 |
+| `slot_micro_f1` | +2.75 ± 2.76 | +3.73 ± 1.23 |
+| `exact_match` | +3.58 ± 2.05 | +6.98 ± 3.29 |
+| `json_valid_rate` | +1.49 ± 2.35 | +1.83 ± 0.93 |
+
+**十項全正，但不是十個已確立的效果。** Phi 五項的 mean 都大於各自 SD；Gemma
+只有 `intent_accuracy` 與 `exact_match` 如此。這句話寫進了 README、data card、
+model card 與 release notes，四個地方一致。
+
+**附帶觀察（非預先登記）**：Phi 上 `real_syn_filtered` 的種子間變異明顯小於
+`real_only`（intent accuracy SD 1.05% 對 3.24%）——合成資料在該 family 上不只
+拉高平均，也讓訓練更穩定。
+
+**資源帳本**：`complete_all_local_gpu`、pending 清空。auxiliary 19.035 h、
+local total **33.475 h**。primary core 維持 14.440 h——凍結的比較仍然只有
+Gemma seed-42 矩陣，不因加入第二個 family 而稀釋。
+
+**`verify_readme` 54 → 78 項。** 新增的檢查把宣稱綁在原始 JSON 上：判準旗標
+必須為真、兩個 primary metric 的 CI 都必須排除零、所有表格列由原始數字重新
+格式化比對。**若結果變了，README 那些句子會讓檢查失敗，不會默默留著過期宣稱。**
+
+### [2026-08-01 02:00–09:50] M16 — 過程紀錄
 
 **已完成並 push（commits `97ddea2` → `b1b12b6`）：**
 
