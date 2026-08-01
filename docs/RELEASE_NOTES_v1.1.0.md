@@ -1,10 +1,4 @@
-# v1.1.0 — Release notes 草稿
-
-> **狀態：草稿。** 這份是給使用者直接貼進 GitHub Release 的內容。
-> ⏳ 標記處等 M16 robustness 批次跑完後補上數字。
-> **本檔不會自動發佈**——建 tag、發 Release、上傳 HF card 都是使用者的動作。
-
----
+# v1.1.0 — Release notes
 
 ## 這是一個「證據」版本，不是資料或權重版本
 
@@ -131,10 +125,9 @@ backfill 6.596 h（五個批次、十個 runs，逐批次加總而非單一時�
 
 ---
 
-## 使用者發佈步驟
+## 完整資料
 
-1. `python -m scripts.check_gates` 全綠
-2. 建 annotated tag `v1.1.0`（tagger 必須是 `kuotunyu`）
-3. 用本檔內容建 GitHub Release
-4. 上傳更新後的 `hf_cards/dataset_README.md` 與 `hf_cards/model_README.md`
-5. 複驗 GitHub Contributors 仍只有 `kuotunyu`
+- 跨 family 報告：[`reports/m15_cross_model_replication.md`](../reports/m15_cross_model_replication.md)
+- Phi paired 統計：[`reports/m15_phi4mini_paired_statistics.md`](../reports/m15_phi4mini_paired_statistics.md)
+- Robustness 逐 seed：[`reports/m16_robustness_summary_gemma.md`](../reports/m16_robustness_summary_gemma.md)、[`reports/m16_robustness_summary_phi4mini.md`](../reports/m16_robustness_summary_phi4mini.md)
+- 資源帳本：[`reports/m12_resource_ledger.json`](../reports/m12_resource_ledger.json)
