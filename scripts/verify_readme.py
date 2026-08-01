@@ -146,6 +146,22 @@ def expected_cross_model_rows(report: dict[str, Any]) -> list[str]:
     return rows
 
 
+def expected_demo_examples(evidence: dict[str, Any], utterances: list[str]) -> list[str]:
+    """Return the exact strings a worked example must reproduce.
+
+    README quotes real model output, so the utterance and the adapter's raw
+    JSON are both taken from the evidence file rather than retyped. A reworded
+    example or a hand-edited JSON blob fails this check.
+    """
+    by_utterance = {row["utterance"]: row for row in evidence["comparisons"]}
+    expected: list[str] = []
+    for utterance in utterances:
+        row = by_utterance[utterance]
+        expected.append(utterance)
+        expected.append(row["adapted"]["raw"])
+    return expected
+
+
 def expected_robustness_seed_rows(summary: dict[str, Any]) -> list[str]:
     """Return the across-seed paired-delta rows, in percentage points.
 
@@ -285,6 +301,23 @@ def verify_readme(
                     row in readme,
                 )
             )
+
+    # The worked examples are the only place README shows raw model output, so
+    # they must come from the evidence file verbatim.
+    demo_utterances = ["播放周杰倫", "台北明天會不會下雨"]
+    for expected in expected_demo_examples(m11, demo_utterances):
+        checks.append(
+            (
+                f"demo example {expected[:24]}",
+                expected in readme,
+            )
+        )
+    checks.append(
+        (
+            "demo prompt asymmetry disclosed",
+            "zero-shot" in readme and "catalog" in readme,
+        )
+    )
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
     comparisons = m11["comparisons"]

@@ -45,6 +45,51 @@ LoRA adapter 使用方式與 Gemma 4 text-tower key mapping 已完整寫在
 匿名發布稽核結果保存在
 [`reports/m13_publication.json`](reports/m13_publication.json)。
 
+## 這個模型實際在做什麼
+
+以下是**真實執行的輸出**，不是示意。同一台 RTX 4090、同一份 unconstrained
+decoding 設定，左邊是未微調的 base model，右邊是本專案的 filtered adapter。
+
+**輸入：`播放周杰倫`**
+
+```jsonc
+// base model — 意圖正確，但鍵名用了 "slot"
+{"intent": "play_music", "slots": [{"slot": "artist_name", "value": "周杰倫"}]}
+
+// filtered adapter
+{"intent":"play_music","slots":[{"type":"artist_name","value":"周杰倫"}]}
+```
+
+**輸入：`台北明天會不會下雨`**
+
+```jsonc
+// base model — 這次鍵名又變成 "name"
+{"intent": "weather_query", "slots": [{"name": "place_name", "value": "台北"}, ...]}
+
+// filtered adapter
+{"intent":"weather_query","slots":[{"type":"place_name","value":"台北"},{"type":"date","value":"明天"}]}
+```
+
+### 差別不在「懂不懂」，在「守不守得住契約」
+
+base model 產出的 intent 大致正確，slot type 也全都是合法的 MASSIVE 標籤——
+它知道這個任務。它失敗在**輸出契約**：schema 要求 `type`，它寫成 `slot`，
+而且五句裡有四句用 `slot`、一句用 `name`，**連自己都不一致**。嚴格 schema
+驗證下 base 是 **0/5**、adapter 是 **5/5**。
+
+也有語意上的修正：`明天` 在 base 被標成 `timeofday`，adapter 標成 `date`；
+`幫我寄信給小美說會晚到` 裡的「會晚到」被 base 當成 `email_folder`，adapter
+正確地不產生那個 slot。
+
+> **兩邊的 prompt 不同，這是刻意的。** base 拿到的是含合法 label catalog 的
+> zero-shot prompt（否則它不可能猜到 60 個 intent 的字串），adapter 用的是不含
+> catalog 的 frozen SFT prompt。所以這是**部署情境的比較**——實務上你會怎麼用
+> 這兩者——不是同 prompt 的受控 ablation。
+
+這五句是固定的質性示範，**不是 Test-set 成效**。原始輸出、latency 與 adapter
+tree SHA-256 保存在
+[`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
+
 ## TL;DR
 
 在 seed 42 下，將 3,760 筆 filtered synthetic corpus 加入 20-shot real
