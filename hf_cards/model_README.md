@@ -141,9 +141,10 @@ model.eval()
 - Test 來源具有翻譯語料特性，不等同所有自然台灣口語。
 - 可能輸出無效 JSON、錯誤 intent 或不在原句中的 slot value。
 - 沒有 constrained decoding；JSON-valid rate 是實測指標。
-- Robustness 已涵蓋 seeds 42–44，但五項指標中只有 intent accuracy 與 exact
-  match 的效果明顯大於 seed 間的變異；其餘三項在 `n=3` 下無法與零區分。擾動
-  是 deterministic probes，不是自然 ASR logs。
+- Robustness 已涵蓋 seeds 42–44，但**這個 Gemma adapter 所屬的 family** 五項
+  指標中只有 intent accuracy 與 exact match 的效果明顯大於 seed 間的變異；其
+  餘三項在 `n=3` 下無法與零區分。擾動是 deterministic probes，不是自然 ASR
+  logs。
 - 不適用醫療、法律、金融或安全關鍵決策。
 
 ## Training data

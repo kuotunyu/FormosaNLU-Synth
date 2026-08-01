@@ -200,10 +200,27 @@ averaged (percentage points):
 | Exact match | +3.58 | 2.05 |
 | JSON-valid rate | +1.49 | 2.35 |
 
-All five means are positive, but only two are on firm ground: intent accuracy
-and exact match have a mean clearly above their spread. For the other three the
-sample standard deviation is comparable to or larger than the mean, so at n=3
-they are not distinguishable from zero.
+The same probe was then run on Phi-4-mini for the same three seeds, using the
+identical manifest and evaluator:
+
+| Metric | Mean Δ | Sample SD |
+| --- | ---: | ---: |
+| Intent accuracy | +6.22 | 3.46 |
+| Intent macro-F1 | +4.69 | 2.73 |
+| Slot micro-F1 | +3.73 | 1.23 |
+| Exact match | +6.98 | 3.29 |
+| JSON-valid rate | +1.83 | 0.93 |
+
+All ten figures across both families are positive, but the two families are not
+equally well supported. Every Phi metric has a mean above its own sample SD.
+For Gemma only intent accuracy and exact match do; the other three have a
+sample SD comparable to or larger than the mean, so at n=3 they are not
+distinguishable from zero. Ten positive numbers is not ten established effects.
+
+A side observation, not a preregistered claim: on Phi the filtered group varies
+much less across seeds than the real-only group (intent accuracy SD 1.05%
+versus 3.24%), so the synthetic data appears to stabilise training on that
+family as well as raising the mean.
 
 The single-seed view was misleading in both directions. On seed 42 alone,
 intent macro-F1 was -0.40 and JSON-valid rate was -0.38; averaged over three
@@ -233,9 +250,9 @@ distribution.
 - Synthetic utterances are seeded from a 20-shot sample; coverage of rare intents
   and rare slot types is correspondingly thin.
 - No per-recipe ablation was run (see `docs/DECISIONS.md` D-004).
-- Robustness spans Gemma seeds 42-44, but three of its five metrics have a
-  sample SD comparable to their mean at n=3 and are not distinguishable from
-  zero; deterministic probes do not replace
+- Robustness spans both families at seeds 42-44, but three of Gemma's five
+  metrics have a sample SD comparable to their mean at n=3 and are not
+  distinguishable from zero; deterministic probes do not replace
   evaluation on natural ASR logs or code-switching corpora.
 - The pilot's cheap filters rejected 63/500 rows; one additional incomplete
   request escaped those filters and was rejected by the independent judge.

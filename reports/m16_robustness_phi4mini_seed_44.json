@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-01T01:33:11.435534+00:00",
+  "status": "complete",
+  "groups": {
+    "real_only": {
+      "schema_version": 1,
+      "created_at": "2026-08-01T00:57:56.747448+00:00",
+      "status": "complete",
+      "evaluation_mode": "trained_adapter_robustness_probe",
+      "group": "real_only",
+      "seed": 44,
+      "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m15\\phi4mini\\real_only\\seed_44\\adapter",
+      "target": 8922,
+      "completed": 8922,
+      "probe_kind_counts": {
+        "asr_noise": 2974,
+        "colloquial": 2974,
+        "lexical": 2974
+      },
+      "metrics": {
+        "samples": 8922.0,
+        "json_valid_rate": 0.9729881192557722,
+        "intent_accuracy": 0.6430172607038781,
+        "intent_macro_f1": 0.6446432696115025,
+        "slot_micro_f1": 0.5227329192546584,
+        "exact_match": 0.354180676978256
+      },
+      "metrics_by_probe_kind": {
+        "asr_noise": {
+          "samples": 2974.0,
+          "json_valid_rate": 0.9717552118359112,
+          "intent_accuracy": 0.601546738399462,
+          "intent_macro_f1": 0.6004575683331967,
+          "slot_micro_f1": 0.4870237437879624,
+          "exact_match": 0.3093476798924008
+        },
+        "colloquial": {
+          "samples": 2974.0,
+          "json_valid_rate": 0.9737726967047747,
+          "intent_accuracy": 0.6627437794216543,
+          "intent_macro_f1": 0.6649056087071983,
+          "slot_micro_f1": 0.5426269439760165,
+          "exact_match": 0.38063214525891054
+        },
+        "lexical": {
+          "samples": 2974.0,
+          "json_valid_rate": 0.9734364492266308,
+          "intent_accuracy": 0.6647612642905179,
+          "intent_macro_f1": 0.6645106339837451,
+          "slot_micro_f1": 0.5392120075046904,
+          "exact_match": 0.3725622057834566
+        }
+      },
+      "primary_test_metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.968392737054472,
+        "intent_accuracy": 0.683927370544721,
+        "intent_macro_f1": 0.6843676465386057,
+        "slot_micro_f1": 0.5601659751037344,
+        "exact_match": 0.39979825151311366
+      },
+      "delta_vs_primary_by_probe_kind": {
+        "asr_noise": {
+          "json_valid_rate": 0.00336247478143914,
+          "intent_accuracy": -0.08238063214525893,
+          "intent_macro_f1": -0.08391007820540897,
+          "slot_micro_f1": -0.07314223131577202,
+          "exact_match": -0.09045057162071285
+        },
+        "colloquial": {
+          "json_valid_rate": 0.00537995965030269,
+          "intent_accuracy": -0.02118359112306667,
+          "intent_macro_f1": -0.01946203783140743,
+          "slot_micro_f1": -0.01753903112771793,
+          "exact_match": -0.01916610625420312
+        },
+        "lexical": {
+          "json_valid_rate": 0.00504371217215871,
+          "intent_accuracy": -0.01916610625420312,
+          "intent_macro_f1": -0.01985701255486061,
+          "slot_micro_f1": -0.020953967599044,
+          "exact_match": -0.027236045729657044
+        }
+      },
+      "diagnostics": {
+        "schema_validation_error": 4,
+        "unknown_intent": 135,
+        "unknown_slot_type": 102,
+        "valid": 8681
+      },
+      "performance": {
+        "wall_seconds_sum": 1586.4086599000293,
+        "output_tokens": 191539,
+        "peak_observed_gpu_memory_mib": 5536.0
+      },
+      "evaluation_only": true
+    },
+    "real_syn_filtered": {
+      "schema_version": 1,
+      "created_at": "2026-08-01T01:33:09.771757+00:00",
+      "status": "complete",
+      "evaluation_mode": "trained_adapter_robustness_probe",
+      "group": "real_syn_filtered",
+      "seed": 44,
+      "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m15\\phi4mini\\real_syn_filtered\\seed_44\\adapter",
+      "target": 8922,
+      "completed": 8922,
+      "probe_kind_counts": {
+        "asr_noise": 2974,
+        "colloquial": 2974,
+        "lexical": 2974
+      },
+      "metrics": {
+        "samples": 8922.0,
+        "json_valid_rate": 0.9820668011656579,
+        "intent_accuracy": 0.6905402376148846,
+        "intent_macro_f1": 0.6937652022436402,
+        "slot_micro_f1": 0.562293834052271,
+        "exact_match": 0.4212060076216095
+      },
+      "metrics_by_probe_kind": {
+        "asr_noise": {
+          "samples": 2974.0,
+          "json_valid_rate": 0.98453261600538,
+          "intent_accuracy": 0.6570275722932079,
+          "intent_macro_f1": 0.6648363317219589,
+          "slot_micro_f1": 0.5340887629839471,
+          "exact_match": 0.38567585743106925
+        },
+        "colloquial": {
+          "samples": 2974.0,
+          "json_valid_rate": 0.9838601210490922,
+          "intent_accuracy": 0.7101546738399462,
+          "intent_macro_f1": 0.7112416058534927,
+          "slot_micro_f1": 0.5795606494746895,
+          "exact_match": 0.4438466711499664
+        },
+        "lexical": {
+          "samples": 2974.0,
+          "json_valid_rate": 0.9778076664425017,
+          "intent_accuracy": 0.7044384667114997,
+          "intent_macro_f1": 0.7067772006918723,
+          "slot_micro_f1": 0.5735575085976309,
+          "exact_match": 0.43409549428379285
+        }
+      },
+      "primary_test_metrics": {
+        "samples": 2974.0,
+        "json_valid_rate": 0.9828513786146604,
+        "intent_accuracy": 0.7269670477471419,
+        "intent_macro_f1": 0.7225250547405382,
+        "slot_micro_f1": 0.5813549507817024,
+        "exact_match": 0.4546065904505716
+      },
+      "delta_vs_primary_by_probe_kind": {
+        "asr_noise": {
+          "json_valid_rate": 0.00168123739071957,
+          "intent_accuracy": -0.06993947545393409,
+          "intent_macro_f1": -0.0576887230185793,
+          "slot_micro_f1": -0.047266187797755266,
+          "exact_match": -0.06893073301950237
+        },
+        "colloquial": {
+          "json_valid_rate": 0.0010087424344317197,
+          "intent_accuracy": -0.0168123739071957,
+          "intent_macro_f1": -0.011283448887045466,
+          "slot_micro_f1": -0.0017943013070128577,
+          "exact_match": -0.010759919300605214
+        },
+        "lexical": {
+          "json_valid_rate": -0.00504371217215871,
+          "intent_accuracy": -0.02252858103564226,
+          "intent_macro_f1": -0.015747854048665855,
+          "slot_micro_f1": -0.0077974421840715236,
+          "exact_match": -0.020511096166778764
+        }
+      },
+      "diagnostics": {
+        "unknown_intent": 69,
+        "unknown_slot_type": 91,
+        "valid": 8762
+      },
+      "performance": {
+        "wall_seconds_sum": 2072.784397599942,
+        "output_tokens": 187047,
+        "peak_observed_gpu_memory_mib": 5391.0
+      },
+      "evaluation_only": true
+    }
+  },
+  "missing_groups": [],
+  "evaluation_only": true
+}

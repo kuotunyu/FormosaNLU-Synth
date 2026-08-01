@@ -58,12 +58,31 @@ revision `cfbefacb99257ffa30c83adab238a50856ac3083`）重跑一次三種子 pair
 
 ## Robustness 擴充
 
-⏳ **待 M16 批次完成後補上。** 預計涵蓋：
+v1.0.0 的 robustness 只有 Gemma 的 seed 42 兩個 adapter。現在是**兩個 family
+× 三個 seed × 兩組，共十二個 adapter**，全部使用既有的 frozen 8,922-row
+probe，evaluation-only，不回流訓練。
 
-- Gemma robustness 從只有 seed 42 擴充到 seeds 42–44
-- Phi robustness seeds 42–44（v1.0.0 完全沒有）
+Paired delta（filtered − real_only，百分點，delta 在每個 seed 內先算再平均）：
 
-兩者都使用既有的 frozen 8,922-row probe，evaluation-only，不回流訓練。
+| Metric | Gemma Δ ± SD | Phi Δ ± SD |
+| --- | ---: | ---: |
+| `intent_accuracy` | +3.63 ± 1.72 | +6.22 ± 3.46 |
+| `intent_macro_f1` | +2.11 ± 2.19 | +4.69 ± 2.73 |
+| `slot_micro_f1` | +2.75 ± 2.76 | +3.73 ± 1.23 |
+| `exact_match` | +3.58 ± 2.05 | +6.98 ± 3.29 |
+| `json_valid_rate` | +1.49 ± 2.35 | +1.83 ± 0.93 |
+
+**十項全部為正，但不要讀成十個結果。** Phi 的五項 mean 都大於各自的 sample
+SD；Gemma 只有 `intent_accuracy` 與 `exact_match` 如此，其餘三項在 `n=3` 下
+無法與零區分。
+
+**單一 seed 會誤導。** Gemma 只看 seed 42 時，`intent_macro_f1` 是 −0.40、
+`json_valid_rate` 是 −0.38（兩項皆負）；補到三個 seed 後平均都轉正。v1.0.0
+的 README 只列了正向的三項——沒有寫錯，但不完整；現在五項全列。
+
+**附帶觀察（非預先登記）**：Phi 上 `real_syn_filtered` 的種子間變異明顯小於
+`real_only`（intent accuracy SD 1.05% 對 3.24%），合成資料在該 family 上似乎
+也讓訓練更穩定。
 
 ---
 
@@ -71,10 +90,15 @@ revision `cfbefacb99257ffa30c83adab238a50856ac3083`）重跑一次三種子 pair
 
 | 項目 | v1.0.0 | v1.1.0 |
 | --- | ---: | ---: |
-| Primary core | 14.440 h | 14.440 h（未變） |
-| Auxiliary | 8.685 h | 12.440 h ⏳ |
-| 可追溯 local total | 23.124 h | 26.879 h ⏳ |
+| Primary core | 14.440 h | **14.440 h（刻意未變）** |
+| Auxiliary | 8.685 h | 19.035 h |
+| 可追溯 local total | 23.124 h | **33.475 h** |
+| TDP 上限包絡 | 10.406 kWh | 15.064 kWh |
 | API 花費 | $0 | $0 |
+
+新增的 10.35 小時分別是：M15 的 Phi 訓練與評估 3.755 h、M16 的 robustness
+backfill 6.596 h（五個批次、十個 runs，逐批次加總而非單一時間窗，避免把批次
+之間的閒置計為 GPU 時間）。
 
 **primary core 刻意維持不變**：凍結的比較仍然只有 Gemma seed-42 矩陣，加入
 第二個 student family 不應該稀釋它。M15 全部計入 auxiliary。

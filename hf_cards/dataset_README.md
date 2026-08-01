@@ -117,6 +117,17 @@ bootstrap 後，intent accuracy 的平均提升為 +4.14 個百分點（95% CI
 跨越零），Phi 的 `exact_match_seed_42` 在 Holm 校正後 `p = 0.141` 不顯著。
 兩者都不在預先登記的判準內。
 
+同樣的複製在 **robustness probe** 上也成立。以 8,922 筆擾動 probe、兩個 family
+各三個 seed 評測，paired delta（百分點）：
+
+| Metric | Gemma Δ ± SD | Phi Δ ± SD |
+| --- | ---: | ---: |
+| Intent accuracy | +3.63 ± 1.72 | +6.22 ± 3.46 |
+| Exact match | +3.58 ± 2.05 | +6.98 ± 3.29 |
+
+十項全部為正，但強度不同：Phi 的五項 mean 都大於各自的 SD，Gemma 只有這兩項
+如此。**十個正數不等於十個已確立的效果。**
+
 **範圍**：兩個 family、一份 frozen dataset、一種 training contract；兩個
 family 分別彙總、不 pooling，不宣稱推廣到其他 dataset、任務或任意 model。
 

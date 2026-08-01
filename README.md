@@ -239,16 +239,16 @@ Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
 | Robustness probe inference（auxiliary） | **2.102 h** | 兩組 × 8,922-row evaluation-only runs |
 | M15 Phi-4-mini training（auxiliary） | **2.718 h** | 兩組 × 三種子，共六個 runs |
 | M15 Phi-4-mini evaluation（auxiliary） | **1.037 h** | 六個完整 2,974-row Test runs |
-| M16 robustness backfill（auxiliary） | **3.616 h** | 逐批次加總，非單一時間窗 |
-| **Measured auxiliary subtotal** | **16.055 h** | F7 + M11 + extra seeds + robustness + M15 + M16 |
-| **可追溯 local total** | **30.495 h** | 所有本機 GPU 階段 |
+| M16 robustness backfill（auxiliary） | **6.596 h** | 五個批次、十個 runs；逐批次加總，非單一時間窗 |
+| **Measured auxiliary subtotal** | **19.035 h** | F7 + M11 + extra seeds + robustness + M15 + M16 |
+| **可追溯 local total** | **33.475 h** | 所有本機 GPU 階段 |
 | **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
 M15 屬於 auxiliary：primary core 的 14.440 h 仍然只涵蓋凍結的 Gemma seed-42
 比較，不因為加入第二個 student family 而改變。
 
 若以 RTX 4090 的 450 W TDP 計算，primary core 14.440 小時對應
-6.498 kWh、local total 30.495 小時對應 13.723 kWh 的保守
+6.498 kWh、local total 33.475 小時對應 15.064 kWh 的保守
 GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以
 TDP 運作。
 
@@ -264,13 +264,15 @@ python -m scripts.verify_readme
 ## Robustness probe
 
 Auxiliary perturbation manifest 含 8,922 筆 rows，涵蓋 typo、code-switching
-與 ASR-like noise。`real_only` 與 `real_syn_filtered` 的 **seeds 42–44 共六個
-Gemma adapters** 各完成 8,922-row inference；它是 auxiliary evaluation，不取代
-untouched Test 的 headline table，也不回流 training。
+與 ASR-like noise。`real_only` 與 `real_syn_filtered` 在 **seeds 42–44、兩個
+student family 共十二個 adapters** 上各完成 8,922-row inference；它是 auxiliary
+evaluation，不取代 untouched Test 的 headline table，也不回流 training。
 
 ### 三種子 paired delta
 
 delta 在**每個 seed 內先計算再平均**，保留同資料訓練出的 adapter 之間的配對。
+
+**Gemma 4 E4B**（seeds 42–44）
 
 | Metric | Mean Δ（百分點） | Sample SD |
 | --- | ---: | ---: |
@@ -280,15 +282,32 @@ delta 在**每個 seed 內先計算再平均**，保留同資料訓練出的 ada
 | `exact_match` | +3.58 | 2.05 |
 | `json_valid_rate` | +1.49 | 2.35 |
 
-**五項的平均都是正的，但只有兩項站得住腳。** `intent_accuracy` 與
-`exact_match` 的 mean 明顯大於 sample SD；其餘三項的 SD 與 mean 相當甚至更大，
-在 `n=3` 下**無法與零區分**，不應被當成已確立的效果。
+**Phi-4-mini**（seeds 42–44，同一份 probe 與 evaluator）
 
-**單一 seed 的畫面在兩個方向上都會誤導。** 只看 seed 42 時，
+| Metric | Mean Δ（百分點） | Sample SD |
+| --- | ---: | ---: |
+| `intent_accuracy` | +6.22 | 3.46 |
+| `intent_macro_f1` | +4.69 | 2.73 |
+| `slot_micro_f1` | +3.73 | 1.23 |
+| `exact_match` | +6.98 | 3.29 |
+| `json_valid_rate` | +1.83 | 0.93 |
+
+**兩個 family 的十項全部為正。** 但兩者的證據強度不同：Phi 的五項 mean 都大於
+各自的 sample SD；Gemma 只有 `intent_accuracy` 與 `exact_match` 兩項如此，其餘
+三項的 SD 與 mean 相當甚至更大，在 `n=3` 下**無法與零區分**，不應被當成已確立
+的效果。
+
+另一個附帶觀察：Phi 的 `real_syn_filtered` 在種子間的變異明顯小於 `real_only`
+（例如 intent accuracy 的 SD 為 1.05% 對 3.24%）。合成資料不只是把平均拉高，
+在這個 family 上也讓不同 seed 的結果更穩定。這是觀察，不是預先登記的宣稱。
+
+**單一 seed 的畫面在兩個方向上都會誤導。** Gemma 只看 seed 42 時，
 `intent_macro_f1` 為 **−0.40**、`json_valid_rate` 為 **−0.38**（兩項皆為負）；
 補到三個 seed 後兩者的平均都轉正。這也是為什麼上表五項全列，而不是只挑正向的
 三項。完整逐 seed 數字見
-[`reports/m16_robustness_summary_gemma.md`](reports/m16_robustness_summary_gemma.md)。
+[`reports/m16_robustness_summary_gemma.md`](reports/m16_robustness_summary_gemma.md)
+與
+[`reports/m16_robustness_summary_phi4mini.md`](reports/m16_robustness_summary_phi4mini.md)。
 
 ### Seed-42 的逐 probe 拆解
 
@@ -453,9 +472,10 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
   登記的判準內，但一併列出。
 - F7 independent judge audit 已完成 376/376；random stratum 的觀察漏檢率
   為 6.0%，但樣本僅 50 筆，95% interval 很寬。
-- Robustness 已涵蓋 Gemma seeds 42–44，但三項指標（`intent_macro_f1`、
-  `slot_micro_f1`、`json_valid_rate`）的 sample SD 與 mean 相當，`n=3` 下無法
-  與零區分；只有 `intent_accuracy` 與 `exact_match` 的效果較穩固。
+- Robustness 已涵蓋兩個 family 的 seeds 42–44。Phi 的五項 mean 都大於各自的
+  sample SD，但 **Gemma 只有兩項如此**——`intent_macro_f1`、`slot_micro_f1` 與
+  `json_valid_rate` 在 `n=3` 下無法與零區分。「十項全正」不等於「十項都是已確
+  立的效果」。
 - 三種擾動是 deterministic probes，尚未涵蓋真實 ASR log 或自然 code-switching
   corpus。
 - M11 的五句 real-runtime comparison 只證明 demo contract 與 adapter 可實際
