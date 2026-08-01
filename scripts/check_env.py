@@ -124,13 +124,28 @@ def _external_env_check() -> Check:
 
 
 def _git_identity_check() -> Check:
+    """Report the repo-local commit identity without blocking a fresh clone.
+
+    Sole contributorship is enforced by scripts/verify_contributors, which
+    audits the commit history and runs as a pre-push gate. Requiring a matching
+    local identity here would make the first documented step of the
+    reproduction fail for everyone who is not the author, which is the wrong
+    trade: the identity matters for committing to this repository, not for
+    running the pipeline.
+    """
     name_result = _command("git", "config", "--local", "--get", "user.name")
     email_result = _command("git", "config", "--local", "--get", "user.email")
     name = name_result.stdout.strip() if name_result and name_result.returncode == 0 else ""
     email = email_result.stdout.strip() if email_result and email_result.returncode == 0 else ""
-    valid = name == "kuotunyu" and bool(email)
-    detail = f"{name or '<unset>'} <{email or 'unset'}>"
-    return Check("git_identity", "pass" if valid else "fail", detail)
+    if name == "kuotunyu" and email:
+        return Check("git_identity", "pass", f"{name} <{email}>", required=False)
+    observed = f"{name or '<unset>'} <{email or 'unset'}>"
+    detail = (
+        f"{observed}; fine for reproducing. Committing to this repository "
+        "additionally requires the maintainer identity, which "
+        "verify_contributors enforces."
+    )
+    return Check("git_identity", "warn", detail, required=False)
 
 
 def run_checks() -> list[Check]:
