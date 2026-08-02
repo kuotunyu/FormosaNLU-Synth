@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import sys
 
-from scripts.check_gates import build_gates
+import pytest
+
+from scripts.check_gates import Gate, build_gates, run_gates
 
 # The CI workflow that used to enforce these is no longer tracked, so the gate
 # list itself is now the only thing standing between a regression and a push.
@@ -41,3 +43,16 @@ def test_gates_use_the_current_interpreter() -> None:
 def test_every_gate_is_described() -> None:
     for gate in build_gates():
         assert gate.description.strip()
+
+
+@pytest.mark.filterwarnings("error::pytest.PytestUnhandledThreadExceptionWarning")
+def test_quiet_gate_output_is_decoded_as_utf8(monkeypatch) -> None:
+    """UTF-8 child output must not be decoded with the Windows ANSI code page."""
+    gate = Gate(
+        name="unicode",
+        description="Emit UTF-8 outside cp950",
+        command=[sys.executable, "-c", "print('🚀正體中文')"],
+    )
+    monkeypatch.setattr("scripts.check_gates.build_gates", lambda: [gate])
+
+    assert run_gates(quiet=True) == [(gate, 0)]

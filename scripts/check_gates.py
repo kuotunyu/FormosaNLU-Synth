@@ -71,6 +71,7 @@ def run_gates(*, quiet: bool = False) -> list[tuple[Gate, int]]:
             check=False,
             capture_output=quiet,
             text=True,
+            encoding="utf-8",
         )
         if quiet and completed.returncode != 0:
             # Only surface output for the gate that actually failed.

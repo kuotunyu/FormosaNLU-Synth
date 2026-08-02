@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import statistics
 import subprocess
 import sys
@@ -46,9 +47,12 @@ class Check:
 
 
 def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
+    environment = os.environ.copy()
+    environment["PYTHONUTF8"] = "1"
     return subprocess.run(
         command,
         cwd=REPO_ROOT,
+        env=environment,
         check=False,
         capture_output=True,
         text=True,

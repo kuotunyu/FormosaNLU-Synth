@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 
 from scripts.release_preflight import (
     EXPECTED_DEMO_UTTERANCES,
@@ -11,6 +12,7 @@ from scripts.release_preflight import (
     _m11_evidence_status,
     _replicate_summary_status,
     _robustness_status,
+    _run,
     _sha256,
     _three_value_summary,
     _tree_sha256,
@@ -28,6 +30,21 @@ def test_json_status_handles_missing_invalid_and_status(tmp_path) -> None:
     assert _json_status(missing) == "missing"
     assert _json_status(invalid) == "invalid"
     assert _json_status(complete) == "complete"
+
+
+def test_subprocess_runner_forces_utf8_child_output(monkeypatch) -> None:
+    """The UTF-8 decoder requires the child process to emit UTF-8 too."""
+    monkeypatch.setenv("PYTHONUTF8", "0")
+    result = _run(
+        [
+            sys.executable,
+            "-c",
+            "import sys; print(sys.flags.utf8_mode); print('正體中文')",
+        ]
+    )
+
+    assert result.returncode == 0
+    assert result.stdout.splitlines() == ["1", "正體中文"]
 
 
 def test_markdown_marks_nonblocking_failure_as_info() -> None:
