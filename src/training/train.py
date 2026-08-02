@@ -144,7 +144,10 @@ def train_group(
     quantization = config["quantization"]
     lora = config["lora"]
     if group not in config["groups"]:
-        raise ValueError(f"Unknown training group: {group}")
+        from src.training.ablation import ABLATION_GROUPS
+
+        if group not in ABLATION_GROUPS:
+            raise ValueError(f"Unknown training group: {group}")
     run_seed = int(training["seed"] if seed is None else seed)
     if max_steps_override is not None and not smoke_test:
         raise ValueError("max_steps_override is restricted to smoke tests")

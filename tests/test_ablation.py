@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 import pytest
+import yaml
 
 from src.training.ablation import (
     ABLATION_GROUPS,
@@ -15,6 +16,7 @@ from src.training.ablation import (
     recipe_by_row_id,
     recipe_counts,
 )
+from src.training.train import DEFAULT_CONFIG, load_train_config, train_group
 
 
 def test_group_set_is_the_control_plus_one_per_recipe() -> None:
@@ -26,6 +28,27 @@ def test_group_set_is_the_control_plus_one_per_recipe() -> None:
 def test_unknown_group_is_rejected() -> None:
     with pytest.raises(ValueError, match="Unknown ablation group"):
         ablation_examples("abl_no_nonexistent_recipe")
+
+
+def test_training_entry_accepts_preregistered_ablation_group(tmp_path) -> None:
+    """M19 groups must pass the training entry point's group validation."""
+    config = load_train_config(DEFAULT_CONFIG)
+    config["model"]["local_path"] = "definitely-missing-model"
+    config_path = tmp_path / "train.yaml"
+    config_path.write_text(
+        yaml.safe_dump(config, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(FileNotFoundError, match="Local model is missing"):
+        train_group(
+            group=CONTROL_GROUP,
+            config_path=config_path,
+            output_dir=tmp_path / "run",
+            smoke_test=False,
+            resume=False,
+            seed=42,
+        )
 
 
 def test_plan_mismatch_is_an_error_not_a_silent_relabel(tmp_path) -> None:
