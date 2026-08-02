@@ -37,6 +37,7 @@ def test_resource_ledger_uses_measured_phase_times() -> None:
         "two 8,922-row robustness probe evaluations",
         "M15 Phi-4-mini training runs",
         "M15 Phi-4-mini evaluations",
+        "M19 equal-N per-recipe ablation",
     ]
 
 
@@ -101,15 +102,66 @@ def test_resource_ledger_adds_completed_auxiliary_phases() -> None:
             "finished_at": "2026-01-01T07:00:00+00:00",
             "runs": [{}, {}],
         },
+        m19_batch={"status": "complete", "runs": [{"status": "completed"}] * 5},
+        m19_training_reports=[
+            {"status": "completed", "metrics": {"train_runtime": 360.0}}
+            for _ in range(5)
+        ],
+        m19_evaluation_reports=[
+            {
+                "evaluation_mode": "trained_adapter",
+                "completed": 2_974,
+                "target": 2_974,
+                "wall_seconds": 360.0,
+            }
+            for _ in range(5)
+        ],
     )
     assert ledger["status"] == "complete_all_local_gpu"
     assert ledger["pending"] == []
     # The second student family is auxiliary, so the frozen primary core must
     # not move when M15 is folded in.
     assert ledger["measured_core_gpu_hours"] == 4.0
-    assert ledger["measured_auxiliary_gpu_hours"] == 6.0
-    assert ledger["measured_total_local_gpu_hours"] == 10.0
-    assert ledger["gpu_tdp_total_energy_upper_bound_kwh"] == 4.5
+    assert ledger["measured_auxiliary_gpu_hours"] == 7.0
+    assert ledger["measured_total_local_gpu_hours"] == 11.0
+    assert ledger["gpu_tdp_total_energy_upper_bound_kwh"] == 4.95
+
+
+def test_resource_ledger_uses_measured_m19_training_and_evaluation_times() -> None:
+    ledger = build_resource_ledger(
+        generation={"generation": {"wall_seconds": 0}},
+        training={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        evaluation={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        zero_shot={"wall_seconds": 0},
+        m19_batch={"status": "complete", "runs": [{"status": "completed"}] * 5},
+        m19_training_reports=[
+            {"status": "completed", "metrics": {"train_runtime": 360.0}}
+            for _ in range(5)
+        ],
+        m19_evaluation_reports=[
+            {
+                "evaluation_mode": "trained_adapter",
+                "completed": 2_974,
+                "target": 2_974,
+                "wall_seconds": 360.0,
+            }
+            for _ in range(5)
+        ],
+    )
+
+    phase = ledger["phases"]["m19_equal_n_recipe_ablation"]
+    assert phase["wall_hours"] == 1.0
+    assert phase["training_runs"] == 5
+    assert phase["evaluation_rows"] == 14_870
+    assert phase["basis"].startswith("summed runs/m19/*/seed_42/run_report.json")
 
 
 def test_robustness_backfill_sums_batches_rather_than_spanning_them() -> None:

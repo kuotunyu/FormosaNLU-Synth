@@ -31,6 +31,7 @@ M15_TRAINING_REPORT = REPO_ROOT / "runs" / "m15" / "phi4mini" / "training_batch.
 M15_EVALUATION_REPORT = (
     REPO_ROOT / "results" / "m15" / "phi4mini" / "evaluation_batch.json"
 )
+M19_BATCH_REPORT = REPO_ROOT / "runs" / "m19" / "batch_report.json"
 RESOURCE_REPORT = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 ASSET_DIR = REPO_ROOT / "assets"
 
@@ -73,6 +74,9 @@ def build_resource_ledger(
     m15_training: dict[str, Any] | None = None,
     m15_evaluation: dict[str, Any] | None = None,
     robustness_backfill: list[dict[str, Any]] | None = None,
+    m19_batch: dict[str, Any] | None = None,
+    m19_training_reports: list[dict[str, Any]] | None = None,
+    m19_evaluation_reports: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Summarize measured wall times without converting them into cloud costs."""
     generation_hours = float(generation["generation"]["wall_seconds"]) / 3600
@@ -255,6 +259,49 @@ def build_resource_ledger(
         robustness_backfill
     ):
         pending.append("M16 robustness backfill batches")
+
+    completed_m19 = (
+        m19_batch is not None
+        and m19_batch.get("status") == "complete"
+        and len(m19_batch.get("runs", [])) == 5
+        and all(run.get("status") == "completed" for run in m19_batch["runs"])
+        and len(m19_training_reports or []) == 5
+        and all(
+            report.get("status") == "completed"
+            and report.get("metrics", {}).get("train_runtime") is not None
+            for report in (m19_training_reports or [])
+        )
+        and len(m19_evaluation_reports or []) == 5
+        and all(
+            report.get("evaluation_mode") == "trained_adapter"
+            and report.get("completed") == report.get("target") == 2_974
+            and report.get("wall_seconds") is not None
+            for report in (m19_evaluation_reports or [])
+        )
+    )
+    if completed_m19:
+        train_seconds = sum(
+            float(report["metrics"]["train_runtime"])
+            for report in (m19_training_reports or [])
+        )
+        eval_seconds = sum(
+            float(report["wall_seconds"])
+            for report in (m19_evaluation_reports or [])
+        )
+        hours = (train_seconds + eval_seconds) / 3600
+        auxiliary_hours += hours
+        phases["m19_equal_n_recipe_ablation"] = {
+            "wall_hours": hours,
+            "training_runs": 5,
+            "evaluation_runs": 5,
+            "evaluation_rows": 5 * 2_974,
+            "basis": (
+                "summed runs/m19/*/seed_42/run_report.json metrics.train_runtime "
+                "and reports/m19/*_seed_42.json wall_seconds"
+            ),
+        }
+    else:
+        pending.append("M19 equal-N per-recipe ablation")
 
     total_hours = measured_gpu_hours + auxiliary_hours
     return {
@@ -538,6 +585,15 @@ def main() -> int:
         _load(path)
         for path in sorted((REPO_ROOT / "results").glob("m16_robustness_batch_*.json"))
     ]
+    m19_batch = _load_optional(M19_BATCH_REPORT)
+    m19_training_reports = [
+        _load(path)
+        for path in sorted((REPO_ROOT / "runs" / "m19").glob("*/seed_42/run_report.json"))
+    ]
+    m19_evaluation_reports = [
+        _load(path)
+        for path in sorted((REPO_ROOT / "reports" / "m19").glob("*_seed_42.json"))
+    ]
     ledger = build_resource_ledger(
         generation=generation,
         training=training,
@@ -551,6 +607,9 @@ def main() -> int:
         m15_training=m15_training,
         m15_evaluation=m15_evaluation,
         robustness_backfill=robustness_backfill or None,
+        m19_batch=m19_batch,
+        m19_training_reports=m19_training_reports or None,
+        m19_evaluation_reports=m19_evaluation_reports or None,
     )
     args.resource_report.write_text(
         json.dumps(ledger, ensure_ascii=False, indent=2) + "\n",
