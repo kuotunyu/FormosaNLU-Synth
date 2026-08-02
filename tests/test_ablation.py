@@ -5,6 +5,7 @@ import json
 import pytest
 import yaml
 
+from scripts import m19_ablation
 from src.training.ablation import (
     ABLATION_GROUPS,
     CONTROL_GROUP,
@@ -49,6 +50,32 @@ def test_training_entry_accepts_preregistered_ablation_group(tmp_path) -> None:
             resume=False,
             seed=42,
         )
+
+
+def test_m19_accepts_the_real_completed_evaluation_report_schema(
+    tmp_path, monkeypatch
+) -> None:
+    """run_adapter reports completion through completed/target, not status."""
+    report = tmp_path / "report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "evaluation_mode": "trained_adapter",
+                "group": CONTROL_GROUP,
+                "seed": 42,
+                "completed": 2_974,
+                "target": 2_974,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        m19_ablation,
+        "eval_paths",
+        lambda group: {"report_json": report},
+    )
+
+    assert m19_ablation._eval_complete(CONTROL_GROUP)
 
 
 def test_plan_mismatch_is_an_error_not_a_silent_relabel(tmp_path) -> None:

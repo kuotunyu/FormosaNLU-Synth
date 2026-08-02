@@ -52,7 +52,12 @@ def _eval_complete(group: str) -> bool:
     if not report.is_file():
         return False
     payload = json.loads(report.read_text(encoding="utf-8"))
-    return payload.get("status") == "complete" and payload.get("completed") == 2_974
+    return (
+        payload.get("evaluation_mode") == "trained_adapter"
+        and payload.get("group") == group
+        and payload.get("seed") == SEED
+        and payload.get("completed") == payload.get("target") == 2_974
+    )
 
 
 def _train_complete(group: str) -> bool:
