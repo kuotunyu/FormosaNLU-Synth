@@ -19,6 +19,7 @@ M16_ROBUSTNESS_SEEDS = {
     "gemma": REPO_ROOT / "reports" / "m16_robustness_summary_gemma.json",
     "phi4mini": REPO_ROOT / "reports" / "m16_robustness_summary_phi4mini.json",
 }
+M19_ABLATION = REPO_ROOT / "reports" / "m19_ablation.json"
 GENERATION = REPO_ROOT / "reports" / "generation_report.json"
 RESOURCES = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 M11 = REPO_ROOT / "reports" / "m11_demo_evidence.json"
@@ -176,6 +177,25 @@ def expected_robustness_seed_rows(summary: dict[str, Any]) -> list[str]:
     return rows
 
 
+def expected_ablation_rows(report: dict[str, Any]) -> list[str]:
+    """Return the M19 equal-N rows exactly as README must reproduce them."""
+    rows = []
+    for item in report["groups"]:
+        metrics = item["metrics"]
+        excluded = item["excluded_recipe"] or "— (equal-N control)"
+        mark = "yes" if item["detectable_on_exact_match"] else "no"
+        rows.append(
+            f"| `{item['group']}` | `{excluded}` | "
+            f"{metrics['intent_accuracy']:.2%} | "
+            f"{metrics['intent_macro_f1']:.2%} | "
+            f"{metrics['slot_micro_f1']:.2%} | "
+            f"{metrics['exact_match']:.2%} | "
+            f"{item['delta_vs_control_percentage_points']['exact_match']:+.2f} | "
+            f"{metrics['json_valid_rate']:.2%} | {mark} |"
+        )
+    return rows
+
+
 def verify_readme(
     *,
     readme: str,
@@ -189,6 +209,7 @@ def verify_readme(
     paired: dict[str, Any] | None = None,
     cross_model: dict[str, Any] | None = None,
     robustness_seeds: dict[str, dict[str, Any]] | None = None,
+    ablation: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
     for expected in expected_main_rows(m10):
@@ -300,6 +321,36 @@ def verify_readme(
                     f"robustness seed row {target} {row.split('|')[1].strip()}",
                     row in readme,
                 )
+            )
+
+    if ablation is not None:
+        checks.append(("M19 ablation complete", ablation.get("status") == "complete"))
+        checks.append(
+            (
+                "M19 single-seed scope disclosed",
+                "seed 42（n=1）" in readme,
+            )
+        )
+        checks.append(
+            (
+                "M19 detectability threshold disclosed",
+                (
+                    f"{ablation['detectability_threshold_percentage_points']:.1f} "
+                    "percentage points"
+                )
+                in readme,
+            )
+        )
+        checks.append(
+            (
+                "M19 no recipe-level causal claim",
+                ablation.get("causal_claim_allowed") is False
+                and "不做單一 recipe 的 causal claim" in readme,
+            )
+        )
+        for expected in expected_ablation_rows(ablation):
+            checks.append(
+                (f"M19 row {expected.split('|')[1].strip()}", expected in readme)
             )
 
     # The worked examples are the only place README shows raw model output, so
@@ -418,6 +469,7 @@ def main() -> int:
             if path.is_file()
         }
         or None,
+        ablation=_load(M19_ABLATION) if M19_ABLATION.is_file() else None,
     )
     print(f"README verification passed: {len(checks)} reproducible checks")
     for check in checks:

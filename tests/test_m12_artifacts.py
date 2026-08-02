@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from scripts.build_m12_artifacts import build_resource_ledger
 from scripts.verify_readme import (
+    expected_ablation_rows,
     expected_main_rows,
     expected_paired_markers,
     expected_publication_markers,
@@ -285,6 +286,31 @@ def test_expected_readme_row_is_formatted_from_metrics() -> None:
     )
 
     assert rows == ["| `real_only` | 20-shot real | 73.54% | 75.20% | 62.14% | 49.06% | 98.02% |"]
+
+
+def test_expected_ablation_row_is_formatted_from_report() -> None:
+    report = {
+        "groups": [
+            {
+                "group": "abl_no_paraphrase",
+                "excluded_recipe": "paraphrase",
+                "metrics": {
+                    "intent_accuracy": 0.75,
+                    "intent_macro_f1": 0.74,
+                    "slot_micro_f1": 0.63,
+                    "exact_match": 0.47,
+                    "json_valid_rate": 0.97,
+                },
+                "delta_vs_control_percentage_points": {"exact_match": -3.0},
+                "detectable_on_exact_match": True,
+            }
+        ]
+    }
+
+    assert expected_ablation_rows(report) == [
+        "| `abl_no_paraphrase` | `paraphrase` | 75.00% | 74.00% | "
+        "63.00% | 47.00% | -3.00 | 97.00% | yes |"
+    ]
 
 
 def test_expected_replicate_row_is_formatted_from_summary() -> None:
