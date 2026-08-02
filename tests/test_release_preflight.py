@@ -10,6 +10,7 @@ from scripts.release_preflight import (
     _f7_release_status,
     _json_status,
     _m11_evidence_status,
+    _m19_ablation_status,
     _replicate_summary_status,
     _robustness_status,
     _run,
@@ -30,6 +31,34 @@ def test_json_status_handles_missing_invalid_and_status(tmp_path) -> None:
     assert _json_status(missing) == "missing"
     assert _json_status(invalid) == "invalid"
     assert _json_status(complete) == "complete"
+
+
+def test_m19_release_status_requires_five_noncausal_equal_n_groups(tmp_path) -> None:
+    report = tmp_path / "m19.json"
+    payload = {
+        "status": "complete",
+        "seed": 42,
+        "equal_n_synthetic_rows": 2_246,
+        "evaluation_rows_per_group": 2_974,
+        "detectability_threshold_percentage_points": 2.5,
+        "causal_claim_allowed": False,
+        "groups": [
+            {"group": group}
+            for group in (
+                "abl_all_eqn",
+                "abl_no_paraphrase",
+                "abl_no_slot_substitution",
+                "abl_no_noise_codeswitch",
+                "abl_no_hard_negative",
+            )
+        ],
+    }
+    report.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert _m19_ablation_status(report) == "complete"
+    payload["causal_claim_allowed"] = True
+    report.write_text(json.dumps(payload), encoding="utf-8")
+    assert _m19_ablation_status(report) == "causal_claim_not_blocked"
 
 
 def test_subprocess_runner_forces_utf8_child_output(monkeypatch) -> None:

@@ -73,6 +73,41 @@ def _json_status(path: Path) -> str:
         return "invalid"
 
 
+EXPECTED_M19_GROUPS = {
+    "abl_all_eqn",
+    "abl_no_paraphrase",
+    "abl_no_slot_substitution",
+    "abl_no_noise_codeswitch",
+    "abl_no_hard_negative",
+}
+
+
+def _m19_ablation_status(path: Path) -> str:
+    """Validate the frozen M19 aggregate before a v1.2.0 release."""
+    if not path.is_file():
+        return "missing"
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return "invalid"
+    if report.get("status") != "complete":
+        return str(report.get("status"))
+    if report.get("seed") != 42:
+        return "seed_mismatch"
+    if report.get("equal_n_synthetic_rows") != 2_246:
+        return "equal_n_mismatch"
+    if report.get("evaluation_rows_per_group") != 2_974:
+        return "evaluation_rows_mismatch"
+    if report.get("detectability_threshold_percentage_points") != 2.5:
+        return "detectability_threshold_mismatch"
+    if report.get("causal_claim_allowed") is not False:
+        return "causal_claim_not_blocked"
+    groups = {row.get("group") for row in report.get("groups", [])}
+    if groups != EXPECTED_M19_GROUPS or len(report.get("groups", [])) != 5:
+        return "group_set_mismatch"
+    return "complete"
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -454,6 +489,7 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
         REPO_ROOT / "reports" / "m9_replicate_summary.json"
     )
     robustness = _robustness_status(REPO_ROOT / "reports" / "m10_robustness.json")
+    m19_ablation = _m19_ablation_status(REPO_ROOT / "reports" / "m19_ablation.json")
 
     checks = [
         Check(
@@ -528,6 +564,15 @@ def collect_checks(*, run_slow_checks: bool = True) -> list[Check]:
             m11_evidence == "complete",
             m11_evidence,
             "five real base-versus-adapter rows and adapter hash match",
+        ),
+        Check(
+            "m19_equal_n_ablation",
+            m19_ablation == "complete",
+            m19_ablation,
+            (
+                "five seed-42 equal-N groups complete with the preregistered "
+                "2.5 pp detectability limit and no recipe-level causal claim"
+            ),
         ),
         Check(
             "colab_portability",
