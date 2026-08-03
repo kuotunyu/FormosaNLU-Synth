@@ -306,11 +306,11 @@ git add -- docs/superpowers/plans/2026-08-03-readme-redesign-implementation.md
 git commit -m "Docs: record README redesign verification"
 ```
 
-- [ ] **Step 6: Push `main` and inspect the public render**
+- [x] **Step 6: Push `main` and inspect the public render**
 
 Run `git push origin main`, then open the public repository README and verify title wrapping, badge rendering, main result figure, artifact links, tables, and details controls at desktop width.
 
-- [ ] **Step 7: Verify sole authorship and immutable release boundary**
+- [x] **Step 7: Verify sole authorship and immutable release boundary**
 
 Confirm through GitHub API that every new commit has author/committer `kuotunyu`, the contributors endpoint returns only `kuotunyu`, and tag `v1.2.1` still resolves to `1f42372e97c98212f192362ec441c034815b37d5`.
 
@@ -330,3 +330,15 @@ Expected: no blocking issue. Record any advisory finding in the handoff; do not 
 - **Placeholder scan:** Every implementation and test step is fully specified; nothing is deferred.
 - **Interface consistency:** Task 1 defines one exact report-derived stable badge consumed by Task 2 and checked again in Task 4. README content continues to feed the existing raw-text verifiers without changing report schemas.
 - **Scope boundary:** Only documentation presentation and its exact-markup regression test change; no research artifact or external release is rewritten.
+
+## Execution Notes
+
+- GitHub rendered the new title, all five badges, all five tracked result images,
+  and six collapsed `<details>` blocks; browser inspection found zero broken images.
+- The public `main` branch has no tracked Actions workflow: `.github/workflows/ci.yml`
+  was deliberately removed in earlier history and remains locally ignored. A manual
+  dispatch therefore returns HTTP 422. This redesign does not reintroduce that
+  out-of-scope workflow; the fresh local six-gate suite is the integration evidence.
+- GitHub API confirmed all five redesign commits map to `kuotunyu`, Contributors
+  contains only `kuotunyu`, and `v1.2.1^{}` remains
+  `1f42372e97c98212f192362ec441c034815b37d5`.
