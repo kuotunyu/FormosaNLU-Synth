@@ -30,6 +30,7 @@ paired contract 完成複製。
 | v1.2.1 immutable source archive | [Zenodo](https://zenodo.org/records/21767493) | Public；version DOI [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493) |
 | 3,754-row F1–F7 corpus | [Hugging Face Dataset](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) | Public；Dataset Viewer 與匿名載入通過 |
 | Filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) | Public；PEFT config、686 tensors 與 SHA-256 通過 |
+| English technical report | [LaTeX source 與 build 說明](paper/README.md) | Evidence-bounded technical report；尚未 peer review |
 
 ```python
 from datasets import load_dataset
@@ -561,10 +562,11 @@ python -m scripts.check_gates
 
 </details>
 
-`scripts.check_gates` 會依序執行五道檢查：`ruff`、`pytest`、
+`scripts.check_gates` 會依序執行六道檢查：`ruff`、`pytest`、
 `scripts.verify_readme`（數字可追溯性）、`scripts.verify_contributors`
 （單一作者）、`scripts.verify_reproduce`（**本文件記載的每個指令都還存在且
-參數可解析**）。任何一項失敗即以非零狀態結束。
+參數可解析**）、`scripts.verify_closeout`（publication metadata、連結與公開範圍）。
+任何一項失敗即以非零狀態結束。
 
 README 的每個數字都必須能從 `reports/` 與 `runs/` 的原始檔重算，因此**修改
 README 的數字時必須同時更新 verifier 的檢查項**，不能只改文字。

@@ -15,7 +15,18 @@ def test_collect_checks_reports_missing_inputs_instead_of_raising(tmp_path: Path
 
     assert checks
     assert all(isinstance(check, Check) for check in checks)
-    assert all(not check.passed for check in checks)
+    failed = {check.name for check in checks if not check.passed}
+    assert {
+        "markdown_links",
+        "v120_release_links",
+        "next_session_reports",
+        "gate_documentation",
+        "model_license_language",
+        "version_metadata",
+        "doi_backlinks",
+        "license_scope",
+        "paper_package",
+    }.issubset(failed)
 
 
 def test_rejects_release_links_that_are_not_absolute_and_tag_pinned(
@@ -79,6 +90,31 @@ def test_accepts_next_session_report_paths_that_exist(tmp_path: Path) -> None:
     )
 
     assert _check(tmp_path, "next_session_reports").passed is True
+
+
+def test_rejects_readme_that_omits_a_check_gate(tmp_path: Path) -> None:
+    (tmp_path / "README.md").write_text(
+        "`scripts.check_gates` 會依序執行五道檢查："
+        "`ruff`、`pytest`、`scripts.verify_readme`、"
+        "`scripts.verify_contributors`、`scripts.verify_reproduce`。\n",
+        encoding="utf-8",
+    )
+
+    check = _check(tmp_path, "gate_documentation")
+
+    assert check.passed is False
+    assert "verify_closeout" in check.observed
+
+
+def test_rejects_internal_process_documents_from_public_tree(tmp_path: Path) -> None:
+    internal = tmp_path / "docs" / "superpowers" / "plans"
+    internal.mkdir(parents=True)
+    (internal / "implementation.md").write_text("internal\n", encoding="utf-8")
+
+    check = _check(tmp_path, "public_tree_scope")
+
+    assert check.passed is False
+    assert "docs/superpowers/plans/implementation.md" in check.observed
 
 
 def test_rejects_mixed_student_license_claim(tmp_path: Path) -> None:

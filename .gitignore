@@ -58,6 +58,7 @@ htmlcov/
 .github/
 CLAUDE.md
 PLAN.md
+/docs/superpowers/
 
 # ---- Crash dumps from interrupted shell tools ----
 *.stackdump

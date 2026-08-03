@@ -45,6 +45,14 @@ SOFTWARE.
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 FENCED_CODE_BLOCK = re.compile(r"```.*?```", re.DOTALL)
 REPORT_REFERENCE = re.compile(r"`(reports/[A-Za-z0-9_./-]+\.(?:json|md))`")
+DOCUMENTED_GATE_TOKENS = (
+    "`ruff`",
+    "`pytest`",
+    "`scripts.verify_readme`",
+    "`scripts.verify_contributors`",
+    "`scripts.verify_reproduce`",
+    "`scripts.verify_closeout`",
+)
 
 
 @dataclass(frozen=True)
@@ -76,7 +84,11 @@ def _tracked_markdown(root: Path) -> list[Path]:
             encoding="utf-8",
         )
         if completed.returncode == 0:
-            return [root / item for item in completed.stdout.splitlines() if item]
+            return [
+                root / item
+                for item in completed.stdout.splitlines()
+                if item and (root / item).is_file()
+            ]
     excluded = {".git", ".venv", ".pytest_cache", ".ruff_cache", "dist", "outputs"}
     return [path for path in root.rglob("*.md") if excluded.isdisjoint(path.parts)]
 
@@ -141,6 +153,60 @@ def _next_session_report_check(root: Path) -> Check:
         passed,
         observed,
         "every backtick-quoted reports/*.json or reports/*.md path exists",
+    )
+
+
+def _gate_documentation_check(root: Path) -> Check:
+    text = _read_text(root, "README.md") or ""
+    missing = [token.strip("`") for token in DOCUMENTED_GATE_TOKENS if token not in text]
+    describes_six = "六道檢查" in text
+    passed = bool(text) and describes_six and not missing
+    observed_parts = []
+    if not describes_six:
+        observed_parts.append("README does not say 六道檢查")
+    if missing:
+        observed_parts.append(f"missing: {', '.join(missing)}")
+    return Check(
+        "gate_documentation",
+        passed,
+        "all six gates documented" if passed else "; ".join(observed_parts),
+        "README names all six scripts.check_gates checks",
+    )
+
+
+def _public_tree_scope_check(root: Path) -> Check:
+    internal_root = root / "docs" / "superpowers"
+    if (root / ".git").exists():
+        completed = subprocess.run(
+            ["git", "ls-files", "docs/superpowers"],
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        internal = (
+            [
+                item
+                for item in completed.stdout.splitlines()
+                if item and (root / item).is_file()
+            ]
+            if completed.returncode == 0
+            else []
+        )
+    elif internal_root.exists():
+        internal = sorted(
+            path.relative_to(root).as_posix()
+            for path in internal_root.rglob("*")
+            if path.is_file()
+        )
+    else:
+        internal = []
+    return Check(
+        "public_tree_scope",
+        not internal,
+        "no internal process documents tracked" if not internal else ", ".join(internal),
+        "docs/superpowers is excluded from the public repository tree",
     )
 
 
@@ -323,6 +389,8 @@ def collect_checks(repo_root: Path = REPO_ROOT) -> list[Check]:
         _markdown_link_check(repo_root),
         _v120_release_link_check(repo_root),
         _next_session_report_check(repo_root),
+        _gate_documentation_check(repo_root),
+        _public_tree_scope_check(repo_root),
         _model_license_check(repo_root),
         _card_claim_check(repo_root),
         _version_check(repo_root),
