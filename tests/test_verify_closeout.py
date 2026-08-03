@@ -101,3 +101,25 @@ def test_accepts_explicit_apache_and_phi_mit_license_language(tmp_path: Path) ->
     )
 
     assert _check(tmp_path, "model_license_language").passed is True
+
+
+def test_repository_metadata_checks_pass() -> None:
+    required = {
+        "v120_release_links",
+        "next_session_reports",
+        "model_license_language",
+        "version_metadata",
+        "license_scope",
+    }
+    failed = {check.name for check in collect_checks() if not check.passed}
+
+    assert failed.isdisjoint(required)
+
+
+def test_markdown_link_check_ignores_fenced_code_examples(tmp_path: Path) -> None:
+    (tmp_path / "README.md").write_text(
+        "```python\nfixture = '[example](missing.md)'\n```\n",
+        encoding="utf-8",
+    )
+
+    assert _check(tmp_path, "markdown_links").passed is True

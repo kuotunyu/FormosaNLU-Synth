@@ -88,8 +88,8 @@ final run report 只記錄後段 session；v1.2.0 以原始 log timestamps 與 S
 
 ## 完整資料
 
-- M19 aggregate：[`reports/m19_ablation.md`](../reports/m19_ablation.md)
-- M19 runtime audit：[`reports/m19_runtime_audit.json`](../reports/m19_runtime_audit.json)
-- M19 protocol：[`docs/M19_ABLATION_PROTOCOL.md`](M19_ABLATION_PROTOCOL.md)
-- Resource ledger：[`reports/m12_resource_ledger.json`](../reports/m12_resource_ledger.json)
-- Decision record：[`docs/DECISIONS.md`](DECISIONS.md)
+- M19 aggregate：[`reports/m19_ablation.md`](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.0/reports/m19_ablation.md)
+- M19 runtime audit：[`reports/m19_runtime_audit.json`](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.0/reports/m19_runtime_audit.json)
+- M19 protocol：[`docs/M19_ABLATION_PROTOCOL.md`](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.0/docs/M19_ABLATION_PROTOCOL.md)
+- Resource ledger：[`reports/m12_resource_ledger.json`](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.0/reports/m12_resource_ledger.json)
+- Decision record：[`docs/DECISIONS.md`](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.0/docs/DECISIONS.md)

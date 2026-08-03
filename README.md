@@ -621,7 +621,8 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 | --- | --- |
 | 本 repository 的 code | MIT（[LICENSE](LICENSE)） |
 | MASSIVE `zh-TW` seed data | CC BY 4.0 |
-| Teacher、judge 與 student weights | Apache-2.0；詳見各 upstream model card |
+| Teacher、judge 與 primary Gemma student weights | Apache-2.0；詳見各 upstream model card |
+| Phi-4-mini replication model weights | MIT；詳見 `microsoft/Phi-4-mini-instruct` upstream model card |
 | Synthetic dataset | 詳見 [`docs/data_card.md`](docs/data_card.md) |
 | LoRA adapter | Apache-2.0，沿用 student base model |
 

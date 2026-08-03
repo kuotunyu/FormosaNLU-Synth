@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, dataset, or adapter, please cite it using this metadata."
 title: "FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU"
 type: software
-version: 1.0.0
-date-released: 2026-07-29
+version: 1.2.1
+date-released: 2026-08-03
 authors:
   - name: kuotunyu
 repository-code: "https://github.com/kuotunyu/FormosaNLU-Synth"

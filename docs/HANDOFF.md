@@ -54,7 +54,7 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 - `assets/m12_*.png`：主表、filter 比較、漏斗、per-intent 與方法圖
 - `src/inference/demo.py`：base vs filtered adapter 的 M11 Gradio 比較介面
 - `reports/m10_probe_manifest.json`：8,922-row evaluation-only robustness probe
-- `docs/data_card.md`：已填入 full-corpus 結果的 pre-release 草稿
+- `docs/data_card.md`：已發布且已填入 full-corpus 結果的現行 data card
 
 ### ➡️ 接下來的建議起點
 

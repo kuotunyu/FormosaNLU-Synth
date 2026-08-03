@@ -90,8 +90,9 @@ phase；GPU、Ollama 與 M19 processes 已回到 idle／不存在。
 - `README.md`：研究問題、方法、主結果、限制與重現入口
 - `reports/m10_main_results.md`：Gemma primary 七行主表
 - `reports/m14_paired_statistics.md`：paired statistics
-- `reports/m15_cross_model_report.json`：Phi cross-family replication
-- `reports/m16_robustness_summary.json`：兩個 family × seeds 42–44 robustness
+- `reports/m15_cross_model_replication.json`：Phi cross-family replication
+- `reports/m16_robustness_summary_gemma.json`：Gemma seeds 42–44 robustness
+- `reports/m16_robustness_summary_phi4mini.json`：Phi-4-mini seeds 42–44 robustness
 - `reports/m19_ablation.json`：M19 machine-readable aggregate
 - `reports/m19_runtime_audit.json`：M19 中斷 attempt 的 hash-anchored resource audit
 - `reports/m12_resource_ledger.json`：完整本機 GPU 資源帳本

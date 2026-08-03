@@ -42,6 +42,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+FENCED_CODE_BLOCK = re.compile(r"```.*?```", re.DOTALL)
 REPORT_REFERENCE = re.compile(r"`(reports/[A-Za-z0-9_./-]+\.(?:json|md))`")
 
 
@@ -88,6 +89,7 @@ def _markdown_link_check(root: Path) -> Check:
         except (OSError, UnicodeError):
             missing.append(f"{source.relative_to(root).as_posix()}:unreadable")
             continue
+        text = FENCED_CODE_BLOCK.sub("", text)
         for raw_target in MARKDOWN_LINK.findall(text):
             target = raw_target.strip().strip("<>").split(maxsplit=1)[0]
             if not target or target.startswith(("#", "http://", "https://", "mailto:")):
