@@ -1,33 +1,26 @@
-# FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
+# FormosaNLU — Synthetic Data Distillation for Low-resource NLU
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21767493.svg)](https://doi.org/10.5281/zenodo.21767493)
+[![Release](https://img.shields.io/badge/release-v1.2.1-2EA44F)](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
+[![Dataset](https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E)](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1)
+[![Model](https://img.shields.io/badge/Hugging%20Face-Model-FFD21E)](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21767493-1682D4)](https://doi.org/10.5281/zenodo.21767493)
+[![License: MIT](https://img.shields.io/badge/License-MIT-2EA44F.svg)](LICENSE)
 
-> **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、seeds 43/44
-> uncertainty runs、M10／M16 robustness、M11 比較介面、M12 報告產物、
-> Colab portability、F7 independent judge audit 與 M19 equal-N per-recipe
-> ablation 均已完成。所有本機 GPU 階段已收尾；
-> GitHub、Hugging Face Dataset 與 LoRA adapter 已公開，並通過匿名下載驗證。
-> **M15 已在第二個 student family（`microsoft/Phi-4-mini-instruct`）
-> 完成同一份 paired contract 的複製，預先登記的判準通過；M19 的五組
-> single-seed composition comparison 則沒有任何 exact-match 差異達到
-> 預先登記的 2.5-point detectability threshold。**
+以本機 open-weight teacher 生成、過濾 synthetic data，再於 20-shot MASSIVE
+`zh-TW` 上驗證它能否改善 intent classification、slot filling 與 strict JSON
+output。效果已在 Gemma 與 Phi-4-mini 兩個 student model families 上，以相同的
+paired contract 完成複製。
 
-在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
-language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
-任務包含 joint intent classification、slot filling，以及嚴格的 JSON output
-contract。
-
-| 項目 | 設定 |
+| 核心證據 | 結果 |
 | --- | --- |
-| **Dataset** | MASSIVE `zh-TW`（CC BY 4.0），60 個 intents、55 種 slot types |
-| **Low-resource setting** | 每個 intent 取 `min(20, available)` 筆 real train examples，seed 42 |
-| **Teacher** | `qwen3.6:27b`，透過 Ollama 在本機執行 |
-| **Student** | `google/gemma-4-E4B-it`，4-bit QLoRA |
-| **Independent judge** | `gpt-oss:20b` |
-| **Hardware / API spend** | 單張 RTX 4090 24 GB / **$0** |
+| **Gemma，3 paired seeds** | intent accuracy **+4.14 pp**；joint exact match **+3.86 pp** |
+| **Phi-4-mini replication** | intent accuracy **+5.09 pp**；joint exact match **+4.71 pp** |
+| **Local-first pipeline** | **11,264** generated → **3,760** frozen primary；單張 RTX 4090；**$0 API spend** |
 
-Teacher、student 與 judge 來自不同 model families。Primary 結果使用
-2,974 筆完全未進入訓練流程的 MASSIVE `zh-TW` Test rows。
+![三種子主要結果](assets/m12_main_results.png)
+
+> **專案已完成。** GitHub、Hugging Face Dataset、Gemma LoRA adapter 與
+> Zenodo source archive 均已公開，並通過匿名下載、hash 與 citation 驗證。
 
 ## 公開產物
 
@@ -52,8 +45,8 @@ LoRA adapter 使用方式與 Gemma 4 text-tower key mapping 已完整寫在
 
 ## 這個模型實際在做什麼
 
-以下是**真實執行的輸出**，不是示意。同一台 RTX 4090、同一份 unconstrained
-decoding 設定，左邊是未微調的 base model，右邊是本專案的 filtered adapter。
+以下是**真實執行輸出**，不是示意。同一台 RTX 4090、同一份 unconstrained
+decoding 設定，比較未微調的 base model 與 filtered adapter。
 
 **輸入：`播放周杰倫`**
 
@@ -75,50 +68,45 @@ decoding 設定，左邊是未微調的 base model，右邊是本專案的 filte
 {"intent":"weather_query","slots":[{"type":"place_name","value":"台北"},{"type":"date","value":"明天"}]}
 ```
 
-### 差別不在「懂不懂」，在「守不守得住契約」
+### 差別不只在語意，更在輸出契約
 
 base model 產出的 intent 大致正確，slot type 也全都是合法的 MASSIVE 標籤——
 它知道這個任務。它失敗在**輸出契約**：schema 要求 `type`，它寫成 `slot`，
 而且五句裡有四句用 `slot`、一句用 `name`，**連自己都不一致**。嚴格 schema
 驗證下 base 是 **0/5**、adapter 是 **5/5**。
 
-也有語意上的修正：`明天` 在 base 被標成 `timeofday`，adapter 標成 `date`；
+也有語意修正：`明天` 在 base 被標成 `timeofday`，adapter 標成 `date`；
 `幫我寄信給小美說會晚到` 裡的「會晚到」被 base 當成 `email_folder`，adapter
-正確地不產生那個 slot。
+則正確地不產生該 slot。
 
 > **兩邊的 prompt 不同，這是刻意的。** base 拿到的是含合法 label catalog 的
 > zero-shot prompt（否則它不可能猜到 60 個 intent 的字串），adapter 用的是不含
 > catalog 的 frozen SFT prompt。所以這是**部署情境的比較**——實務上你會怎麼用
 > 這兩者——不是同 prompt 的受控 ablation。
 
-這五句是固定的質性示範，**不是 Test-set 成效**。原始輸出、latency 與 adapter
+這五句是固定質性示範，**不是 Test-set 成效**。原始輸出、latency 與 adapter
 tree SHA-256 保存在
 [`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
 
-## TL;DR
+## 任務與設定
 
-在 seed 42 下，將 3,760 筆 filtered synthetic corpus 加入 20-shot real
-baseline，使 exact match 提升 **+3.06%**（3.06 個百分點），補回與
-full-real training 差距的 **26.4%**；slot F1 提升 4.40 個百分點，補回
-46.6% 的差距。Filtered 組只使用約三分之一的 synthetic rows，表現仍優於
-unfiltered-full 組。
+| 項目 | 設定 |
+| --- | --- |
+| **Dataset** | MASSIVE `zh-TW`（CC BY 4.0），60 個 intents、55 種 slot types |
+| **Low-resource setting** | 每個 intent 取 `min(20, available)` 筆 real train examples |
+| **Teacher** | `qwen3.6:27b`，透過 Ollama 在本機執行 |
+| **Primary student** | `google/gemma-4-E4B-it`，4-bit QLoRA |
+| **Replication student** | `microsoft/Phi-4-mini-instruct`，4-bit QLoRA |
+| **Independent judge** | `gpt-oss:20b` |
+| **Hardware / API spend** | 單張 RTX 4090 24 GB / **$0** |
 
-三個 paired seeds（42–44）中，filtered 組相對 `real_only` 的 exact match
-平均提升 **+3.86 ± 0.73 個百分點**（descriptive 95% CI
-[+2.03, +5.68]），intent accuracy 平均提升 **+4.14 ± 1.39 個百分點**
-（[+0.68, +7.59]）。由於只有三個 seeds，這些 intervals 是描述性不確定性，
-不是廣泛統計顯著性宣稱。
-
-**這個效果不只存在於一個 student family。** 以完全相同的 frozen corpus、
-prompt、500 steps 與 strict evaluator，在第二個 family
-`microsoft/Phi-4-mini-instruct` 重跑同一份三種子 paired contract 後，
-intent accuracy 與 exact match 在兩個 family 都是正向平均提升，且
-hierarchical 95% CI 下界都大於零——這正是**在看到 Phi 結果之前就凍結的
-判準**。詳見下方「跨 student family 複製」。
-
-![M9 primary 結果](assets/m12_main_results.png)
+Teacher、students 與 judge 來自不同 model families。所有 primary results 都在
+2,974 筆完全未進入訓練流程的 MASSIVE `zh-TW` Test rows 上計算。
 
 ## 實驗結果
+
+<details>
+<summary><strong>查看 seed-42 primary matrix 與差距補回率</strong></summary>
 
 ### Seed-42 primary 實驗矩陣
 
@@ -146,7 +134,9 @@ run 的變化如下：
 | Intent accuracy | +2.66 個百分點 | 24.2% |
 | Intent macro-F1 | +0.89 個百分點 | 13.8% |
 | Slot micro-F1 | +4.40 個百分點 | 46.6% |
-| Exact match | +3.06 個百分點 | 26.4% |
+| Exact match | +3.06%（3.06 個百分點） | 26.4% |
+
+</details>
 
 ### 三種子不確定性
 
@@ -184,6 +174,9 @@ MASSIVE `zh-TW` Test 與目前 Gemma 4 contract 內的 paired evidence，不等�
 跨模型或跨資料集泛化。完整方法、input SHA-256 與結果見
 [`reports/m14_paired_statistics.md`](reports/m14_paired_statistics.md)。
 
+<details>
+<summary><strong>查看 M19 equal-N per-recipe ablation（negative result）</strong></summary>
+
 ### Equal-N per-recipe ablation（M19）
 
 M19 把四種 synthetic recipes 做 leave-one-out，並將每組 synthetic rows 固定為
@@ -209,6 +202,8 @@ Machine-readable 結果、執行契約與逐組報告分別在
 [`reports/m19_ablation.json`](reports/m19_ablation.json)、
 [`docs/M19_ABLATION_PROTOCOL.md`](docs/M19_ABLATION_PROTOCOL.md) 與
 [`reports/m19/`](reports/m19/)；這個 negative result 連同 single-seed 限制完整保留。
+
+</details>
 
 ### 跨 student family 複製
 
@@ -244,6 +239,9 @@ tests 顯著。
 [`reports/m15_cross_model_replication.md`](reports/m15_cross_model_replication.md)
 與
 [`reports/m15_phi4mini_paired_statistics.md`](reports/m15_phi4mini_paired_statistics.md)。
+
+<details>
+<summary><strong>查看各 intent 的完整變化與 seed variance</strong></summary>
 
 ### 各 intent 的變化
 
@@ -289,6 +287,8 @@ tests 顯著。
 python -m scripts.analyse_intent_confusion
 ```
 
+</details>
+
 ## Filter pipeline 是否真的有價值？
 
 三個 synthetic groups 用來區分 data quality 與 quantity：
@@ -333,7 +333,11 @@ frozen 3,760-row training contract 不回溯修改。
 
 ## 成本與可重現性
 
-Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
+Primary GPU path 在單張 RTX 4090 上使用 **14.440 h**；加上所有 auxiliary
+evidence，完整 local total 為 **42.412 h**、API spend 為 **$0**。
+
+<details>
+<summary><strong>查看完整 GPU 時數與 energy upper-bound 帳本</strong></summary>
 
 | Phase | GPU wall-clock | 證據 |
 | --- | ---: | --- |
@@ -374,6 +378,8 @@ TDP 運作。
 python -m scripts.build_m12_artifacts
 python -m scripts.verify_readme
 ```
+
+</details>
 
 ## Robustness probe
 
@@ -423,6 +429,9 @@ delta 在**每個 seed 內先計算再平均**，保留同資料訓練出的 ada
 與
 [`reports/m16_robustness_summary_phi4mini.md`](reports/m16_robustness_summary_phi4mini.md)。
 
+<details>
+<summary><strong>查看 seed-42 的逐 probe 拆解</strong></summary>
+
 ### Seed-42 的逐 probe 拆解
 
 | Group | Probe | Intent acc | Slot F1 | Exact match | JSON valid |
@@ -440,6 +449,8 @@ match 都高於 `real_only`——但如前所述，同一個 seed 的 `intent_ma
 `json_valid_rate` 反而略低，所以不要只看這三欄下結論。
 
 擾動是 deterministic evaluation probes，不等同真實語音辨識錯誤分布。
+
+</details>
 
 ## 方法
 
@@ -488,6 +499,9 @@ python -m scripts.demo --mock
 ## 重現流程
 
 > 執行環境：native Windows、單張 RTX 4090，不需要 WSL。
+
+<details>
+<summary><strong>查看完整本機重現命令</strong></summary>
 
 ```bash
 # 1. 建立環境
@@ -547,6 +561,8 @@ python -m scripts.eval_robustness \
 # 8. 推送前的完整把關（lint、測試、README 數字可追溯性、單一作者稽核）
 python -m scripts.check_gates
 ```
+
+</details>
 
 `scripts.check_gates` 會依序執行五道檢查：`ruff`、`pytest`、
 `scripts.verify_readme`（數字可追溯性）、`scripts.verify_contributors`
@@ -649,29 +665,13 @@ Hugging Face cards 為準。
 | Synthetic dataset | 詳見 [`docs/data_card.md`](docs/data_card.md) |
 | LoRA adapter | Apache-2.0，沿用 student base model |
 
-## Roadmap
+## 專案狀態
 
-M13 public release、M14 paired statistics 與 **M15 跨 family 複製均已完成**。
-M15 使用 `microsoft/Phi-4-mini-instruct`（MIT，frozen revision
-`cfbefacb99257ffa30c83adab238a50856ac3083`）重複
-`real_only`／`real_syn_filtered` 三種子 paired contract；跨 family claim
-在看到結果前就限定為 intent accuracy 與 exact match 在兩個 model families
-都呈正向 paired mean，且 hierarchical 95% CI lower bound 都大於零。
-該判準已通過，結果見上方「跨 student family 複製」。
-
-M15 原始 2-step smoke 的 strict label gate 為失敗（strict JSON-valid
-`0/32`），但 `32/32` 輸出均為可解析 JSON object，checkpoint-1、跨程序
-resume 至 checkpoint-2、32-row evaluation 與 6,674 MiB peak reserved VRAM
-皆正常。正式六組開始前已登錄
-[`m15.smoke.infrastructure.v2`](reports/m15_smoke_protocol_amendment.json)
-protocol amendment：smoke 僅判定 infrastructure 與頂層 JSON 結構；
-unknown intent、slot schema、accuracy 與 exact match 仍依原 strict evaluator
-計分。原始失敗證據保留於
-[`reports/m15_phi4mini_smoke.json`](reports/m15_phi4mini_smoke.json)，沒有
-parser repair、label aliasing，也沒有變更正式 500-step contract。
-
-後續再延伸台灣在地知識 distillation，並以 TMMLU+ 與 `twinkle-eval`
-等工具評估。
+研究矩陣、three-seed uncertainty、paired statistics、兩個 student families、
+robustness、equal-N recipe ablation、Colab portability、公開 Dataset／Model、
+GitHub Release 與 Zenodo DOI 均已完成。M15 smoke amendment 的原始失敗與決策
+紀錄仍完整保留於 [`reports/`](reports/)；沒有 parser repair、label aliasing 或
+事後修改正式 contract。
 
 ## 專案文件
 
