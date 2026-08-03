@@ -131,6 +131,31 @@ bootstrap 後，intent accuracy 的平均提升為 +4.14 個百分點（95% CI
 **範圍**：兩個 family、一份 frozen dataset、一種 training contract；兩個
 family 分別彙總、不 pooling，不宣稱推廣到其他 dataset、任務或任意 model。
 
+### v1.2.1 evidence release 與 M19 equal-N ablation
+
+[GitHub v1.2.1 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
+只補齊文件、授權範圍、technical report 與保存 metadata。**Dataset rows and
+Model tensors did not change.** 本 Dataset 仍是相同的 3,754 rows，train
+SHA-256 仍為
+`c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665`。
+
+M19 是 equal-N composition comparison：Gemma seed 42 的 control 與四個
+leave-one-recipe-out 組都使用 1,176 real + 2,246 synthetic rows。Exact match
+相對 control 的差異如下：
+
+| 排除 recipe | Exact-match Δ vs control（percentage points） |
+| --- | ---: |
+| `paraphrase` | +0.50 |
+| `slot_substitution` | +2.02 |
+| `noise_codeswitch` | -0.74 |
+| `hard_negative` | +1.31 |
+
+預先登記的 detectability threshold 是 **2.5 percentage points**，沒有任何組別
+達到。這是 **single seed (n=1); descriptive comparison only**。This does not support a recipe-level causal claim.
+
+所有本機 GPU 階段的可追溯總量為 **42.412 hours**；以 RTX 4090 450 W TDP
+估算的 GPU-only 上限包絡為 **19.085 kWh**，不是 wall-socket measurement。
+
 ## 適合用途
 
 - 正體中文 intent classification／slot filling 研究
@@ -164,7 +189,7 @@ FormosaNLU Synth：
 
 ```text
 kuotunyu. FormosaNLU Synthetic Data Distillation for Traditional Chinese
-(Taiwan) NLU, version 1.0.0. 2026.
+(Taiwan) NLU, version 1.2.1. 2026.
 https://github.com/kuotunyu/FormosaNLU-Synth
 ```
 

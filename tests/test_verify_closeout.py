@@ -123,3 +123,9 @@ def test_markdown_link_check_ignores_fenced_code_examples(tmp_path: Path) -> Non
     )
 
     assert _check(tmp_path, "markdown_links").passed is True
+
+
+def test_repository_closeout_checks_pass() -> None:
+    failed = [check for check in collect_checks() if not check.passed]
+
+    assert failed == []

@@ -15,6 +15,7 @@ REQUIRED_GATES = {
     "verify_readme",
     "verify_contributors",
     "verify_reproduce",
+    "verify_closeout",
 }
 
 
@@ -30,6 +31,7 @@ def test_gates_run_in_the_documented_order() -> None:
         "verify_readme",
         "verify_contributors",
         "verify_reproduce",
+        "verify_closeout",
     ]
 
 

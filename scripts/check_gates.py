@@ -5,8 +5,8 @@ That workflow is no longer part of the published repository, so this script is
 the local replacement. Run it before every push; a non-zero exit means at
 least one gate failed and the push should not happen.
 
-The gates are deliberately the same four the CI job ran, in the same order:
-lint, tests, README number traceability, and the sole-contributor audit.
+The gates retain the former CI checks and add local reproducibility and
+publication-closeout audits in a fixed order.
 """
 
 from __future__ import annotations
@@ -54,6 +54,11 @@ def build_gates() -> list[Gate]:
             name="verify_reproduce",
             description="Every command the README documents still resolves",
             command=[python, "-m", "scripts.verify_reproduce"],
+        ),
+        Gate(
+            name="verify_closeout",
+            description="Publication metadata, links, licenses, cards, and paper",
+            command=[python, "-m", "scripts.verify_closeout"],
         ),
     ]
 
