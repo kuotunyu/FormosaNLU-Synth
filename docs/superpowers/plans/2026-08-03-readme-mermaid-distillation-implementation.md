@@ -141,7 +141,7 @@ Expected: 2 tests pass.
 <details>
 <summary><strong>查看 publication static pipeline figure</strong></summary>
 
-![FormosaNLU pipeline](assets/m12_pipeline.png)
+![FormosaNLU pipeline](../../../assets/m12_pipeline.png)
 
 </details>
 ```
@@ -209,13 +209,23 @@ git ls-files --error-unmatch interview.md
 
 Expected: only approved README/verifier/test/spec/plan files are changed; the final command fails because `interview.md` is not tracked.
 
-- [ ] **Step 5: Commit、push 與公開頁面驗收**
+- [x] **Step 5: Commit、push 與公開頁面驗收**
 
 設定四個 Git identity environment variables為指定的 `kuotunyu` identity，stage only approved files，commit without trailers，push `main`。在 public repository 實際檢查兩張 Mermaid、badges、images、links、tables 與 `<details>`。
 
-- [ ] **Step 6: 稽核 authorship 與 immutable tag**
+- [x] **Step 6: 稽核 authorship 與 immutable tag**
 
 透過 GitHub API 確認新 commits 的 author/committer 都是 `kuotunyu`、Contributors 只有 `kuotunyu`，並確認 `v1.2.1^{}` 仍是 `1f42372e97c98212f192362ec441c034815b37d5`。
+
+## Execution Notes
+
+- `README.md` 由 686 行／33,543 bytes 精簡為 660 行／32,604 bytes，保留研究限制、引用、授權與可重現命令。
+- Mermaid CLI 11.16.0 已成功渲染兩張圖；資料流程圖 9 nodes、成對實驗圖 11 nodes，所有 `classDef` 均含明確文字色彩。
+- 公開 GitHub README 已實際驗收：兩張 Mermaid 均為 `is-render-ready`、目標章節存在、10 張圖片無破圖、無 Mermaid error。
+- `scripts.verify_readme` 通過 95 項可追溯檢查；`scripts.verify_reproduce` 的 21 個命令與 closeout 的 9 項檢查全綠。
+- 完整 gate suite 六道均通過：Ruff、pytest、README、Contributors、reproduce、closeout；Impeccable detector 回傳 `[]`。
+- 實作 commit `967a8d6c5288a998d082adb637b91510aa21c3b3` 已推至 `main`；GitHub API 與公開頁面均確認 Contributors 只有 `kuotunyu`。
+- `v1.2.1^{}` 仍固定為 `1f42372e97c98212f192362ec441c034815b37d5`；`interview.md` 仍未被 Git 追蹤。
 
 ## Self-review
 
