@@ -39,7 +39,7 @@
 - Consumes: `doi` and `doi_url` from `reports/v121_zenodo.json`
 - Produces: exact Markdown badge `[![DOI](https://img.shields.io/badge/DOI-<encoded DOI>-1682D4)](<doi_url>)`
 
-- [ ] **Step 1: Change the positive test to the stable badge and keep an explicit rejection case**
+- [x] **Step 1: Change the positive test to the stable badge and keep an explicit rejection case**
 
 Use this expected Markdown in `test_accepts_exact_doi_backlinks`:
 
@@ -52,7 +52,7 @@ badge = (
 
 Add a focused test that writes the old `zenodo.org/badge/DOI/...svg` markup and asserts the `doi_backlinks` check fails with `README.md` in `observed`.
 
-- [ ] **Step 2: Run the focused tests and verify RED**
+- [x] **Step 2: Run the focused tests and verify RED**
 
 Run:
 
@@ -62,7 +62,7 @@ Run:
 
 Expected: the new stable-badge acceptance test fails because the verifier still requires the old Zenodo SVG markup.
 
-- [ ] **Step 3: Generate the stable badge from the report-derived DOI**
+- [x] **Step 3: Generate the stable badge from the report-derived DOI**
 
 In `_doi_backlink_check`, replace the old badge construction with:
 
@@ -76,7 +76,7 @@ badge = (
 
 Do not loosen the checks for `## 引用`, `record_url`, `CITATION.cff`, handoff, or release notes.
 
-- [ ] **Step 4: Run focused tests and verify GREEN**
+- [x] **Step 4: Run focused tests and verify GREEN**
 
 Run:
 
@@ -86,7 +86,7 @@ Run:
 
 Expected: all DOI backlink tests pass.
 
-- [ ] **Step 5: Commit the verifier regression fix**
+- [x] **Step 5: Commit the verifier regression fix**
 
 Stage only the two files, set all four Git identity environment variables to the required `kuotunyu` identity, and commit:
 
@@ -108,7 +108,7 @@ Expected: commit message has no trailer and both author and committer are `kuotu
 - Consumes: verifier-backed values already present in README and tracked reports
 - Produces: title, concise positioning, five-link badge row, three headline findings, main-results image, public artifact table
 
-- [ ] **Step 1: Replace the title and dense status block**
+- [x] **Step 1: Replace the title and dense status block**
 
 Use this hierarchy:
 
@@ -123,11 +123,11 @@ families 上以相同 paired contract 複製。
 
 Do not bold or foreground 「正體中文（台灣）」；the `zh-TW` identifier is enough in the hero.
 
-- [ ] **Step 2: Add the compact badge row**
+- [x] **Step 2: Add the compact badge row**
 
 Add badges for Release, Dataset, Model, DOI, and MIT. The DOI badge must exactly match Task 1. Every badge must have a direct destination URL; no badge may be decorative-only.
 
-- [ ] **Step 3: Add the three headline findings**
+- [x] **Step 3: Add the three headline findings**
 
 Use a compact table or bullets containing only verifier-backed facts:
 
@@ -139,17 +139,18 @@ Use a compact table or bullets containing only verifier-backed facts:
 | Local-first pipeline | `11,264` generated → `3,760` frozen primary；單張 RTX 4090；`$0` API spend |
 ```
 
-Immediately follow it with `![三種子主要結果](assets/m12_main_results.png)`.
+Immediately follow it with the existing `m12_main_results.png` asset, using
+the README-relative path `assets/m12_main_results.png`.
 
-- [ ] **Step 4: Move public artifacts ahead of implementation detail**
+- [x] **Step 4: Move public artifacts ahead of implementation detail**
 
 Retain the four existing public artifact URLs, anonymous verification status, Dataset load example, Dataset row count `3,754`, and Model Card link. Replace the long milestone status paragraph with one concise line stating that the project and local GPU stages are complete and public artifacts passed anonymous download/hash verification.
 
-- [ ] **Step 5: Keep the real-output demo, but tighten its introduction**
+- [x] **Step 5: Keep the real-output demo, but tighten its introduction**
 
 Retain both verbatim evidence examples required by `scripts.verify_readme`, the `0/5` versus `5/5 valid JSON` finding, the prompt asymmetry caveat (`zero-shot` and `catalog`), and the report link. Remove repeated explanations already made in the hero.
 
-- [ ] **Step 6: Run README and closeout verifiers**
+- [x] **Step 6: Run README and closeout verifiers**
 
 Run:
 
@@ -160,7 +161,7 @@ Run:
 
 Expected: both pass; every headline number remains traceable to tracked reports.
 
-- [ ] **Step 7: Commit the first-screen redesign**
+- [x] **Step 7: Commit the first-screen redesign**
 
 Stage only `README.md`, set exact Git identity, and commit:
 
@@ -182,7 +183,7 @@ Expected: no experiment or artifact file is staged.
 - Consumes: existing result tables, report links, images, caveats, commands, citation, licenses
 - Produces: shorter hierarchy with progressive disclosure and no duplicated conclusion paragraphs
 
-- [ ] **Step 1: Remove the standalone `TL;DR` duplication**
+- [x] **Step 1: Remove the standalone `TL;DR` duplication**
 
 Merge its unique uncertainty and cross-family caveats into the corresponding result subsections. Do not remove:
 
@@ -191,7 +192,7 @@ Merge its unique uncertainty and cross-family caveats into the corresponding res
 - the preregistered Phi criterion;
 - M19 `seed 42（n=1）`, `2.5 percentage points`, and no recipe-level causal claim.
 
-- [ ] **Step 2: Reorder results from strongest evidence to diagnostic detail**
+- [x] **Step 2: Reorder results from strongest evidence to diagnostic detail**
 
 Use this order inside `## 實驗結果`:
 
@@ -203,7 +204,7 @@ Use this order inside `## 實驗結果`:
 
 Keep the exact verifier-required Markdown rows unchanged even when they move.
 
-- [ ] **Step 3: Fold low-frequency tables**
+- [x] **Step 3: Fold low-frequency tables**
 
 Wrap the per-intent table, seed-42 robustness probe breakdown, and long reproduction environment/command detail in descriptive `<details>` blocks. Each `<summary>` must state what evidence is inside; examples:
 
@@ -218,15 +219,15 @@ Wrap the per-intent table, seed-42 robustness probe breakdown, and long reproduc
 
 Do not wrap the main three-seed table, cross-family replication, core method diagram, limitations, or citation.
 
-- [ ] **Step 4: Consolidate method and cost language**
+- [x] **Step 4: Consolidate method and cost language**
 
 State each hardware/runtime/resource fact once. Preserve all verifier-required markers: primary training hours, evaluation hours, core/auxiliary/total GPU hours, TDP envelope, generation count, accepted count, F7 release count, and random-stratum miss rate.
 
-- [ ] **Step 5: Replace the completed Roadmap checklist with a closeout statement**
+- [x] **Step 5: Replace the completed Roadmap checklist with a closeout statement**
 
 Keep one concise paragraph indicating research, publication, DOI, Dataset, Model, portability, robustness, and cross-family replication are complete. Preserve links to handoff and project documents; remove only duplicated completion prose.
 
-- [ ] **Step 6: Verify README coverage after distillation**
+- [x] **Step 6: Verify README coverage after distillation**
 
 Run:
 
@@ -238,7 +239,7 @@ Run:
 
 Expected: all pass, proving that progressive disclosure did not remove machine-checked evidence or commands.
 
-- [ ] **Step 7: Commit the evidence-layer distillation**
+- [x] **Step 7: Commit the evidence-layer distillation**
 
 Stage only `README.md`, set exact Git identity, and commit:
 
@@ -259,7 +260,7 @@ git commit -m "Docs: streamline README evidence trail"
 - Consumes: finished Markdown and green local gates
 - Produces: rendered public README, verified Git identity, sole GitHub contributor
 
-- [ ] **Step 1: Run formatting and content hygiene checks**
+- [x] **Step 1: Run formatting and content hygiene checks**
 
 Run:
 
@@ -270,11 +271,11 @@ rg -n "正體中文（台灣）|zenodo.org/badge/DOI|目前狀態" README.md
 
 Expected: no whitespace errors, no old Zenodo badge, no dense `目前狀態` hero, and no emphasized regional phrase in the title.
 
-- [ ] **Step 2: Render through GitHub-compatible Markdown**
+- [x] **Step 2: Render through GitHub-compatible Markdown**
 
 Use GitHub's Markdown API with `context=kuotunyu/FormosaNLU-Synth`, inspect the generated HTML for `h1`, badge images, artifact links, `<details>`, result image paths, tables, and headings. Reject the render if any image `src` is empty or any DOI link differs from the report-derived URL.
 
-- [ ] **Step 3: Run the complete six-gate suite**
+- [x] **Step 3: Run the complete six-gate suite**
 
 Run:
 
@@ -284,7 +285,7 @@ Run:
 
 Expected: Ruff, full pytest, README, contributors, reproduce, and closeout all pass.
 
-- [ ] **Step 4: Audit the final diff and private-file boundary**
+- [x] **Step 4: Audit the final diff and private-file boundary**
 
 Run:
 
@@ -296,7 +297,7 @@ git ls-files --error-unmatch interview.md
 
 Expected: only approved README/verifier/test/spec/plan files changed; `git ls-files` fails for `interview.md`, proving it is not tracked.
 
-- [ ] **Step 5: Commit the completed plan record**
+- [x] **Step 5: Commit the completed plan record**
 
 Stage only this plan file, set exact Git identity, and commit:
 
@@ -313,7 +314,7 @@ Run `git push origin main`, then open the public repository README and verify ti
 
 Confirm through GitHub API that every new commit has author/committer `kuotunyu`, the contributors endpoint returns only `kuotunyu`, and tag `v1.2.1` still resolves to `1f42372e97c98212f192362ec441c034815b37d5`.
 
-- [ ] **Step 8: Run the Impeccable detector once**
+- [x] **Step 8: Run the Impeccable detector once**
 
 Run:
 
