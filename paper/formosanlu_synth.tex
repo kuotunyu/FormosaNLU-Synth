@@ -1,0 +1,287 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[round]{natbib}
+
+\title{FormosaNLU-Synth: Filtered Synthetic Data Distillation for\\
+Traditional Chinese (Taiwan) Natural Language Understanding}
+\author{kuotunyu}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study whether locally generated and aggressively filtered synthetic data can
+improve low-resource joint intent classification and slot filling in Traditional
+Chinese as used in Taiwan.  Starting from a 20-shot-per-intent subset of MASSIVE
+\texttt{zh-TW}, a local open-weight teacher generates four kinds of examples and
+a fixed seven-stage pipeline filters them.  The public corpus contains 3,754
+released rows.  Under a frozen 500-step QLoRA contract, adding filtered synthetic
+data to the real-only baseline improves three-seed Gemma intent accuracy and
+exact match by +4.14 and +3.86 percentage points, respectively.  A preregistered
+replication with Phi-4-mini yields corresponding gains of +5.09 and +4.71
+percentage points.  A single-seed equal-size recipe ablation finds that no
+leave-one-recipe-out exact-match difference reaches the preregistered 2.5-point
+detectability threshold.  We release the corpus, one Gemma adapter, code,
+machine-readable reports, checksums, and resource accounting.  This document is
+an evidence-bounded technical report rather than a peer-reviewed publication.
+\end{abstract}
+
+\section{Introduction}
+Natural language understanding (NLU) systems for intent classification and slot
+filling require examples that cover both label semantics and local linguistic
+variation.  This requirement is difficult in a low-resource locale such as
+Traditional Chinese as used in Taiwan (\texttt{zh-TW}).  MASSIVE provides a
+parallel multilingual benchmark with intent and slot annotations
+\citep{fitzgerald2023massive}, but a deployment team may still have only a small
+labeled subset available for adaptation.
+
+FormosaNLU-Synth asks a deliberately narrow question: under one frozen low-
+resource MASSIVE \texttt{zh-TW} contract, can synthetic examples produced by a
+local open-weight teacher improve a smaller student over the same real-only
+baseline?  The project separates generation, filtering, training, and evaluation;
+keeps the test split outside every construction decision; and preserves negative
+results rather than adjusting thresholds after inspection.
+
+The evidence supports three bounded conclusions.  First, filtered synthetic data
+improves the preregistered paired comparison for two student model families.
+Second, the result survives deterministic robustness probes, although uncertainty
+is substantial with three seeds.  Third, a single-seed equal-size composition
+study does not isolate a detectable independent contribution from any one recipe.
+These findings do not establish generalization to other datasets, languages,
+model families, or training budgets.
+
+\section{Related Work}
+MASSIVE contains one million virtual-assistant utterances across 51 languages,
+18 domains, 60 intents, and 55 slot types \citep{fitzgerald2023massive}.  The
+present work uses its Traditional Chinese (Taiwan) partition and retains its
+joint intent and slot structure.
+
+Synthetic instruction-data pipelines can bootstrap supervision from model
+generations and then reject invalid or overly similar examples.  Self-Instruct
+demonstrated this generate--filter--fine-tune pattern for instruction following
+\citep{wang2023selfinstruct}.  FormosaNLU-Synth applies the general pattern to a
+fixed structured-prediction schema rather than claiming a new general-purpose
+instruction-generation algorithm.
+
+The student models are adapted with low-rank updates.  LoRA freezes pretrained
+weights and learns low-rank matrices \citep{hu2022lora}; QLoRA extends this idea
+to backpropagation through quantized base weights \citep{dettmers2023qlora}.
+The primary student is the Apache-2.0 Gemma 4 E4B instruction model
+\citep{gemma4modelcard}.  The replication student is the MIT-licensed
+Phi-4-mini instruction model \citep{phi4minimodelcard}.
+
+\section{Method}
+\paragraph{Real-data budget.}
+For each MASSIVE intent, the low-resource training set contains at most 20 real
+examples selected with seed 42, producing 1,176 real examples.  Validation and
+test rows never enter generation or training-data assembly.
+
+\paragraph{Local generation.}
+The teacher is \texttt{qwen3.6:27b}, served locally through Ollama.  It produces
+four recipe families: label-preserving paraphrases, slot substitution followed
+by constrained rewriting, locale-aware noise and code-switching, and hard
+negatives between confusable intents.  Labels are constructed by the pipeline;
+there is no row-by-row human annotation.  The teacher, primary student, and
+independent judge belong to different model families.
+
+\paragraph{Fixed filtering.}
+The pipeline applies schema validation (F1), label-contract checks (F2), grounded
+slot checks (F3), Taiwan locale and language checks (F4), seed-copy, duplicate,
+and outlier removal (F5), and validation/test contamination exclusion (F6).
+These fixed stages reduce 11,264 generated rows to 3,760.  A stratified F7 audit
+with the independent \texttt{gpt-oss:20b} judge rejects six rows from the public
+release, leaving 3,754 rows.  The already frozen training experiments retain the
+3,760-row F1--F6 corpus; F7 is a release-only exclusion and does not retroactively
+change the experimental contract.
+
+The largest removal is synthetic near-duplication: 4,596 rows are rejected as
+near duplicates.  The preregistered target of 8,000--9,000 accepted examples is
+therefore missed.  Thresholds were not relaxed after this shortfall was observed.
+
+\paragraph{Structured output.}
+Each model must emit strict JSON containing one legal intent and a list of typed
+slot spans.  Metrics are intent accuracy, intent macro-F1, slot micro-F1, exact
+match, and strict JSON-valid rate.  Exact match requires the complete structured
+prediction to satisfy the evaluator.
+
+\section{Experimental Design}
+The primary matrix uses Gemma 4 E4B with 4-bit QLoRA.  Every trained condition
+uses 500 optimizer steps and the same prompt template without a label catalog.
+The deployment-oriented zero-shot baseline uses a separate prompt containing the
+legal label catalog; it is not a same-prompt causal ablation.  All headline
+evaluations use the untouched 2,974-row MASSIVE \texttt{zh-TW} test set.
+
+The seed-42 matrix compares real-only training, conventional augmentation,
+unfiltered synthetic data at full and equal size, the filtered corpus, and the
+full-real upper reference.  The primary paired analysis then trains real-only and
+real-plus-filtered conditions with seeds 42, 43, and 44 under identical data and
+configuration hashes.  A 5,000-repetition hierarchical paired bootstrap first
+resamples seeds and then paired test rows within each selected seed.  Exact
+McNemar tests are computed per seed for intent accuracy and exact match, with
+Holm correction over six tests.
+
+Before observing the second-family results, the cross-family criterion was fixed:
+the paired mean delta for intent accuracy and exact match had to be positive in
+both families, and every corresponding hierarchical 95\% confidence-interval
+lower bound had to exceed zero.  Results are summarized per family and are not
+pooled.
+
+\section{Results}
+Table~\ref{tab:primary} reports the frozen seed-42 matrix.  The filtered condition
+uses fewer synthetic rows than the full unfiltered condition but has the highest
+intent accuracy, slot F1, exact match, and JSON-valid rate among the synthetic
+conditions in this run.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & Intent acc. & Macro-F1 & Slot F1 & Exact & JSON valid \\
+\midrule
+Zero shot & 10.66 & 23.12 & 0.00 & 8.10 & 17.38 \\
+Real only & 73.54 & 75.20 & 62.14 & 49.06 & 98.02 \\
+Classical augmentation & 74.31 & 75.59 & 62.58 & 46.81 & 96.23 \\
+Unfiltered full & 75.99 & 76.42 & 65.01 & 51.21 & 97.75 \\
+Unfiltered equal-N & 76.03 & 75.59 & 64.37 & 51.01 & 97.95 \\
+Filtered synthetic & 76.19 & 76.09 & 66.54 & 52.12 & 97.98 \\
+Full real reference & 84.53 & 81.65 & 71.58 & 60.66 & 99.73 \\
+\bottomrule
+\end{tabular}
+\caption{Seed-42 test metrics in percent.}
+\label{tab:primary}
+\end{table}
+
+Across the three paired Gemma seeds, filtered synthetic data improves intent
+accuracy by \(4.14 \pm 1.39\) percentage points and exact match by
+\(3.86 \pm 0.73\) points (mean \(\pm\) sample standard deviation).  The
+hierarchical bootstrap estimates are +4.14 with 95\% CI [2.60, 5.59] for intent
+accuracy and +3.86 with CI [2.75, 4.92] for exact match.  The six exact McNemar
+tests for these two metrics reject after Holm correction, with adjusted
+\(p \leq 0.00017\).  These tests apply only to the frozen rows and contract.
+
+\section{Robustness}
+The evaluation-only robustness manifest deterministically perturbs the test set
+with colloquial/lexical variants and ASR-like noise, yielding 8,922 rows per
+adapter.  It never re-enters training.  Across seeds 42--44, all five paired mean
+deltas are positive for both families.  For Gemma, the filtered-minus-real-only
+deltas are 3.63 intent-accuracy points, 2.11 macro-F1 points, 2.75 slot-F1 points,
+3.58 exact-match points, and 1.49 JSON-valid points.  For Phi-4-mini, the
+corresponding deltas are 6.22, 4.69, 3.73, 6.98, and 1.83 points.
+
+The uncertainty is important.  Gemma macro-F1, slot F1, and JSON-valid sample
+standard deviations are comparable to or larger than their means at \(n=3\).
+Two Gemma metrics that are negative at seed 42 become positive when all three
+seeds are included.  The perturbations are deterministic probes, not a measured
+distribution of real speech-recognition errors; they support a bounded stress
+test rather than a general robustness claim.
+
+\section{Cross-Family Replication}
+Phi-4-mini repeats the real-only versus real-plus-filtered comparison using the
+same corpus, prompt template, 500 steps, seeds, evaluator, and 2,974 test rows.
+The Phi intent-accuracy mean delta is +5.09 percentage points with hierarchical
+95\% CI [1.83, 9.02], and the exact-match delta is +4.71 with CI [1.36, 7.59].
+The corresponding Gemma estimates are +4.14 [2.60, 5.59] and +3.86 [2.75, 4.92].
+Both preregistered primary metrics therefore pass the cross-family criterion.
+
+This result is not uniformly positive for every metric and test.  Gemma's
+JSON-valid interval crosses zero, and one Phi seed-level exact-match McNemar test
+does not reject after correction.  The conclusion is consequently limited to
+replication across two families under this one frozen dataset and training
+contract; it is not a claim about arbitrary models.
+
+\section{Equal-N Recipe Ablation}
+The M19 composition experiment fixes each condition at 1,176 real plus 2,246
+synthetic rows.  An equal-size control retains all four recipes; four other
+conditions each exclude one recipe.  Every condition uses Gemma, seed 42, 500
+steps, and the same 2,974-row test set.  Exact-match difference from control and
+a threshold of 2.5 percentage points were fixed before execution.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+Excluded recipe & Intent acc. & Exact match & Exact delta \\
+\midrule
+None (control) & 75.99 & 49.50 & 0.00 \\
+Paraphrase & 74.14 & 50.00 & +0.50 \\
+Slot substitution & 77.14 & 51.51 & +2.02 \\
+Noise/code-switch & 73.47 & 48.76 & -0.74 \\
+Hard negative & 76.19 & 50.81 & +1.31 \\
+\bottomrule
+\end{tabular}
+\caption{M19 seed-42 equal-N composition comparison, in percent/percentage points.}
+\label{tab:m19}
+\end{table}
+
+The four exact-match deltas were +0.50 +2.02 -0.74 and +1.31 percentage points;
+none reaches the threshold.  This is a descriptive comparison with a single seed
+(\(n=1\)).  It neither shows that the recipes are useless nor identifies an
+independent recipe effect.  In particular, this result does not support a recipe-level causal claim.
+No additional seed, new metric, or lower threshold
+was added after inspecting the result.
+
+\section{Limitations}
+The core evidence uses one translated benchmark locale, two student families,
+three training seeds, a fixed 500-step budget, and one teacher/judge setup.
+MASSIVE \texttt{zh-TW} is translated from English SLURP and may not cover the
+distribution of naturally occurring Taiwanese speech.  Synthetic examples can
+inherit teacher biases, local-knowledge gaps, and generation modes.  The F7
+random stratum contains only 50 rows; its observed 6.0\% rejection rate has a
+wide Wilson interval and targeted strata are not an unbiased corpus estimate.
+
+M19 is a single seed and is intentionally underpowered for small recipe effects.
+Per-intent estimates vary considerably across seeds, so extreme seed-42 changes
+must not be interpreted as stable intent-specific effects.  Robustness probes
+are generated perturbations rather than sampled production errors.  There is no
+end-user study, no wall-socket energy measurement, and no evidence for other
+languages or domains.  The report is not peer reviewed.
+
+\section{Ethics and Licensing}
+The source code is MIT licensed.  MASSIVE seed utterances and the released
+synthetic dataset are distributed with CC BY 4.0 attribution and provenance
+described in the data card.  The local Qwen teacher, gpt-oss judge, and primary
+Gemma student have their own Apache-2.0 upstream terms; Phi-4-mini is MIT
+licensed.  These upstream terms are not replaced by the repository license.
+
+The public model artifact is the Gemma seed-42 filtered LoRA adapter, governed by
+the applicable Gemma upstream license.  Phi-4-mini weights and Phi adapters are
+not published.  The dataset contains task utterances rather than personal user
+logs, but synthetic content can still encode stereotypes or unsafe assumptions;
+downstream users should audit performance and harms in their deployment domain.
+
+\section{Resource Accounting}
+Every model workload ran locally on one NVIDIA GeForce RTX 4090 24 GB, with no
+paid model API usage.  The frozen primary path accounts for 14.440 GPU hours.
+Including generation audits, extra seeds, robustness, Phi replication, and M19,
+the traceable local total is 42.412 hours.
+
+At the documented 450 W GPU TDP, the total corresponds to a 19.085 kWh
+GPU-only upper-bound envelope.  This value is not a wall-socket measurement and
+does not imply that the GPU operated at TDP throughout.  One interrupted M19
+attempt contributes 2.084 hours through a hash-anchored runtime audit so that
+discarded compute is not silently omitted.
+
+\section{Reproducibility}
+The public release corpus has SHA-256
+\texttt{c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665}.
+The published Gemma adapter is 155,609,536 bytes with SHA-256
+\texttt{f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a}.
+Machine-readable reports record row counts, data and prediction hashes, fixed
+seeds, model revisions, bootstrap settings, and interpretation boundaries.
+
+Repository checks rebuild reported README values from tracked reports, audit the
+sole-contributor history, verify documented commands, and validate publication
+metadata.  The source reports are authoritative if prose and machine-readable
+evidence differ.  Reproduction should use the tagged environment and documented
+commands rather than rerunning generation with newer upstream model revisions.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
