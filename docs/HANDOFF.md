@@ -11,7 +11,7 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-08-03 +08:00 |
+| 執行區間 | 2026-07-27 03:14–2026-08-03 14:20 +08:00 |
 | 完成到 | **v1.2.1 已發布並由 Zenodo 保存，專案完成。** 研究、GPU 階段、publication metadata、Hugging Face cards、GitHub Release 與 DOI 均已驗證 |
 | 卡住的項目 | 無 |
 | GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 27.972 h；可追溯 local total **42.412 h**；TDP 上限 19.085 kWh |
@@ -100,6 +100,17 @@ primary runs，或 M15 的預先登記判準。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-08-03 14:20 +08:00] v1.2.1 DOI closeout — 完成
+
+- README、`CITATION.cff`、handoff 與 release notes 已加入精確的 version DOI
+  `10.5281/zenodo.21767493`，並由離線 closeout gate 對照 Zenodo evidence
+- GitHub Release body 已同步 DOI 與 record URL；repository homepage 已改為 DOI
+  landing page，原八個 topics 與六個 release assets 均維持不變
+- 匿名複驗 GitHub、Hugging Face 與 Zenodo 均為 `public_verified`；Dataset
+  仍為 3,754 rows，Gemma adapter size／SHA 未變，release preflight 無 blocking
+- GitHub Contributors API 只回傳 `kuotunyu`；`v1.0.0`–`v1.2.1` 四個 tag
+  target 均未移動，`v1.2.1` 仍固定指向 `1f42372e97c98212f192362ec441c034815b37d5`
 
 ### [2026-08-03 09:22 +08:00] M19 — 五組完成，進入 v1.2.0 收尾
 
