@@ -9,7 +9,7 @@
       "release_manifest.json",
       "schema.json"
     ],
-    "hub_commit": "90cd3f53fcdc0bb09fda19f75163d221b9fc80be",
+    "hub_commit": "c5896f84d49078c6aea614637b64a464481c50e2",
     "license": "cc-by-4.0",
     "repo_id": "steven0226/formosa-nlu-synth-v1",
     "rows": 3754,
@@ -41,7 +41,7 @@
       "tokenizer.json",
       "tokenizer_config.json"
     ],
-    "hub_commit": "d36211df0b7451af9037e5a4200431b09f4d202b",
+    "hub_commit": "fdb4d6aa139d53a51f45c0cf2cfbe5c73660f253",
     "license": "apache-2.0",
     "repo_id": "steven0226/gemma-4-e4b-formosanlu-lora",
     "url": "https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora",
@@ -49,5 +49,5 @@
   },
   "schema_version": 1,
   "status": "public_verified",
-  "verified_at": "2026-07-29T14:03:04.306051+00:00"
+  "verified_at": "2026-08-03T04:54:51.108239+00:00"
 }
