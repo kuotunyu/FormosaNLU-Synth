@@ -158,7 +158,9 @@ flowchart TB
 
 <details>
 <summary><strong>查看 publication static pipeline figure</strong></summary>
+
 ![FormosaNLU pipeline](assets/m12_pipeline.png)
+
 </details>
 
 <details>

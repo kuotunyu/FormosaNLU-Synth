@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from scripts.build_m12_artifacts import build_resource_ledger
 from scripts.verify_readme import (
     expected_ablation_rows,
@@ -10,6 +12,8 @@ from scripts.verify_readme import (
     expected_robustness_rows,
     readme_diagram_checks,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_readme_diagram_checks_require_two_focused_flows() -> None:
@@ -65,6 +69,16 @@ MASSIVE --> F1-F4 --> F5-F6 --> F7 --> real_only --> cross-family
 """
 
     assert not readme_diagram_checks(readme)["exactly two Mermaid diagrams"]
+
+
+def test_publication_static_pipeline_image_has_markdown_block_boundaries() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert (
+        "</summary>\n\n"
+        "![FormosaNLU pipeline](assets/m12_pipeline.png)\n\n"
+        "</details>"
+    ) in readme
 
 
 def test_resource_ledger_uses_measured_phase_times() -> None:
