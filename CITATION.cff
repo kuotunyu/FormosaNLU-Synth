@@ -17,6 +17,9 @@ keywords:
   - intent classification
   - slot filling
 identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21767493"
+    description: "Version-specific Zenodo DOI for v1.2.1"
   - type: url
     value: "https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1"
     description: "Public dataset"

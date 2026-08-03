@@ -34,7 +34,7 @@
 ## D-002 · Teacher 改用本機開放權重模型（Ollama），judge 換家族
 
 - **日期**：2026-07-27
-- **狀態**：`accepted`（最終型號 `pending`，M2 實測後補記）
+- **狀態**：`accepted-complete`（最終型號與實測由 D-010 定案）
 - **決策**：合成資料的 teacher 用**本機 Ollama 上的 Apache-2.0 開放權重模型**；品質審查 judge 用**不同家族**的 Apache-2.0 開放權重模型。Phase 1 不使用任何雲端 API。
 
 **觸發原因**
@@ -450,9 +450,9 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 ## D-017 — M15 第二 student 採 `microsoft/Phi-4-mini-instruct`
 
 - **日期**：2026-07-29
-- **狀態**：`accepted_pending_runtime`（revision／paired claim 已凍結；待下載、
-  token audit 與 one-step smoke）
-- **決策**：跨模型 replication 的第二 student 候選定為
+- **狀態**：`accepted-complete`（artifact audit、amended smoke qualification、
+  六組正式 runs 與跨 family report 均已完成）
+- **決策**：跨模型 replication 的第二 student 定為
   `microsoft/Phi-4-mini-instruct`。只重跑主比較：
   `real_only`／`real_syn_filtered` × seeds 42–44；資料、prompt、steps、
   effective batch、max length 與 2,974-row Test contract 均保持一致。
@@ -464,7 +464,7 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 | Qwen 3–4B student | 中文強，但與 Qwen teacher 同 family，較難排除 family affinity |
 | SmolLM3 3B | Apache-2.0、工具鏈乾淨，但官方原生語言不含 Chinese |
 | Llama 3.2 3B | 模型小，但 Chinese 不是主要支援語言且 license 義務較多 |
-| **Phi-4-mini-instruct（採用候選）** | 3.8B、MIT、官方列出 Chinese、約 7.7 GB，且與三個既有角色皆不同 family |
+| **Phi-4-mini-instruct（採用）** | 3.8B、MIT、官方列出 Chinese、約 7.7 GB，且與三個既有角色皆不同 family |
 
 **理由**
 
@@ -477,6 +477,13 @@ projects 不由此 pipeline 自動啟動；contributors 仍只能是 `kuotunyu`�
 **硬性 gate**：下載前依 >2 GB 規則取得使用者明示同意；下載後固定 revision
 與 SHA、完成 tokenizer truncation audit、one-step QLoRA、checkpoint resume
 與小型 strict-output probe。任一項失敗就停，不為通關改資料或 primary config。
+
+**完成結果**：固定 revision `cfbefacb99257ffa30c83adab238a50856ac3083`；
+`real_only`／`real_syn_filtered` × seeds 42–44 六組各完成 500-step training 與
+2,974-row strict evaluation。預先登記的 `intent_accuracy`、`exact_match` 跨兩個
+student families 判準通過；完整結果見
+`reports/m15_cross_model_replication.json`。原始 strict smoke failure 與 D-018
+amendment 同時保留，沒有 parser repair 或事後調參。
 
 **凍結 revision 與 claim（2026-07-29）**：
 

@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：v1.2.0 已發布，專案完成。**
+> **狀態：v1.2.1 已發布、由 Zenodo 保存，專案完成。**
 > 這份檔保留已完成的 Colab、Hugging Face 與 GitHub 操作紀錄，供未來重現；
 > 目前沒有需要使用者執行的步驟。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
@@ -11,19 +11,21 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**無。v1.2.0 已於 2026-08-03 完成發布。**
+**無。v1.2.1 已於 2026-08-03 完成發布，version DOI 為
+[`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493)。**
 
 | 動作 | 結果 |
 |---|---|
 | M19 五組 equal-N ablation | ✅ 五組各 500 steps + 2,974-row strict evaluation |
-| Annotated tag `v1.2.0` | ✅ 指向 `07493cacb26dea5daaa03aafdbc1497b12678405`，tagger `kuotunyu` |
-| GitHub Release | ✅ [v1.2.0](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.0)，非 draft、非 prerelease |
+| Annotated tag `v1.2.1` | ✅ 指向 `1f42372e97c98212f192362ec441c034815b37d5`，tagger `kuotunyu` |
+| GitHub Release | ✅ [v1.2.1](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)，非 draft、非 prerelease |
+| Zenodo | ✅ [record 21767493](https://zenodo.org/records/21767493)，creator 僅 `kuotunyu` |
 | Release preflight | ✅ `public_verified`，blocking 為空 |
 | Hugging Face artifacts | ✅ 刻意不變；Dataset 仍 3,754 rows、Gemma adapter SHA 未變 |
 | Contributors | ✅ GitHub API 複驗只有 `kuotunyu` |
 
-v1.2.0 是研究證據版本，不是 Dataset／Model artifact 版本，因此不需要重新上傳
-Hugging Face。M19 的 single-seed negative result、2.5-point detectability threshold
+v1.2.1 是 publication-layer evidence 版本，不是 Dataset／Model artifact 版本，
+因此不需要重新上傳資料或權重。M19 的 single-seed negative result、2.5-point detectability threshold
 與 no-causal-claim 限制均已公開。
 
 以下 v1.1.0 表格保留作歷史紀錄：

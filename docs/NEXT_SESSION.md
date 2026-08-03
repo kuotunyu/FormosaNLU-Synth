@@ -1,6 +1,6 @@
 # NEXT_SESSION.md — 接手指南
 
-> **最後更新**：2026-08-03，v1.2.0 已發布
+> **最後更新**：2026-08-03，v1.2.1 已發布並由 Zenodo 保存
 > **目前狀態**：專案完成，沒有待跑的 GPU 階段，也沒有需要使用者操作的發布步驟。
 
 ---
@@ -14,7 +14,9 @@ JSON 輸出）的 low-resource 表現。
 公開產物：
 
 - GitHub：<https://github.com/kuotunyu/FormosaNLU-Synth>
-- GitHub Release：[v1.2.0](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.0)
+- GitHub Release：[v1.2.1](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
+- Zenodo：[record 21767493](https://zenodo.org/records/21767493)，version DOI
+  [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493)
 - HF Dataset：`steven0226/formosa-nlu-synth-v1`（3,754 rows）
 - HF Model：`steven0226/gemma-4-e4b-formosanlu-lora`
 
@@ -34,16 +36,17 @@ phase；GPU、Ollama 與 M19 processes 已回到 idle／不存在。
 
 | 項目 | 結果 |
 |---|---|
-| Core commit | `07493cacb26dea5daaa03aafdbc1497b12678405` |
-| Annotated tag | `v1.2.0`，tagger `kuotunyu` |
+| Tagged release commit | `1f42372e97c98212f192362ec441c034815b37d5` |
+| Annotated tag | `v1.2.1`，tagger `kuotunyu` |
 | GitHub Release | 非 draft、非 prerelease |
+| Zenodo | Public；version DOI `10.5281/zenodo.21767493`；creator 僅 `kuotunyu` |
 | 本機 gates | Ruff、完整 pytest、README verifier、contributors audit、reproduce verifier 全綠 |
 | Release preflight | `public_verified`；blocking 為空 |
 | Contributors | GitHub API 只有 `kuotunyu` |
-| Hugging Face | Dataset／adapter 刻意不變；v1.2.0 是 evidence release |
+| Hugging Face | Dataset／adapter 刻意不變；v1.2.1 是 publication-layer evidence release |
 
-`v1.2.0` tag 指向 M19 core commit；其後若有文件-only handoff commit，不得移動
-已公開 tag。
+`v1.2.1` tag 固定指向 Zenodo 保存的 source snapshot；其後的 DOI backlink／handoff
+commit 只前進 `main`，不得移動已公開 tag。`v1.2.0` 與更早 tags 同樣 immutable。
 
 ---
 
@@ -55,7 +58,7 @@ phase；GPU、Ollama 與 M19 processes 已回到 idle／不存在。
 - README 依使用者決定維持正體中文（台灣，`zh-TW`）為主，專有名詞保留原文。
 
 若之後要做台灣知識蒸餾、TMMLU+、真實 ASR error 或自然 code-switching corpus，
-那是新里程碑／新研究，不是 v1.2.0 的欠件。開始前應另立 protocol、凍結判準與
+那是新里程碑／新研究，不是 v1.2.1 的欠件。開始前應另立 protocol、凍結判準與
 資源預算，不能把 M19 的 single-seed 結果事後升級成 recipe-level causal claim。
 
 ---

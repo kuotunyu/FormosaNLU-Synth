@@ -154,5 +154,5 @@ M4 仍沿用 `docs/AUTONOMOUS_RUN.md` 的既定門檻，M2 不修改：
 ## 8. Review 狀態
 
 - [x] D-009 無人監督規則下自動定案，可進 M3
-- [ ] 使用者已 review `qwen3.6:27b` / `gpt-oss:20b` / `BAAI/bge-m3`
-- 使用者 review 日期：待填
+- [x] 使用者已 review `qwen3.6:27b` / `gpt-oss:20b` / `BAAI/bge-m3`
+- 使用者 review 日期：2026-07-29（於對話中明示已看過並同意）

@@ -11,8 +11,8 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-08-03 09:38 +08:00 |
-| 完成到 | **v1.2.0 已發布，專案完成。** M19 五組 equal-N ablation、完整本機 gates、annotated tag 與 GitHub Release 均已完成並驗證 |
+| 執行區間 | 2026-07-27 03:14–2026-08-03 +08:00 |
+| 完成到 | **v1.2.1 已發布並由 Zenodo 保存，專案完成。** 研究、GPU 階段、publication metadata、Hugging Face cards、GitHub Release 與 DOI 均已驗證 |
 | 卡住的項目 | 無 |
 | GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 27.972 h；可追溯 local total **42.412 h**；TDP 上限 19.085 kWh |
 | 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB |
@@ -30,9 +30,9 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 `m15.smoke.infrastructure.v2` amendment；原失敗不覆寫，正式 prompt、資料、
 500 steps、strict metrics 與跨 family criterion 全部不變。
 
-### 👀 需要你 review 的產出
+### ✅ 已完成的主要產出
 
-<!-- 例如 docs/teacher_choice.md、reports/pilot_report.md、M8 零樣本結果 -->
+以下全部已完成、驗證並公開；目前不需要使用者逐項操作。
 
 - `docs/teacher_choice.md`：teacher/judge 定案與完整 benchmark
 - `reports/pilot_report.md`：500 筆 pilot、過濾漏斗、固定 gate
@@ -58,21 +58,21 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 
 ### ➡️ 接下來的建議起點
 
-**專案的 GPU、實驗與 v1.2.0 發布工作已全部完成。** M19 已補上原本 D-004
+**專案的 GPU、實驗與 v1.2.1 publication closeout 已全部完成。** M19 已補上原本 D-004
 因成本取消的 per-recipe ablation；五組差異都未達預先登記的 2.5-point 門檻，
 negative result 已完整公開。Phi `full_real` 仍依 D-019 原則永久取消；README 的
 台灣知識蒸餾 + TMMLU+ 只是未來 roadmap，不是未完成待辦。
 
-**v1.2.0 發布已完成**（2026-08-03）：
+**v1.2.1 發布與保存已完成**（2026-08-03）：
 
 | 項目 | 結果 |
 |---|---|
-| Core commit | `07493cacb26dea5daaa03aafdbc1497b12678405` |
-| Annotated tag `v1.2.0` | 指向上述 core commit；tagger `kuotunyu` |
-| GitHub Release | [v1.2.0](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.0)，非 draft、非 prerelease |
-| 本機 gates | Ruff、完整 pytest、README verifier、contributors audit、reproduce verifier 全綠 |
+| Annotated tag `v1.2.1` | 固定指向 `1f42372e97c98212f192362ec441c034815b37d5`；tagger `kuotunyu`，不因 post-tag DOI commit 移動 |
+| GitHub Release | [v1.2.1](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)，非 draft、非 prerelease，6 個 hash-verified evidence assets |
+| Zenodo | [record 21767493](https://zenodo.org/records/21767493)；version DOI [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493)；creator 僅 `kuotunyu` |
+| 本機 gates | Ruff、完整 pytest、README verifier、contributors audit、reproduce verifier、closeout verifier 全綠 |
 | Release preflight | `public_verified`，blocking 為空 |
-| Hugging Face | Dataset 仍 3,754 rows；Gemma adapter SHA 未變；本 evidence release 不重傳 artifact |
+| Hugging Face | Dataset 仍 3,754 rows；Gemma adapter SHA 未變；v1.2.1 只更新 cards，不重傳 artifact |
 | Contributors | GitHub API 複驗只有 `kuotunyu` |
 
 **v1.1.0 發布紀錄**（2026-08-01）：

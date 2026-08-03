@@ -1,5 +1,7 @@
 # v1.2.1 — Publication metadata and documentation closeout
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21767493.svg)](https://doi.org/10.5281/zenodo.21767493)
+
 ## 範圍
 
 v1.2.1 是 publication-layer patch。它修正版本 metadata、文件連結、授權範圍、
@@ -35,6 +37,8 @@ Hugging Face card 說明、可引用技術報告與 release preservation；不�
 
 ## v1.2.1 evidence
 
+- [Zenodo immutable source archive](https://zenodo.org/records/21767493) — version DOI
+  [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493)
 - [研究摘要與重現入口](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.1/README.md)
 - [English technical report](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.1/paper/formosanlu_synth.tex)
 - [M19 equal-N aggregate](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.1/reports/m19_ablation.md)

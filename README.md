@@ -1,5 +1,7 @@
 # FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21767493.svg)](https://doi.org/10.5281/zenodo.21767493)
+
 > **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、seeds 43/44
 > uncertainty runs、M10／M16 robustness、M11 比較介面、M12 報告產物、
 > Colab portability、F7 independent judge audit 與 M19 equal-N per-recipe
@@ -32,6 +34,7 @@ Teacher、student 與 judge 來自不同 model families。Primary 結果使用
 | Artifact | 位置 | 驗證狀態 |
 | --- | --- | --- |
 | Source、pipeline、reports | [GitHub](https://github.com/kuotunyu/FormosaNLU-Synth) | Public；Contributors 僅 `kuotunyu` |
+| v1.2.1 immutable source archive | [Zenodo](https://zenodo.org/records/21767493) | Public；version DOI [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493) |
 | 3,754-row F1–F7 corpus | [Hugging Face Dataset](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) | Public；Dataset Viewer 與匿名載入通過 |
 | Filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) | Public；PEFT config、686 tensors 與 SHA-256 通過 |
 
@@ -614,6 +617,26 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
 - Synthetic data 會繼承 teacher 的 biases 與台灣在地知識缺口。
 - F5 移除 4,596 筆 synthetic near-duplicates，顯示明顯的 generator mode
   collapse。
+
+## 引用
+
+若使用本專案的 source、pipeline、reports、Dataset 或公開 adapter，請引用
+[`CITATION.cff`](CITATION.cff) 所記錄的 v1.2.1 版本：
+
+```bibtex
+@software{kuotunyu_formosanlu_synth_2026,
+  author  = {kuotunyu},
+  title   = {FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU},
+  year    = {2026},
+  version = {1.2.1},
+  doi     = {10.5281/zenodo.21767493},
+  url     = {https://doi.org/10.5281/zenodo.21767493}
+}
+```
+
+Zenodo version record：<https://zenodo.org/records/21767493>。這個 DOI 固定指向
+GitHub `v1.2.1` source snapshot；Dataset 與 Model 的各自授權仍以下節與
+Hugging Face cards 為準。
 
 ## 授權
 

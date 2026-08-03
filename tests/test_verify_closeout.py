@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from scripts.verify_closeout import Check, collect_checks
@@ -105,6 +106,7 @@ def test_accepts_explicit_apache_and_phi_mit_license_language(tmp_path: Path) ->
 
 def test_repository_metadata_checks_pass() -> None:
     required = {
+        "doi_backlinks",
         "v120_release_links",
         "next_session_reports",
         "model_license_language",
@@ -114,6 +116,76 @@ def test_repository_metadata_checks_pass() -> None:
     failed = {check.name for check in collect_checks() if not check.passed}
 
     assert failed.isdisjoint(required)
+
+
+def test_rejects_missing_doi_backlinks(tmp_path: Path) -> None:
+    reports = tmp_path / "reports"
+    docs = tmp_path / "docs"
+    reports.mkdir()
+    docs.mkdir()
+    (reports / "v121_zenodo.json").write_text(
+        json.dumps(
+            {
+                "doi": "10.5281/zenodo.12345678",
+                "doi_url": "https://doi.org/10.5281/zenodo.12345678",
+                "record_url": "https://zenodo.org/records/12345678",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text("# Project\n", encoding="utf-8")
+    (tmp_path / "CITATION.cff").write_text(
+        "cff-version: 1.2.0\nversion: 1.2.1\nidentifiers: []\n",
+        encoding="utf-8",
+    )
+    (docs / "HANDOFF.md").write_text("No DOI yet.\n", encoding="utf-8")
+    (docs / "RELEASE_NOTES_v1.2.1.md").write_text(
+        "No DOI yet.\n",
+        encoding="utf-8",
+    )
+
+    check = _check(tmp_path, "doi_backlinks")
+
+    assert check.passed is False
+    assert "README.md" in check.observed
+    assert "CITATION.cff" in check.observed
+
+
+def test_accepts_exact_doi_backlinks(tmp_path: Path) -> None:
+    doi = "10.5281/zenodo.12345678"
+    doi_url = f"https://doi.org/{doi}"
+    record_url = "https://zenodo.org/records/12345678"
+    reports = tmp_path / "reports"
+    docs = tmp_path / "docs"
+    reports.mkdir()
+    docs.mkdir()
+    (reports / "v121_zenodo.json").write_text(
+        json.dumps(
+            {"doi": doi, "doi_url": doi_url, "record_url": record_url}
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text(
+        f"[![DOI](https://zenodo.org/badge/DOI/{doi}.svg)]({doi_url})\n"
+        f"## 引用\n{record_url}\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "CITATION.cff").write_text(
+        "cff-version: 1.2.0\n"
+        "version: 1.2.1\n"
+        f"identifiers:\n  - type: doi\n    value: {doi}\n",
+        encoding="utf-8",
+    )
+    (docs / "HANDOFF.md").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+    (docs / "RELEASE_NOTES_v1.2.1.md").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+
+    assert _check(tmp_path, "doi_backlinks").passed is True
 
 
 def test_markdown_link_check_ignores_fenced_code_examples(tmp_path: Path) -> None:

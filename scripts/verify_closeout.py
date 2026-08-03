@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 from dataclasses import dataclass
@@ -211,6 +212,57 @@ def _version_check(root: Path) -> Check:
     )
 
 
+def _doi_backlink_check(root: Path) -> Check:
+    try:
+        report = json.loads(
+            (root / "reports/v121_zenodo.json").read_text(encoding="utf-8")
+        )
+        doi = str(report["doi"])
+        doi_url = str(report["doi_url"])
+        record_url = str(report["record_url"])
+    except (KeyError, OSError, TypeError, UnicodeError, json.JSONDecodeError):
+        return Check(
+            "doi_backlinks",
+            False,
+            "reports/v121_zenodo.json missing or invalid",
+            "the exact minted version DOI appears on every public citation surface",
+        )
+
+    missing: list[str] = []
+    readme = _read_text(root, "README.md") or ""
+    badge = f"[![DOI](https://zenodo.org/badge/DOI/{doi}.svg)]({doi_url})"
+    if badge not in readme or "## 引用" not in readme or record_url not in readme:
+        missing.append("README.md")
+
+    try:
+        citation = yaml.safe_load(
+            (root / "CITATION.cff").read_text(encoding="utf-8")
+        )
+        identifiers = citation.get("identifiers", [])
+        has_doi = any(
+            isinstance(identifier, dict)
+            and identifier.get("type") == "doi"
+            and str(identifier.get("value")) == doi
+            for identifier in identifiers
+        )
+    except (AttributeError, OSError, TypeError, UnicodeError, yaml.YAMLError):
+        has_doi = False
+    if not has_doi:
+        missing.append("CITATION.cff")
+
+    for relative in ("docs/HANDOFF.md", "docs/RELEASE_NOTES_v1.2.1.md"):
+        text = _read_text(root, relative) or ""
+        if doi not in text or record_url not in text:
+            missing.append(relative)
+
+    return Check(
+        "doi_backlinks",
+        not missing,
+        f"exact DOI {doi} on all surfaces" if not missing else ", ".join(missing),
+        "the exact minted version DOI appears on every public citation surface",
+    )
+
+
 def _license_scope_check(root: Path) -> Check:
     license_text = (_read_text(root, "LICENSE") or "").replace("\r\n", "\n")
     notice = _read_text(root, "THIRD_PARTY_NOTICES.md") or ""
@@ -270,6 +322,7 @@ def collect_checks(repo_root: Path = REPO_ROOT) -> list[Check]:
         _model_license_check(repo_root),
         _card_claim_check(repo_root),
         _version_check(repo_root),
+        _doi_backlink_check(repo_root),
         _license_scope_check(repo_root),
         _paper_check(repo_root),
     ]
