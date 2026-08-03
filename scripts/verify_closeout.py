@@ -230,7 +230,11 @@ def _doi_backlink_check(root: Path) -> Check:
 
     missing: list[str] = []
     readme = _read_text(root, "README.md") or ""
-    badge = f"[![DOI](https://zenodo.org/badge/DOI/{doi}.svg)]({doi_url})"
+    badge_doi = doi.replace("-", "--").replace("/", "%2F")
+    badge = (
+        "[![DOI](https://img.shields.io/badge/DOI-"
+        f"{badge_doi}-1682D4)]({doi_url})"
+    )
     if badge not in readme or "## 引用" not in readme or record_url not in readme:
         missing.append("README.md")
 

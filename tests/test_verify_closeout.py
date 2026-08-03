@@ -165,9 +165,12 @@ def test_accepts_exact_doi_backlinks(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
+    badge = (
+        "[![DOI](https://img.shields.io/badge/DOI-"
+        f"{doi.replace('-', '--').replace('/', '%2F')}-1682D4)]({doi_url})"
+    )
     (tmp_path / "README.md").write_text(
-        f"[![DOI](https://zenodo.org/badge/DOI/{doi}.svg)]({doi_url})\n"
-        f"## 引用\n{record_url}\n",
+        f"{badge}\n## 引用\n{record_url}\n",
         encoding="utf-8",
     )
     (tmp_path / "CITATION.cff").write_text(
@@ -186,6 +189,43 @@ def test_accepts_exact_doi_backlinks(tmp_path: Path) -> None:
     )
 
     assert _check(tmp_path, "doi_backlinks").passed is True
+
+
+def test_rejects_fragile_zenodo_svg_badge(tmp_path: Path) -> None:
+    doi = "10.5281/zenodo.12345678"
+    doi_url = f"https://doi.org/{doi}"
+    record_url = "https://zenodo.org/records/12345678"
+    reports = tmp_path / "reports"
+    docs = tmp_path / "docs"
+    reports.mkdir()
+    docs.mkdir()
+    (reports / "v121_zenodo.json").write_text(
+        json.dumps(
+            {"doi": doi, "doi_url": doi_url, "record_url": record_url}
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text(
+        f"[![DOI](https://zenodo.org/badge/DOI/{doi}.svg)]({doi_url})\n"
+        f"## 引用\n{record_url}\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "CITATION.cff").write_text(
+        "cff-version: 1.2.0\n"
+        "version: 1.2.1\n"
+        f"identifiers:\n  - type: doi\n    value: {doi}\n",
+        encoding="utf-8",
+    )
+    (docs / "HANDOFF.md").write_text(f"{doi}\n{record_url}\n", encoding="utf-8")
+    (docs / "RELEASE_NOTES_v1.2.1.md").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+
+    check = _check(tmp_path, "doi_backlinks")
+
+    assert check.passed is False
+    assert "README.md" in check.observed
 
 
 def test_markdown_link_check_ignores_fenced_code_examples(tmp_path: Path) -> None:
