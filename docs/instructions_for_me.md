@@ -1,7 +1,8 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：M15 跨 family 複製已完成；M16（robustness 補齊 + 文件收尾）進行中。**
-> 這份檔的存在理由：需要離開這台電腦才能做的事（Colab、HF、GitHub），我做不了，只能寫清楚讓你照做。
+> **狀態：v1.2.0 已發布，專案完成。**
+> 這份檔保留已完成的 Colab、Hugging Face 與 GitHub 操作紀錄，供未來重現；
+> 目前沒有需要使用者執行的步驟。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
 ---
@@ -10,7 +11,22 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**無。v1.1.0 已於 2026-08-01 完成發佈。**
+**無。v1.2.0 已於 2026-08-03 完成發布。**
+
+| 動作 | 結果 |
+|---|---|
+| M19 五組 equal-N ablation | ✅ 五組各 500 steps + 2,974-row strict evaluation |
+| Annotated tag `v1.2.0` | ✅ 指向 `07493cacb26dea5daaa03aafdbc1497b12678405`，tagger `kuotunyu` |
+| GitHub Release | ✅ [v1.2.0](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.0)，非 draft、非 prerelease |
+| Release preflight | ✅ `public_verified`，blocking 為空 |
+| Hugging Face artifacts | ✅ 刻意不變；Dataset 仍 3,754 rows、Gemma adapter SHA 未變 |
+| Contributors | ✅ GitHub API 複驗只有 `kuotunyu` |
+
+v1.2.0 是研究證據版本，不是 Dataset／Model artifact 版本，因此不需要重新上傳
+Hugging Face。M19 的 single-seed negative result、2.5-point detectability threshold
+與 no-causal-claim 限制均已公開。
+
+以下 v1.1.0 表格保留作歷史紀錄：
 
 三件動作在使用者明確授權後由 agent 代為執行，執行前後皆有驗證：
 
@@ -23,8 +39,7 @@
 | 發佈後匿名驗證 | ✅ `public_verified`；dataset 仍 3,754 rows、adapter SHA `f70f4238…` 未變 |
 | Contributors 複驗 | ✅ 仍只有 `kuotunyu` |
 
-發佈用的權限（`gh release create`、`hf upload`、`git tag -a`、`git push origin v*`）
-**已在完成後重新鎖回 deny list**，只保留唯讀查詢。下次要發佈需再次明確授權。
+未來若要建立新版本，仍需先取得使用者明確授權，並在發布前通過完整本機 gates。
 
 > ⚠️ 一個已知的小瑕疵：清理 release notes 的 commit（`a5926ad`）在建 tag 之後，
 > 所以 `v1.1.0` 標記的 tree 裡，那份文件的開頭仍有「草稿」字樣。程式碼、結果與
@@ -62,11 +77,7 @@ SHA-256 未變，v1.1.0 是證據版本而非資料版本。
 
 確認成功：兩個 HF 頁面顯示新的跨 family 段落；Dataset Viewer 仍正常。
 
-### 另外一件要你判斷（不緊急、不擋任何事）
-
-`CLAUDE.md`【工作方式】原文寫「英文註解與 README」，但目前 README 是繁中的
-（Codex 改的，且已公開）。對台灣 NLU 專案而言繁中有其道理，但那是你定的原文
-規則。改回英文是大工程，我沒有自作主張。
+README 維持使用者指定的正體中文（台灣，`zh-TW`）為主，專有名詞直接使用原文。
 
 ---
 

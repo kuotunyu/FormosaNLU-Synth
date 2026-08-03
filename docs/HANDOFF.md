@@ -11,8 +11,8 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-08-03 09:22 +08:00 |
-| 完成到 | **M19 已完成，v1.2.0 release candidate 正在做最後本機 gates。** 五組 equal-N ablation 均完成 500 steps + 2,974-row strict evaluation |
+| 執行區間 | 2026-07-27 03:14–2026-08-03 09:38 +08:00 |
+| 完成到 | **v1.2.0 已發布，專案完成。** M19 五組 equal-N ablation、完整本機 gates、annotated tag 與 GitHub Release 均已完成並驗證 |
 | 卡住的項目 | 無 |
 | GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 27.972 h；可追溯 local total **42.412 h**；TDP 上限 19.085 kWh |
 | 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB |
@@ -58,12 +58,24 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 
 ### ➡️ 接下來的建議起點
 
-**專案的 GPU 與實驗工作已全部完成。** 本次工作階段會接續完成本機 gates、
-commit／push、tag 與 GitHub Release；不需要使用者在場操作。M19 已補上原本
-D-004 因成本取消的 per-recipe ablation。Phi `full_real` 仍依 D-019 原則永久
-取消；README 的台灣知識蒸餾 + TMMLU+ 只是未來 roadmap，不是 v1.2.0 待辦。
+**專案的 GPU、實驗與 v1.2.0 發布工作已全部完成。** M19 已補上原本 D-004
+因成本取消的 per-recipe ablation；五組差異都未達預先登記的 2.5-point 門檻，
+negative result 已完整公開。Phi `full_real` 仍依 D-019 原則永久取消；README 的
+台灣知識蒸餾 + TMMLU+ 只是未來 roadmap，不是未完成待辦。
 
-**發佈已完成**（2026-08-01，使用者明確授權後由 agent 執行）：
+**v1.2.0 發布已完成**（2026-08-03）：
+
+| 項目 | 結果 |
+|---|---|
+| Core commit | `07493cacb26dea5daaa03aafdbc1497b12678405` |
+| Annotated tag `v1.2.0` | 指向上述 core commit；tagger `kuotunyu` |
+| GitHub Release | [v1.2.0](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.0)，非 draft、非 prerelease |
+| 本機 gates | Ruff、完整 pytest、README verifier、contributors audit、reproduce verifier 全綠 |
+| Release preflight | `public_verified`，blocking 為空 |
+| Hugging Face | Dataset 仍 3,754 rows；Gemma adapter SHA 未變；本 evidence release 不重傳 artifact |
+| Contributors | GitHub API 複驗只有 `kuotunyu` |
+
+**v1.1.0 發布紀錄**（2026-08-01）：
 
 | 項目 | 結果 |
 |---|---|
@@ -76,10 +88,8 @@ D-004 因成本取消的 per-recipe ablation。Phi `full_real` 仍依 D-019 原�
 
 發佈權限已重新鎖回 deny list。
 
-**另外一件要你判斷、不緊急**：`CLAUDE.md` 的【工作方式】原文寫「英文註解與
-README」，但目前 README 是繁中的（Codex 改的，且已公開）。對台灣 NLU 專案而
-言繁中 README 有其道理，但那是你定的原文規則。要改回英文是大工程，我沒有自作
-主張，留給你決定。
+README 維持使用者指定的正體中文（台灣，`zh-TW`）為主，專有名詞保留原文；
+這是已確認的發布語言，不再列為待決事項。
 
 不要覆寫原始 smoke failure、v1 release corpus、frozen thresholds、Gemma
 primary runs，或 M15 的預先登記判準。
