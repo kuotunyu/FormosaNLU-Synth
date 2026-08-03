@@ -38,11 +38,11 @@ dataset = load_dataset("steven0226/formosa-nlu-synth-v1")
 print(dataset["train"].num_rows)  # 3754
 ```
 
-LoRA adapter 使用方式見 [Model Card](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)；匿名發布稽核見 [`reports/m13_publication.json`](reports/m13_publication.json)。
+LoRA 使用方式見 [Model Card](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)；匿名發布稽核見 [`m13_publication.json`](reports/m13_publication.json)。
 
 ## 這個模型實際在做什麼
 
-以下是同一台 RTX 4090、同一份 unconstrained decoding contract 的**真實執行輸出**。
+以下是同一台 RTX 4090、同一份 decoding contract 的**真實輸出**。
 
 **輸入：`播放周杰倫`**
 
@@ -54,73 +54,71 @@ LoRA adapter 使用方式見 [Model Card](https://huggingface.co/steven0226/gemm
 {"intent":"play_music","slots":[{"type":"artist_name","value":"周杰倫"}]}
 ```
 
+同一組五句中，**base model 0/5**，adapter 則是 **5/5 valid JSON**；差別不只在 intent，也在能否穩定遵守 schema。
+
+<details>
+<summary><strong>查看第二個輸出與比較邊界</strong></summary>
+
 **輸入：`台北明天會不會下雨`**
 
-```jsonc
-// base model — 這次鍵名又變成 "name"
-{"intent": "weather_query", "slots": [{"name": "place_name", "value": "台北"}, ...]}
-
-// filtered adapter
+```json
 {"intent":"weather_query","slots":[{"type":"place_name","value":"台北"},{"type":"date","value":"明天"}]}
 ```
 
-### 差別不只在語意，更在輸出契約
+Adapter 也把 base 誤判為 `timeofday` 的「明天」修正為 `date`。兩邊 prompt 刻意不同：base 使用含合法 labels 的 zero-shot catalog prompt，adapter 使用 frozen SFT prompt；這是部署情境比較，不是同 prompt ablation，也不是 Test-set 成效。
 
-base model 產出的 intent 大致正確，slot type 也全都是合法的 MASSIVE 標籤——
-它知道這個任務。它失敗在**輸出契約**：schema 要求 `type`，它寫成 `slot`，
-而且五句裡有四句用 `slot`、一句用 `name`，**連自己都不一致**。嚴格 schema
-驗證下 **base model 0/5**、**adapter 5/5 valid JSON**。
+</details>
 
-也有語意修正：`明天` 在 base 被標成 `timeofday`，adapter 標成 `date`；
-`幫我寄信給小美說會晚到` 裡的「會晚到」被 base 當成 `email_folder`，adapter
-則正確地不產生該 slot。
-
-> **兩邊的 prompt 不同，這是刻意的。** base 拿到的是含合法 label catalog 的
-> zero-shot prompt（否則它不可能猜到 60 個 intent 的字串），adapter 用的是不含
-> catalog 的 frozen SFT prompt。所以這是**部署情境的比較**——實務上你會怎麼用
-> 這兩者——不是同 prompt 的受控 ablation。
-
-這五句是固定質性示範，**不是 Test-set 成效**。原始輸出、latency 與 adapter
-tree SHA-256 保存在
-[`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
-
-## 實驗契約
-
-MASSIVE `zh-TW`（60 intents、55 slot types）每個 intent 取 `min(20, available)` 筆 real examples。`qwen3.6:27b` local teacher、`google/gemma-4-E4B-it` / `microsoft/Phi-4-mini-instruct` 4-bit QLoRA students 與 `gpt-oss:20b` judge 分屬不同 model families；所有 primary results 都來自未進入訓練的 2,974-row Test。全程使用單張 RTX 4090 24 GB，API spend 為 **$0**。
+完整五句、latency 與 adapter tree SHA-256 見 [`m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
 
 ## 方法總覽
+
+實驗使用 MASSIVE `zh-TW`（60 intents、55 slot types）的 frozen 20-shot split；`qwen3.6:27b` teacher、`google/gemma-4-E4B-it`／`microsoft/Phi-4-mini-instruct` QLoRA students 與 `gpt-oss:20b` judge 分屬不同 model families。所有 primary results 均來自未進入訓練的 2,974-row Test；本機 RTX 4090 執行，API spend **$0**。
 
 ### 資料產製與品質控管
 
 ```mermaid
-flowchart LR
-    Massive["MASSIVE zh-TW<br/>frozen 20-shot split"]
-    Teacher["Local teacher<br/>qwen3.6:27b"]
-    Recipes["4 generation recipes<br/>paraphrase · substitution<br/>noise · hard negatives"]
+flowchart TB
+    Inputs["輸入<br/>MASSIVE zh-TW frozen 20-shot data<br/>＋ local teacher qwen3.6:27b"]
+    Recipes["產生四類 synthetic data<br/>semantic rewriting · slot substitution<br/>real-world noise · hard negatives"]
     Generated["11,264 generated rows"]
-    Cheap["F1-F4<br/>schema · labels · slots · locale"]
-    Semantic["F5-F6<br/>diversity · contamination"]
-    Primary["3,760-row frozen primary<br/>training corpus"]
-    Judge["F7 independent audit<br/>gpt-oss:20b"]
-    Public["3,754-row public Dataset"]
+    Checks["格式與標籤檢查<br/>JSON · intent / slot labels<br/>slot values · 台灣用語"]
+    Safety["去重與防止資料洩漏<br/>移除重複／離群樣本<br/>排除接近 validation / Test 的內容"]
+    Primary["3,760-row training corpus<br/>訓練前凍結，不再回溯修改"]
+    Judge["獨立模型品質稽核<br/>gpt-oss:20b 抽查 376 rows"]
+    Public["3,754-row public Dataset<br/>移除 6 筆稽核失敗樣本"]
 
-    Massive --> Recipes
-    Teacher --> Recipes
-    Recipes --> Generated --> Cheap --> Semantic
-    Semantic --> Primary
-    Semantic --> Judge --> Public
+    Inputs --> Recipes --> Generated --> Checks --> Safety --> Primary
+    Primary -->|"public release only<br/>不回溯 training"| Judge --> Public
 
     classDef source fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A
     classDef process fill:#DCFCE7,stroke:#15803D,color:#14532D
     classDef gate fill:#FEF3C7,stroke:#B45309,color:#78350F
     classDef artifact fill:#F3E8FF,stroke:#7E22CE,color:#3B0764
-    class Massive,Teacher source
+    class Inputs source
     class Recipes,Generated process
-    class Cheap,Semantic,Judge gate
+    class Checks,Safety,Judge gate
     class Primary,Public artifact
 ```
 
-F1-F6 的 3,760 rows 是 preregistered training corpus；F7 只影響公開 Dataset，因此兩個 artifact 不應混為一談。四種 recipes 與 frozen semantic thresholds 的完整定義見 [`docs/DESIGN.md`](docs/DESIGN.md)。
+<details>
+<summary><strong>F1–F7 是什麼？</strong></summary>
+
+主圖使用白話名稱；reports 與程式碼則以以下 audit IDs 追蹤每筆資料：
+
+| Audit ID | 實際檢查內容 |
+| --- | --- |
+| F1 | JSON 可解析、欄位與型別正確 |
+| F2 | intent 與 slot labels 屬於 frozen label set |
+| F3 | slot values 確實出現在句子中 |
+| F4 | 繁體中文與台灣用語符合規則 |
+| F5 | 去除重複、過近與極端離群樣本 |
+| F6 | 排除接近 validation / Test 的內容，只用於刪除、不用於挑選 |
+| F7 | 不同 model family 的獨立抽樣稽核，只影響公開 Dataset |
+
+完整 thresholds 與拒絕碼見 [`docs/DESIGN.md`](docs/DESIGN.md)。
+
+</details>
 
 ### 成對實驗與跨模型驗證
 
@@ -160,9 +158,7 @@ flowchart TB
 
 <details>
 <summary><strong>查看 publication static pipeline figure</strong></summary>
-
 ![FormosaNLU pipeline](assets/m12_pipeline.png)
-
 </details>
 
 <details>

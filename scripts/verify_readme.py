@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -37,13 +38,39 @@ DESCRIPTIONS = {
 
 def readme_diagram_checks(readme: str) -> dict[str, bool]:
     """Verify that README keeps two focused, code-aligned Mermaid flows."""
+    mermaid_blocks = [
+        section.split("```", 1)[0]
+        for section in readme.split("```mermaid")[1:]
+    ]
+    data_flow = mermaid_blocks[0] if mermaid_blocks else ""
+    paired_flow = mermaid_blocks[1] if len(mermaid_blocks) > 1 else ""
     return {
         "exactly two Mermaid diagrams": readme.count("```mermaid") == 2,
-        "data pipeline diagram": all(
-            marker in readme for marker in ("MASSIVE", "F1-F4", "F5-F6", "F7")
+        "vertical reader-first data pipeline": (
+            "flowchart TB" in data_flow
+            and all(
+                marker in data_flow
+                for marker in (
+                    "MASSIVE",
+                    "格式與標籤檢查",
+                    "去重與防止資料洩漏",
+                    "3,760-row",
+                    "training corpus",
+                    "獨立模型品質稽核",
+                    "3,754-row",
+                    "public Dataset",
+                )
+            )
+            and not any(
+                re.search(rf"\bF{stage}\b", data_flow) for stage in range(1, 8)
+            )
+        ),
+        "collapsed F1-F7 audit glossary": (
+            "<summary><strong>F1–F7 是什麼？</strong></summary>" in readme
+            and all(f"| F{stage} |" in readme for stage in range(1, 8))
         ),
         "paired evidence diagram": all(
-            marker in readme
+            marker in paired_flow
             for marker in (
                 "real_only",
                 "real_syn_filtered",

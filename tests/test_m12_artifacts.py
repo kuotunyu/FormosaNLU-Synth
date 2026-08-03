@@ -14,6 +14,36 @@ from scripts.verify_readme import (
 
 def test_readme_diagram_checks_require_two_focused_flows() -> None:
     readme = """```mermaid
+flowchart TB
+MASSIVE --> 格式與標籤檢查 --> 去重與防止資料洩漏
+去重與防止資料洩漏 --> 3,760-row training corpus
+3,760-row training corpus --> 獨立模型品質稽核 --> 3,754-row public Dataset
+classDef source fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A
+classDef artifact fill:#F3E8FF,stroke:#7E22CE,color:#3B0764
+```
+<details>
+<summary><strong>F1–F7 是什麼？</strong></summary>
+
+| F1 | JSON 格式 |
+| F2 | labels 合法 |
+| F3 | slot values 出現在句子中 |
+| F4 | 語言與台灣用語 |
+| F5 | 去重與多樣性 |
+| F6 | 防止資料洩漏 |
+| F7 | 獨立品質稽核 |
+</details>
+```mermaid
+flowchart TB
+real_only --> 2,974-row --> hierarchical paired --> cross-family
+real_syn_filtered --> 2,974-row
+```
+"""
+
+    assert all(readme_diagram_checks(readme).values())
+
+
+def test_readme_diagram_checks_reject_horizontal_code_only_filter_flow() -> None:
+    readme = """```mermaid
 flowchart LR
 MASSIVE --> F1-F4 --> F5-F6 --> F7
 ```
@@ -24,7 +54,7 @@ real_syn_filtered --> 2,974-row
 ```
 """
 
-    assert all(readme_diagram_checks(readme).values())
+    assert not all(readme_diagram_checks(readme).values())
 
 
 def test_readme_diagram_checks_reject_one_overloaded_diagram() -> None:
