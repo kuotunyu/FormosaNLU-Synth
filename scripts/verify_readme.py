@@ -35,6 +35,26 @@ DESCRIPTIONS = {
 }
 
 
+def readme_diagram_checks(readme: str) -> dict[str, bool]:
+    """Verify that README keeps two focused, code-aligned Mermaid flows."""
+    return {
+        "exactly two Mermaid diagrams": readme.count("```mermaid") == 2,
+        "data pipeline diagram": all(
+            marker in readme for marker in ("MASSIVE", "F1-F4", "F5-F6", "F7")
+        ),
+        "paired evidence diagram": all(
+            marker in readme
+            for marker in (
+                "real_only",
+                "real_syn_filtered",
+                "2,974-row",
+                "hierarchical paired",
+                "cross-family",
+            )
+        ),
+    }
+
+
 def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -212,6 +232,7 @@ def verify_readme(
     ablation: dict[str, Any] | None = None,
 ) -> list[str]:
     checks: list[tuple[str, bool]] = []
+    checks.extend(readme_diagram_checks(readme).items())
     for expected in expected_main_rows(m10):
         checks.append((f"main row {expected.split('|')[1].strip()}", expected in readme))
     if replicates is not None:

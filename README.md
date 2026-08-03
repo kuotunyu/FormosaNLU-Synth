@@ -38,15 +38,11 @@ dataset = load_dataset("steven0226/formosa-nlu-synth-v1")
 print(dataset["train"].num_rows)  # 3754
 ```
 
-LoRA adapter 使用方式與 Gemma 4 text-tower key mapping 已完整寫在
-[Model Card](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)。
-匿名發布稽核結果保存在
-[`reports/m13_publication.json`](reports/m13_publication.json)。
+LoRA adapter 使用方式見 [Model Card](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)；匿名發布稽核見 [`reports/m13_publication.json`](reports/m13_publication.json)。
 
 ## 這個模型實際在做什麼
 
-以下是**真實執行輸出**，不是示意。同一台 RTX 4090、同一份 unconstrained
-decoding 設定，比較未微調的 base model 與 filtered adapter。
+以下是同一台 RTX 4090、同一份 unconstrained decoding contract 的**真實執行輸出**。
 
 **輸入：`播放周杰倫`**
 
@@ -73,7 +69,7 @@ decoding 設定，比較未微調的 base model 與 filtered adapter。
 base model 產出的 intent 大致正確，slot type 也全都是合法的 MASSIVE 標籤——
 它知道這個任務。它失敗在**輸出契約**：schema 要求 `type`，它寫成 `slot`，
 而且五句裡有四句用 `slot`、一句用 `name`，**連自己都不一致**。嚴格 schema
-驗證下 base 是 **0/5**、adapter 是 **5/5**。
+驗證下 **base model 0/5**、**adapter 5/5 valid JSON**。
 
 也有語意修正：`明天` 在 base 被標成 `timeofday`，adapter 標成 `date`；
 `幫我寄信給小美說會晚到` 裡的「會晚到」被 base 當成 `email_folder`，adapter
@@ -88,20 +84,97 @@ base model 產出的 intent 大致正確，slot type 也全都是合法的 MASSI
 tree SHA-256 保存在
 [`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
 
-## 任務與設定
+## 實驗契約
 
-| 項目 | 設定 |
-| --- | --- |
-| **Dataset** | MASSIVE `zh-TW`（CC BY 4.0），60 個 intents、55 種 slot types |
-| **Low-resource setting** | 每個 intent 取 `min(20, available)` 筆 real train examples |
-| **Teacher** | `qwen3.6:27b`，透過 Ollama 在本機執行 |
-| **Primary student** | `google/gemma-4-E4B-it`，4-bit QLoRA |
-| **Replication student** | `microsoft/Phi-4-mini-instruct`，4-bit QLoRA |
-| **Independent judge** | `gpt-oss:20b` |
-| **Hardware / API spend** | 單張 RTX 4090 24 GB / **$0** |
+MASSIVE `zh-TW`（60 intents、55 slot types）每個 intent 取 `min(20, available)` 筆 real examples。`qwen3.6:27b` local teacher、`google/gemma-4-E4B-it` / `microsoft/Phi-4-mini-instruct` 4-bit QLoRA students 與 `gpt-oss:20b` judge 分屬不同 model families；所有 primary results 都來自未進入訓練的 2,974-row Test。全程使用單張 RTX 4090 24 GB，API spend 為 **$0**。
 
-Teacher、students 與 judge 來自不同 model families。所有 primary results 都在
-2,974 筆完全未進入訓練流程的 MASSIVE `zh-TW` Test rows 上計算。
+## 方法總覽
+
+### 資料產製與品質控管
+
+```mermaid
+flowchart LR
+    Massive["MASSIVE zh-TW<br/>frozen 20-shot split"]
+    Teacher["Local teacher<br/>qwen3.6:27b"]
+    Recipes["4 generation recipes<br/>paraphrase · substitution<br/>noise · hard negatives"]
+    Generated["11,264 generated rows"]
+    Cheap["F1-F4<br/>schema · labels · slots · locale"]
+    Semantic["F5-F6<br/>diversity · contamination"]
+    Primary["3,760-row frozen primary<br/>training corpus"]
+    Judge["F7 independent audit<br/>gpt-oss:20b"]
+    Public["3,754-row public Dataset"]
+
+    Massive --> Recipes
+    Teacher --> Recipes
+    Recipes --> Generated --> Cheap --> Semantic
+    Semantic --> Primary
+    Semantic --> Judge --> Public
+
+    classDef source fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A
+    classDef process fill:#DCFCE7,stroke:#15803D,color:#14532D
+    classDef gate fill:#FEF3C7,stroke:#B45309,color:#78350F
+    classDef artifact fill:#F3E8FF,stroke:#7E22CE,color:#3B0764
+    class Massive,Teacher source
+    class Recipes,Generated process
+    class Cheap,Semantic,Judge gate
+    class Primary,Public artifact
+```
+
+F1-F6 的 3,760 rows 是 preregistered training corpus；F7 只影響公開 Dataset，因此兩個 artifact 不應混為一談。四種 recipes 與 frozen semantic thresholds 的完整定義見 [`docs/DESIGN.md`](docs/DESIGN.md)。
+
+### 成對實驗與跨模型驗證
+
+```mermaid
+flowchart TB
+    Contract["Shared frozen contract<br/>data · prompt · 500 steps · evaluator"]
+    Gemma["Gemma 4"]
+    Phi["Phi-4-mini"]
+    GReal["real_only<br/>seeds 42 / 43 / 44"]
+    GSyn["real_syn_filtered<br/>seeds 42 / 43 / 44"]
+    PReal["real_only<br/>seeds 42 / 43 / 44"]
+    PSyn["real_syn_filtered<br/>seeds 42 / 43 / 44"]
+    GEval["2,974-row strict Test<br/>Gemma paired predictions"]
+    PEval["2,974-row strict Test<br/>Phi paired predictions"]
+    Stats["hierarchical paired bootstrap<br/>McNemar + Holm"]
+    Criterion["preregistered cross-family criterion<br/>replicated"]
+
+    Contract --> Gemma
+    Contract --> Phi
+    Gemma --> GReal --> GEval
+    Gemma --> GSyn --> GEval
+    Phi --> PReal --> PEval
+    Phi --> PSyn --> PEval
+    GEval --> Stats
+    PEval --> Stats
+    Stats --> Criterion
+
+    classDef contract fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A
+    classDef model fill:#DCFCE7,stroke:#15803D,color:#14532D
+    classDef arm fill:#FEF3C7,stroke:#B45309,color:#78350F
+    classDef evidence fill:#F3E8FF,stroke:#7E22CE,color:#3B0764
+    class Contract contract
+    class Gemma,Phi model
+    class GReal,GSyn,PReal,PSyn arm
+    class GEval,PEval,Stats,Criterion evidence
+```
+
+<details>
+<summary><strong>查看 publication static pipeline figure</strong></summary>
+
+![FormosaNLU pipeline](assets/m12_pipeline.png)
+
+</details>
+
+<details>
+<summary><strong>執行互動式 base / adapter 比較介面</strong></summary>
+
+```bash
+uv sync --extra demo
+python -m scripts.demo       # real model
+python -m scripts.demo --mock
+```
+
+</details>
 
 ## 實驗結果
 
@@ -291,45 +364,15 @@ python -m scripts.analyse_intent_confusion
 
 ## Filter pipeline 是否真的有價值？
 
-三個 synthetic groups 用來區分 data quality 與 quantity：
-
-- 相較使用全部 11,264 筆資料的 unfiltered-full，3,760-row filtered corpus
-  的 intent accuracy 高 0.20、slot F1 高 1.53、exact match 高 0.91 個百分點。
-- 相較 equal-N unfiltered control，filtered corpus 的 intent accuracy 高
-  0.17、slot F1 高 2.17、exact match 高 1.11 個百分點。
-
-在 seed 42 的結果中，filter pipeline 帶來的改善不只是 training rows 數量不同。
+Seed 42 下，3,760-row filtered corpus 相較 unfiltered-full / equal-N unfiltered，intent accuracy 分別高 0.20 / 0.17 pp、slot F1 高 1.53 / 2.17 pp、exact match 高 0.91 / 1.11 pp；改善不只來自 training rows 數量。
 
 ![Filtered 與 unfiltered controls](assets/m12_filter_comparison.png)
 
-### Filter funnel
-
-預先登記的 8,000–9,000 accepted-row 目標沒有達成。Frozen F1–F6 最終保留
-3,760 / 11,264 筆（33.38%）；看到結果後沒有放寬 thresholds。
-
-| Stage | 移除 | 剩餘 |
-| --- | ---: | ---: |
-| Generated / F1 schema | 0 | 11,264 |
-| F2 label contract | 461 | 10,803 |
-| F3 grounded slots | 738 | 10,065 |
-| F4 Taiwan locale/language | 951 | 9,114 |
-| F5 seed copy / synthetic duplicate / outlier | 5,106 | 4,008 |
-| F6 Val/Test contamination exclusion | 248 | **3,760** |
-| F7 sampled judge exclusions（376-row audit） | 6 | **3,754 release rows** |
+F1-F6 最終保留 3,760 / 11,264 rows（33.38%），未達 preregistered 8,000–9,000 目標；看到結果後沒有放寬 thresholds。最大損失是 4,596 筆 near-duplicates，揭露 pilot 未發現的 corpus-scale mode collapse。
 
 ![F1–F6 filter funnel](assets/m12_filter_funnel.png)
 
-最大宗損失是 4,596 筆 synthetic near-duplicates。9,114 筆 F1–F4 survivors
-中，只有 4,044 個 utterances 在 exact-text 層級不重複。這種 corpus-scale
-mode collapse 在 500-row pilot 中並不明顯，因此被保留為重要的 negative
-result，而不是隱藏或事後調整門檻。
-
-F7 依事先固定的 strata 稽核 376 筆，370 筆通過、6 筆拒絕。只有 50 筆
-random stratum 可用來估計 F1–F6 漏檢率：其中 3 筆被拒絕，觀察值為
-**6.0%**（Wilson 95% interval：2.06%–16.22%）；hard-negative 與
-boundary-conflict 是刻意加權的 targeted strata，不能當作全 corpus 的
-無偏估計。6 筆已由 release-only corpus 排除，留下 3,754 筆；M9 的
-frozen 3,760-row training contract 不回溯修改。
+F7 依 frozen strata 稽核 376 rows，370 通過、6 拒絕；50-row random stratum 的 observed miss rate 為 **6.0%**（Wilson 95% CI：2.06%–16.22%）。6 rows 只從 public release 排除，M9 的 3,760-row training contract 不回溯修改。
 
 ## 成本與可重現性
 
@@ -452,50 +495,6 @@ match 都高於 `real_only`——但如前所述，同一個 seed 的 `intent_ma
 
 </details>
 
-## 方法
-
-![FormosaNLU pipeline](assets/m12_pipeline.png)
-
-### Generation recipes
-
-| Recipe | 用途 |
-| --- | --- |
-| `paraphrase` | 保留 labels 的 seed utterance 改寫 |
-| `slot_substitution` | 先由程式替換台灣在地 slot value，再做受限制的自然語言改寫 |
-| `noise_codeswitch` | Code-switching、typo、spoken particles 與 ASR-like noise，且不得破壞 slot span |
-| `hard_negative` | 建立容易混淆 intents 之間的 minimal pairs |
-
-Labels 由 pipeline 自動產生，沒有逐筆人工標註。人工僅 spot-check 20 筆。
-Frozen semantic thresholds 如下：
-
-- synthetic duplicate：0.999
-- seed copy：0.995
-- outlier：0.650
-- Val/Test contamination：0.990
-
-完整設計請見 [`docs/DESIGN.md`](docs/DESIGN.md)。
-
-### 互動式比較介面
-
-M11 提供同一句輸入的 base model 與 filtered-adapter 並排比較。Real runtime
-只載入一份 4-bit Gemma model，再切換 LoRA adapter，避免同時載入兩份 model。
-固定五句的本機 RTX 4090 evidence 已完成：在相同 unconstrained decoding
-contract 下，base model 0/5 通過嚴格 schema，filtered adapter
-則為 5/5 valid JSON。這是小型質性示範，不是 accuracy estimate；原始輸出、
-latency、adapter tree SHA-256 與 source commit 都保存在
-[`reports/m11_demo_evidence.json`](reports/m11_demo_evidence.json)。
-
-```bash
-uv sync --extra demo
-python -m scripts.demo
-```
-
-若只想驗證 UI，不載入 model weights：
-
-```bash
-python -m scripts.demo --mock
-```
-
 ## 重現流程
 
 > 執行環境：native Windows、單張 RTX 4090，不需要 WSL。
@@ -574,23 +573,8 @@ README 的數字時必須同時更新 verifier 的檢查項**，不能只改文�
 
 ### 這份重現流程被實際驗證過
 
-2026-08-01 從 GitHub 做了一次乾淨 clone（5.3 MB），以 `uv.lock` 建出全新環境
-（4.9 GB，`uv sync --extra demo` 成功），並確認上列 21 個 `python -m` 指令
-全部解析成功。完整報告見
-[`reports/m18_reproduce_check.md`](reports/m18_reproduce_check.md)。
-
-**未在乾淨環境中完整重跑訓練與生成**——那需要約 42 GPU 小時與本機 Ollama
-模型。驗證的是「路徑走得通、指令都在」，不是「整條管線重跑一次得到同樣數字」。
-這個界線寫在這裡，以免被讀成後者。
-
-Colab notebook
-[`notebooks/01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) 使用相同
-training code。Bundle、GPU-memory preflight、每兩分鐘 Drive checkpoint
-sync 與 resume path 已實際通過 one-group portability run：`real_only`
-seed 42 在 G4（NVIDIA RTX PRO 6000 Blackwell）完成 500 steps，training
-runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆數、
-參數量與本機 primary contract 全部一致；稽核證據見
-[`reports/m9_colab_portability.json`](reports/m9_colab_portability.json)。
+- **乾淨環境：** 2026-08-01 從 5.3 MB GitHub clone 依 `uv.lock` 建出 4.9 GB 環境，21 個 `python -m` 指令全部解析成功（[`m18_reproduce_check.md`](reports/m18_reproduce_check.md)）。這驗證的是路徑與介面，不代表重新花約 42 GPU 小時跑完 generation / training。
+- **Colab portability：** [`01_sft_student.ipynb`](notebooks/01_sft_student.ipynb) 已在 NVIDIA RTX PRO 6000 Blackwell 完成 `real_only` seed 42、500 steps；runtime 1,914.7 秒、peak allocated VRAM 20,646 MiB，frozen contract 與本機一致（[`m9_colab_portability.json`](reports/m9_colab_portability.json)）。
 
 ## Leakage 與 contamination 聲明
 
@@ -665,7 +649,7 @@ Hugging Face cards 為準。
 | Synthetic dataset | 詳見 [`docs/data_card.md`](docs/data_card.md) |
 | LoRA adapter | Apache-2.0，沿用 student base model |
 
-## 專案狀態
+## 專案狀態與文件
 
 研究矩陣、three-seed uncertainty、paired statistics、兩個 student families、
 robustness、equal-N recipe ablation、Colab portability、公開 Dataset／Model、
@@ -673,14 +657,4 @@ GitHub Release 與 Zenodo DOI 均已完成。M15 smoke amendment 的原始失敗
 紀錄仍完整保留於 [`reports/`](reports/)；沒有 parser repair、label aliasing 或
 事後修改正式 contract。
 
-## 專案文件
-
-| 文件 | 用途 |
-| --- | --- |
-| [`docs/DESIGN.md`](docs/DESIGN.md) | Data pipeline 設計 |
-| [`docs/DESIGN_PHASE2.md`](docs/DESIGN_PHASE2.md) | Training、evaluation、demo 與 release 設計 |
-| [`docs/DECISIONS.md`](docs/DECISIONS.md) | ADR-style decision log |
-| [`docs/teacher_choice.md`](docs/teacher_choice.md) | Model 選擇與授權分析 |
-| [`docs/data_card.md`](docs/data_card.md) | Synthetic dataset card |
-| [`hf_cards/`](hf_cards) | Hugging Face Dataset／Model Cards |
-| [`docs/instructions_for_me.md`](docs/instructions_for_me.md) | Colab、Hugging Face 與 GitHub 操作紀錄 |
+核心文件：[data pipeline](docs/DESIGN.md) · [training / evaluation](docs/DESIGN_PHASE2.md) · [decision log](docs/DECISIONS.md) · [model 選擇](docs/teacher_choice.md) · [data card](docs/data_card.md) · [Hugging Face cards](hf_cards/) · [操作紀錄](docs/instructions_for_me.md)

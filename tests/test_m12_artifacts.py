@@ -8,7 +8,33 @@ from scripts.verify_readme import (
     expected_publication_markers,
     expected_replicate_rows,
     expected_robustness_rows,
+    readme_diagram_checks,
 )
+
+
+def test_readme_diagram_checks_require_two_focused_flows() -> None:
+    readme = """```mermaid
+flowchart LR
+MASSIVE --> F1-F4 --> F5-F6 --> F7
+```
+```mermaid
+flowchart TB
+real_only --> 2,974-row --> hierarchical paired --> cross-family
+real_syn_filtered --> 2,974-row
+```
+"""
+
+    assert all(readme_diagram_checks(readme).values())
+
+
+def test_readme_diagram_checks_reject_one_overloaded_diagram() -> None:
+    readme = """```mermaid
+flowchart LR
+MASSIVE --> F1-F4 --> F5-F6 --> F7 --> real_only --> cross-family
+```
+"""
+
+    assert not readme_diagram_checks(readme)["exactly two Mermaid diagrams"]
 
 
 def test_resource_ledger_uses_measured_phase_times() -> None:
