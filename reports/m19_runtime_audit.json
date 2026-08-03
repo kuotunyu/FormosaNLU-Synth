@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "created_at": "2026-08-03T09:21:38.5499485+08:00",
+  "scope": "M19 abl_no_paraphrase discarded interrupted attempt",
+  "uncounted_interrupted_attempt_seconds": 7501.8697549,
+  "uncounted_interrupted_attempt_hours": 2.0838527096944445,
+  "reason": "The first attempt reached step 500 but exited during final validation before the adapter and final run_report were written. The successful continuation reloaded checkpoint-475; its final run_report therefore measures only the later checkpoint-475-to-500 session. This audit adds the discarded attempt once and does not change model or evaluation results.",
+  "source_logs": {
+    "stdout": {
+      "path": "logs/m19_ablation.resume.20260803-001944.stdout.log",
+      "created_at": "2026-08-03T00:19:44.1179685+08:00",
+      "last_write_at": "2026-08-03T02:24:45.9877234+08:00",
+      "sha256": "813bb6f2290189a71fa1e3745092ed15618d1b9444fbf15ae644b33fe58e415e"
+    },
+    "stderr": {
+      "path": "logs/m19_ablation.resume.20260803-001944.stderr.log",
+      "created_at": "2026-08-03T00:19:44.1189688+08:00",
+      "last_write_at": "2026-08-03T02:24:32.2316481+08:00",
+      "sha256": "b87848c729220a48db3d0d0950bf7e931fc613e995c5510579667fff2a5a96c6"
+    }
+  },
+  "measurement_method": "stdout file creation-to-last-write wall interval; stderr hash and timestamps cross-check the same process window",
+  "double_count_check": "The final successful run_report contains train_runtime=193.891 seconds for the later resume only; the completed 2,974-row evaluation report was produced after that resume and is counted separately."
+}

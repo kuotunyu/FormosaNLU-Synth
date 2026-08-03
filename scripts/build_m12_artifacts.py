@@ -32,6 +32,7 @@ M15_EVALUATION_REPORT = (
     REPO_ROOT / "results" / "m15" / "phi4mini" / "evaluation_batch.json"
 )
 M19_BATCH_REPORT = REPO_ROOT / "runs" / "m19" / "batch_report.json"
+M19_RUNTIME_AUDIT = REPO_ROOT / "reports" / "m19_runtime_audit.json"
 RESOURCE_REPORT = REPO_ROOT / "reports" / "m12_resource_ledger.json"
 ASSET_DIR = REPO_ROOT / "assets"
 
@@ -77,6 +78,7 @@ def build_resource_ledger(
     m19_batch: dict[str, Any] | None = None,
     m19_training_reports: list[dict[str, Any]] | None = None,
     m19_evaluation_reports: list[dict[str, Any]] | None = None,
+    m19_execution_audit: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Summarize measured wall times without converting them into cloud costs."""
     generation_hours = float(generation["generation"]["wall_seconds"]) / 3600
@@ -288,16 +290,30 @@ def build_resource_ledger(
             float(report["wall_seconds"])
             for report in (m19_evaluation_reports or [])
         )
-        hours = (train_seconds + eval_seconds) / 3600
+        interrupted_seconds = 0.0
+        if m19_execution_audit and m19_execution_audit.get("status") == "complete":
+            interrupted_seconds = float(
+                m19_execution_audit.get(
+                    "uncounted_interrupted_attempt_seconds", 0.0
+                )
+            )
+        hours = (train_seconds + eval_seconds + interrupted_seconds) / 3600
         auxiliary_hours += hours
         phases["m19_equal_n_recipe_ablation"] = {
             "wall_hours": hours,
+            "interrupted_attempt_wall_hours": interrupted_seconds / 3600,
             "training_runs": 5,
             "evaluation_runs": 5,
             "evaluation_rows": 5 * 2_974,
             "basis": (
                 "summed runs/m19/*/seed_42/run_report.json metrics.train_runtime "
                 "and reports/m19/*_seed_42.json wall_seconds"
+                + (
+                    "; plus audited discarded attempt in "
+                    "reports/m19_runtime_audit.json"
+                    if interrupted_seconds
+                    else ""
+                )
             ),
         }
     else:
@@ -594,6 +610,7 @@ def main() -> int:
         _load(path)
         for path in sorted((REPO_ROOT / "reports" / "m19").glob("*_seed_42.json"))
     ]
+    m19_execution_audit = _load_optional(M19_RUNTIME_AUDIT)
     ledger = build_resource_ledger(
         generation=generation,
         training=training,
@@ -610,6 +627,7 @@ def main() -> int:
         m19_batch=m19_batch,
         m19_training_reports=m19_training_reports or None,
         m19_evaluation_reports=m19_evaluation_reports or None,
+        m19_execution_audit=m19_execution_audit,
     )
     args.resource_report.write_text(
         json.dumps(ledger, ensure_ascii=False, indent=2) + "\n",

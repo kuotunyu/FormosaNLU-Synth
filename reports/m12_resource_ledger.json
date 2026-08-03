@@ -62,14 +62,22 @@
       "batches": 5,
       "runs": 10,
       "basis": "results/m16_robustness_batch_*.json summed started_at to finished_at per batch"
+    },
+    "m19_equal_n_recipe_ablation": {
+      "wall_hours": 8.936585075416614,
+      "interrupted_attempt_wall_hours": 2.0838527096944444,
+      "training_runs": 5,
+      "evaluation_runs": 5,
+      "evaluation_rows": 14870,
+      "basis": "summed runs/m19/*/seed_42/run_report.json metrics.train_runtime and reports/m19/*_seed_42.json wall_seconds; plus audited discarded attempt in reports/m19_runtime_audit.json"
     }
   },
   "measured_core_gpu_hours": 14.439791908305544,
-  "measured_auxiliary_gpu_hours": 19.035198661500004,
-  "measured_total_local_gpu_hours": 33.47499056980555,
+  "measured_auxiliary_gpu_hours": 27.97178373691662,
+  "measured_total_local_gpu_hours": 42.411575645222165,
   "gpu_tdp_watts": 450,
   "gpu_tdp_energy_upper_bound_kwh": 6.497906358737495,
-  "gpu_tdp_total_energy_upper_bound_kwh": 15.063745756412498,
+  "gpu_tdp_total_energy_upper_bound_kwh": 19.085209040349973,
   "energy_note": "Upper-bound GPU-only envelope using the RTX 4090 450 W TDP; not a wall-socket measurement. The core field remains the frozen primary comparison; total includes every completed local auxiliary phase whose timing artifact is available.",
   "pending": []
 }

@@ -231,6 +231,18 @@ ASR-noise was the hardest perturbation. This is evaluation-only auxiliary
 evidence and does not represent a natural ASR-error or code-switching
 distribution.
 
+### Equal-N per-recipe ablation
+
+M19 completed a seed-42 equal-N leave-one-recipe-out comparison. Every arm used
+the same 1,176 real examples plus 2,246 synthetic examples and was evaluated on
+the same 2,974 untouched Test rows. Against the all-recipe equal-N control, the
+exact-match deltas were +0.50 points without `paraphrase`, +2.02 without
+`slot_substitution`, -0.74 without `noise_codeswitch`, and +1.31 without
+`hard_negative`. None reached the preregistered 2.5-point detectability
+threshold. This is a single-seed composition comparison, not evidence that any
+recipe has or lacks an independent causal effect. See
+`reports/m19_ablation.json` and `docs/M19_ABLATION_PROTOCOL.md`.
+
 ## Considerations for Using the Data
 
 ### Contamination and leakage
@@ -249,7 +261,9 @@ distribution.
 - Inherits any biases and Taiwan-specific knowledge gaps of the teacher model.
 - Synthetic utterances are seeded from a 20-shot sample; coverage of rare intents
   and rare slot types is correspondingly thin.
-- No per-recipe ablation was run (see `docs/DECISIONS.md` D-004).
+- The M19 per-recipe ablation is seed 42 only (`n=1`). None of its exact-match
+  deltas reached the preregistered 2.5-point threshold, so it does not support a
+  recipe-level causal claim.
 - Robustness spans both families at seeds 42-44, but three of Gemma's five
   metrics have a sample SD comparable to their mean at n=3 and are not
   distinguishable from zero; deterministic probes do not replace
@@ -268,15 +282,17 @@ distribution.
 
 ### Model roles
 
-Three models are involved, deliberately drawn from **three different families**,
-all under Apache-2.0. Cross-family distillation rules out the "the teacher and
-the student are the same family, so of course it works" objection.
+Four models are involved, deliberately drawn from **four different families**;
+the first three use Apache-2.0 and Phi-4-mini uses MIT. Cross-family
+distillation and the second-student replication reduce the risk that the
+observed result is only a same-family or single-student artifact.
 
 | Role | Model | Family | License |
 | --- | --- | --- | --- |
 | Teacher (generates the data) | `qwen3.6:27b` | Qwen | Apache-2.0 |
 | Judge (audits pilot) | `gpt-oss:20b` | gpt-oss | Apache-2.0 |
-| Student (fine-tuned on the data) | `google/gemma-4-E4B-it` | Gemma 4 | Apache-2.0 |
+| Primary student | `google/gemma-4-E4B-it` | Gemma 4 | Apache-2.0 |
+| Replication student | `microsoft/Phi-4-mini-instruct` | Phi 4 | MIT |
 
 ### License table
 
@@ -316,15 +332,15 @@ Windows. **No API spend.** The traceable primary core totals **14.440 GPU
 wall-clock hours**: generation 4.073 h, zero-shot evaluation 1.050 h, six
 seed-42 training runs 6.540 h, and six trained evaluations 2.777 h. At the
 GPU's 450 W TDP this is a conservative GPU-only upper-bound envelope of 6.498
-kWh, not a wall-socket measurement. The completed F7 judge (0.756 h) and M11
-real demo generation (0.010 h) are recorded separately as auxiliary time,
-bringing the pre-replicate local total to 15.205 h. Four extra-seed training
-runs add 4.188 h and their four complete Test evaluations add 1.630 h, for a
-pre-robustness local total of 21.023 h. Two robustness evaluations add 2.102 h.
-The final traceable local total is 23.124 h (10.406 kWh at the same conservative
-450 W TDP upper-bound calculation). The resource ledger has no pending local
-GPU phase. See
-`reports/m12_resource_ledger.json`.
+kWh, not a wall-socket measurement. Auxiliary work totals **27.972 h**: F7 and
+M11, four extra-seed runs and evaluations, robustness inference, the six-run
+Phi replication, M16 robustness backfill, and the five-arm M19 ablation. The
+final traceable local total is **42.412 h** (19.085 kWh at the same conservative
+450 W TDP upper-bound calculation). M19 includes a 2.084 h discarded attempt
+that reached final validation before interruption; it is restored exactly once
+through the hash-anchored `reports/m19_runtime_audit.json` instead of being
+silently omitted by the later resume report. The resource ledger has no pending
+local GPU phase. See `reports/m12_resource_ledger.json`.
 
 ---
 
@@ -357,3 +373,8 @@ Seed-42 robustness probe 每組各 8,922 筆。Filtered adapter 整體 intent
 accuracy 73.27%、slot F1 64.13%、exact match 48.79%，高於 `real_only`
 的 71.61%、60.59%、46.33%；三種 probes 都維持同方向，但這是 deterministic
 auxiliary evidence，不等同自然 ASR 或 code-switching 分布。
+
+M19 以相同 1,176 筆 real + 2,246 筆 synthetic 比較四種 leave-one-recipe-out
+組成；四個 exact-match delta 分別為 +0.50、+2.02、-0.74、+1.31 個百分點，
+全部未達預先登記的 2.5-point 門檻。這只是 seed 42（n=1）的描述性結果，
+不做單一 recipe 的 causal claim。

@@ -1,12 +1,14 @@
 # FormosaNLU — 正體中文（台灣）NLU 的 Synthetic Data Distillation
 
-> **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣與 seeds 43/44
-> uncertainty runs、M10 評估、
-> M11 比較介面、M12 報告產物、Colab portability 與 F7 independent
-> judge audit、robustness inference 均已完成。所有本機 GPU 階段已收尾；
+> **目前狀態：**frozen corpus、M9 seed-42 primary 實驗矩陣、seeds 43/44
+> uncertainty runs、M10／M16 robustness、M11 比較介面、M12 報告產物、
+> Colab portability、F7 independent judge audit 與 M19 equal-N per-recipe
+> ablation 均已完成。所有本機 GPU 階段已收尾；
 > GitHub、Hugging Face Dataset 與 LoRA adapter 已公開，並通過匿名下載驗證。
 > **M15 已在第二個 student family（`microsoft/Phi-4-mini-instruct`）
-> 完成同一份 paired contract 的複製，預先登記的判準通過。**
+> 完成同一份 paired contract 的複製，預先登記的判準通過；M19 的五組
+> single-seed composition comparison 則沒有任何 exact-match 差異達到
+> 預先登記的 2.5-point detectability threshold。**
 
 在 low-resource setting 下，由本機 LLM 生成的 synthetic data，能否改善小型
 language model 的表現？FormosaNLU 以正體中文（台灣）口語理解測量這個問題，
@@ -179,6 +181,32 @@ MASSIVE `zh-TW` Test 與目前 Gemma 4 contract 內的 paired evidence，不等�
 跨模型或跨資料集泛化。完整方法、input SHA-256 與結果見
 [`reports/m14_paired_statistics.md`](reports/m14_paired_statistics.md)。
 
+### Equal-N per-recipe ablation（M19）
+
+M19 把四種 synthetic recipes 做 leave-one-out，並將每組 synthetic rows 固定為
+2,246 筆；連同相同的 1,176 筆 real examples，每組訓練資料都是 3,422 筆。
+因此下表比較的是 **composition**，不是資料量。這是 seed 42（n=1）的描述性
+比較；預先登記的 detectability metric 是 exact match，門檻為
+**2.5 percentage points**。
+
+| Group | 排除的 recipe | intent acc | intent macro-F1 | slot F1 | exact match | exact Δ vs control（pp） | JSON-valid | 達門檻 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | :---: |
+| `abl_all_eqn` | `— (equal-N control)` | 75.99% | 75.51% | 63.61% | 49.50% | +0.00 | 97.34% | no |
+| `abl_no_paraphrase` | `paraphrase` | 74.14% | 74.72% | 64.09% | 50.00% | +0.50 | 96.54% | no |
+| `abl_no_slot_substitution` | `slot_substitution` | 77.14% | 77.11% | 65.60% | 51.51% | +2.02 | 96.40% | no |
+| `abl_no_noise_codeswitch` | `noise_codeswitch` | 73.47% | 73.03% | 63.84% | 48.76% | -0.74 | 96.47% | no |
+| `abl_no_hard_negative` | `hard_negative` | 76.19% | 76.23% | 64.69% | 50.81% | +1.31 | 97.24% | no |
+
+五個組別都完成 500-step training 與 2,974-row strict evaluation；最大 absolute
+exact-match delta 是移除 `slot_substitution` 的 +2.02 points，仍低於 2.5-point
+門檻。因此結論是
+`no_difference_reaches_preregistered_detectability_threshold`：這份結果沒有辨識出
+任何單一 recipe 的可檢出獨立貢獻，也**不做單一 recipe 的 causal claim**。
+Machine-readable 結果、執行契約與逐組報告分別在
+[`reports/m19_ablation.json`](reports/m19_ablation.json)、
+[`docs/M19_ABLATION_PROTOCOL.md`](docs/M19_ABLATION_PROTOCOL.md) 與
+[`reports/m19/`](reports/m19/)；這個 negative result 連同 single-seed 限制完整保留。
+
 ### 跨 student family 複製
 
 單一 student 上的提升，可能只是那個 model 的特性。為了排除這個解釋，M15 用
@@ -319,15 +347,19 @@ Primary GPU path 在單張 RTX 4090 上共使用 **14.440 h**：
 | M15 Phi-4-mini training（auxiliary） | **2.718 h** | 兩組 × 三種子，共六個 runs |
 | M15 Phi-4-mini evaluation（auxiliary） | **1.037 h** | 六個完整 2,974-row Test runs |
 | M16 robustness backfill（auxiliary） | **6.596 h** | 五個批次、十個 runs；逐批次加總，非單一時間窗 |
-| **Measured auxiliary subtotal** | **19.035 h** | F7 + M11 + extra seeds + robustness + M15 + M16 |
-| **可追溯 local total** | **33.475 h** | 所有本機 GPU 階段 |
+| M19 equal-N recipe ablation（auxiliary） | **8.937 h** | 五組 training + 五組 2,974-row evaluation；含一次被捨棄的中斷 attempt |
+| **Measured auxiliary subtotal** | **27.972 h** | F7 + M11 + extra seeds + robustness + M15 + M16 + M19 |
+| **可追溯 local total** | **42.412 h** | 所有本機 GPU 階段 |
 | **API spend** | **$0** | 所有 model workloads 均在本機執行 |
 
-M15 屬於 auxiliary：primary core 的 14.440 h 仍然只涵蓋凍結的 Gemma seed-42
-比較，不因為加入第二個 student family 而改變。
+M15、M16 與 M19 都屬於 auxiliary：primary core 的 14.440 h 仍然只涵蓋凍結的
+Gemma seed-42 比較，不因為加入第二個 student family 或 recipe ablation 而改變。
+M19 曾在 `abl_no_paraphrase` final validation 中斷；成功 resume 的 run report 只計
+後段，因此另以 hash-anchored runtime audit 補回已實際消耗但未進 final report 的
+2.084 h，避免低報資源。
 
 若以 RTX 4090 的 450 W TDP 計算，primary core 14.440 小時對應
-6.498 kWh、local total 33.475 小時對應 15.064 kWh 的保守
+6.498 kWh、local total 42.412 小時對應 19.085 kWh 的保守
 GPU-only 上限。這不是 wall-socket measurement，也不代表 GPU 全程以
 TDP 運作。
 
@@ -528,7 +560,7 @@ README 的數字時必須同時更新 verifier 的檢查項**，不能只改文�
 全部解析成功。完整報告見
 [`reports/m18_reproduce_check.md`](reports/m18_reproduce_check.md)。
 
-**未在乾淨環境中完整重跑訓練與生成**——那需要約 33 GPU 小時與本機 Ollama
+**未在乾淨環境中完整重跑訓練與生成**——那需要約 42 GPU 小時與本機 Ollama
 模型。驗證的是「路徑走得通、指令都在」，不是「整條管線重跑一次得到同樣數字」。
 這個界線寫在這裡，以免被讀成後者。
 
@@ -575,9 +607,9 @@ runtime 1,914.7 秒，peak allocated VRAM 20,646 MiB。frozen config、資料筆
   執行；它是 curated qualitative evidence，不可當成 Test-set 成效。
 - **單一 seed 的 per-intent 數字不可靠。** 基線在最不穩的 intent 上逐 seed
   可以差到 67 個百分點（`qa_factoid`），所以本文所有 per-intent 的極端值都必須
-  配著三種子的離散度一起讀。這也意味著任何只跑一個 seed 的 per-intent 分析
-  （包含未來若要做的 per-recipe ablation）會有同樣的問題。
-- 未執行 per-recipe ablation，因此不做單一 recipe 的 causal claim。
+  配著三種子的離散度一起讀。M19 per-recipe ablation 也只有 seed 42（n=1），
+  其 exact-match 差異全部低於預先登記的 2.5 percentage points 門檻；它是
+  composition-level descriptive comparison，不做單一 recipe 的 causal claim。
 - MASSIVE `zh-TW` 翻譯自 English SLURP，未必涵蓋自然台灣口語的完整分布。
 - Synthetic data 會繼承 teacher 的 biases 與台灣在地知識缺口。
 - F5 移除 4,596 筆 synthetic near-duplicates，顯示明顯的 generator mode

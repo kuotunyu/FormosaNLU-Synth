@@ -581,4 +581,49 @@ parser repair 或 label aliasing。正式六組若仍無法學到 canonical inte
 
 ---
 
-<!-- 新決策從 D-021 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+## D-021 — M19 採 equal-N single-seed recipe ablation，negative result 不升級為 causal claim
+
+- **日期**：2026-08-03
+- **狀態**：`accepted-complete`
+- **決策**：在 D-004 的成本限制解除後，執行 `abl_all_eqn` 與四個
+  leave-one-recipe-out 組別。每組固定為 1,176 筆 real + 2,246 筆 synthetic，
+  seed 42、500 steps、相同 strict 2,974-row evaluator；預先登記以 exact match
+  相對 equal-N control 的 absolute delta 是否達 **2.5 percentage points**作為
+  detectability threshold。
+
+**結果**
+
+| 排除 recipe | exact-match delta vs control（pp） | 達 2.5-point 門檻 |
+|---|---:|:---:|
+| `paraphrase` | +0.50 | 否 |
+| `slot_substitution` | +2.02 | 否 |
+| `noise_codeswitch` | -0.74 | 否 |
+| `hard_negative` | +1.31 | 否 |
+
+五組都完成 500-step training 與 2,974/2,974 strict evaluation，沒有任何差異達到
+門檻。正式判讀為
+`no_difference_reaches_preregistered_detectability_threshold`；
+`causal_claim_allowed=false`。這是 seed 42（n=1）的 composition comparison，
+不能解讀為任何 recipe「有效／無效」的獨立因果證據。
+
+**考慮過的選項**
+
+| 選項 | 決定 |
+|---|---|
+| 各 recipe 補 seeds 43/44 | 拒絕；超出 M19 預先登記範圍，也會在看到結果後追加 power |
+| 以 intent accuracy 的 -2.52 points 另宣稱 `noise_codeswitch` 有效 | 拒絕；detectability metric 已凍結為 exact match，不做事後換指標 |
+| 將 +2.02 四捨五入成「接近顯著」 | 拒絕；明確低於 2.5-point 門檻 |
+| 完整保留 negative result 與 single-seed 限制 | 採用 |
+
+**資源誠信**：`abl_no_paraphrase` 第一次 attempt 在 final validation 中斷，之後從
+checkpoint-475 成功續跑。最終 run report 只記錄 resume session；已用原始 log
+timestamps 與 SHA-256 建立 `reports/m19_runtime_audit.json`，把被捨棄 attempt 的
+2.084 h 恢復到資源帳本一次，不影響模型、parser、metrics 或結果。
+
+**什麼情況該推翻**：若未來要判定 recipe-level causal effect，需另立新里程碑，
+在看新結果前登記多 seeds、power／detectability、multiple-comparison strategy 與
+同筆數控制；不得把本次 `n=1` 結果事後升級。
+
+---
+
+<!-- 新決策從 D-022 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->

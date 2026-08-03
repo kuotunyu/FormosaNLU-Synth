@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-02T23:34:39.128341+00:00",
+  "model": "google/gemma-4-E4B-it",
+  "text_only_class": "Gemma4ForCausalLM",
+  "quantization": "NF4 double-quant, bf16 compute",
+  "prompt_template_version": "formosanlu_nlu.v1",
+  "evaluation_mode": "trained_adapter",
+  "label_catalog_included": false,
+  "zero_shot_prompt_includes_label_catalog": false,
+  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m19\\abl_no_noise_codeswitch\\seed_42\\adapter",
+  "group": "abl_no_noise_codeswitch",
+  "seed": 42,
+  "constrained_decoding": false,
+  "completed": 2974,
+  "target": 2974,
+  "wall_seconds": 1558.4058997998213,
+  "timing_basis": "sum of model.generate batch elapsed; excludes model loading",
+  "output_tokens": 64369,
+  "output_tokens_per_second": 41.30438675076131,
+  "output_token_distribution": {
+    "p50": 22,
+    "p95": 38,
+    "p99": 49,
+    "maximum": 68,
+    "max_new_tokens": 128,
+    "at_generation_limit": 0
+  },
+  "peak_device_wide_gpu_memory_mib": 10498.0,
+  "gpu_memory_measurement": "nvidia-smi device-wide memory; concurrent project workloads may contribute",
+  "metrics": {
+    "samples": 2974.0,
+    "json_valid_rate": 0.964694014794889,
+    "intent_accuracy": 0.7347007397444519,
+    "intent_macro_f1": 0.7303191192155692,
+    "slot_micro_f1": 0.6384096024006002,
+    "exact_match": 0.48755884330867516
+  },
+  "parser_outcomes": {
+    "unknown_intent": 43,
+    "unknown_slot_type": 62,
+    "valid": 2869
+  },
+  "conditional_on_strict_valid_json": {
+    "valid_rows": 2869,
+    "intent_correct": 2185,
+    "intent_accuracy": 0.7615894039735099
+  },
+  "per_intent": {
+    "alarm_query": {
+      "correct": 33,
+      "total": 34,
+      "accuracy": 0.9705882352941176
+    },
+    "alarm_remove": {
+      "correct": 21,
+      "total": 21,
+      "accuracy": 1.0
+    },
+    "alarm_set": {
+      "correct": 41,
+      "total": 41,
+      "accuracy": 1.0
+    },
+    "audio_volume_down": {
+      "correct": 10,
+      "total": 11,
+      "accuracy": 0.9090909090909091
+    },
+    "audio_volume_mute": {
+      "correct": 12,
+      "total": 32,
+      "accuracy": 0.375
+    },
+    "audio_volume_other": {
+      "correct": 2,
+      "total": 6,
+      "accuracy": 0.3333333333333333
+    },
+    "audio_volume_up": {
+      "correct": 12,
+      "total": 13,
+      "accuracy": 0.9230769230769231
+    },
+    "calendar_query": {
+      "correct": 65,
+      "total": 126,
+      "accuracy": 0.5158730158730159
+    },
+    "calendar_remove": {
+      "correct": 31,
+      "total": 67,
+      "accuracy": 0.4626865671641791
+    },
+    "calendar_set": {
+      "correct": 147,
+      "total": 209,
+      "accuracy": 0.7033492822966507
+    },
+    "cooking_query": {
+      "correct": 0,
+      "total": 0,
+      "accuracy": 0.0
+    },
+    "cooking_recipe": {
+      "correct": 58,
+      "total": 72,
+      "accuracy": 0.8055555555555556
+    },
+    "datetime_convert": {
+      "correct": 12,
+      "total": 15,
+      "accuracy": 0.8
+    },
+    "datetime_query": {
+      "correct": 85,
+      "total": 88,
+      "accuracy": 0.9659090909090909
+    },
+    "email_addcontact": {
+      "correct": 10,
+      "total": 12,
+      "accuracy": 0.8333333333333334
+    },
+    "email_query": {
+      "correct": 105,
+      "total": 119,
+      "accuracy": 0.8823529411764706
+    },
+    "email_querycontact": {
+      "correct": 23,
+      "total": 26,
+      "accuracy": 0.8846153846153846
+    },
+    "email_sendemail": {
+      "correct": 83,
+      "total": 114,
+      "accuracy": 0.7280701754385965
+    },
+    "general_greet": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 1.0
+    },
+    "general_joke": {
+      "correct": 15,
+      "total": 19,
+      "accuracy": 0.7894736842105263
+    },
+    "general_quirky": {
+      "correct": 47,
+      "total": 169,
+      "accuracy": 0.2781065088757396
+    },
+    "iot_cleaning": {
+      "correct": 26,
+      "total": 26,
+      "accuracy": 1.0
+    },
+    "iot_coffee": {
+      "correct": 36,
+      "total": 36,
+      "accuracy": 1.0
+    },
+    "iot_hue_lightchange": {
+      "correct": 33,
+      "total": 36,
+      "accuracy": 0.9166666666666666
+    },
+    "iot_hue_lightdim": {
+      "correct": 18,
+      "total": 21,
+      "accuracy": 0.8571428571428571
+    },
+    "iot_hue_lightoff": {
+      "correct": 40,
+      "total": 43,
+      "accuracy": 0.9302325581395349
+    },
+    "iot_hue_lighton": {
+      "correct": 3,
+      "total": 3,
+      "accuracy": 1.0
+    },
+    "iot_hue_lightup": {
+      "correct": 9,
+      "total": 27,
+      "accuracy": 0.3333333333333333
+    },
+    "iot_wemo_off": {
+      "correct": 18,
+      "total": 18,
+      "accuracy": 1.0
+    },
+    "iot_wemo_on": {
+      "correct": 8,
+      "total": 10,
+      "accuracy": 0.8
+    },
+    "lists_createoradd": {
+      "correct": 31,
+      "total": 39,
+      "accuracy": 0.7948717948717948
+    },
+    "lists_query": {
+      "correct": 46,
+      "total": 51,
+      "accuracy": 0.9019607843137255
+    },
+    "lists_remove": {
+      "correct": 40,
+      "total": 52,
+      "accuracy": 0.7692307692307693
+    },
+    "music_dislikeness": {
+      "correct": 4,
+      "total": 4,
+      "accuracy": 1.0
+    },
+    "music_likeness": {
+      "correct": 30,
+      "total": 36,
+      "accuracy": 0.8333333333333334
+    },
+    "music_query": {
+      "correct": 28,
+      "total": 35,
+      "accuracy": 0.8
+    },
+    "music_settings": {
+      "correct": 2,
+      "total": 6,
+      "accuracy": 0.3333333333333333
+    },
+    "news_query": {
+      "correct": 82,
+      "total": 124,
+      "accuracy": 0.6612903225806451
+    },
+    "play_audiobook": {
+      "correct": 28,
+      "total": 41,
+      "accuracy": 0.6829268292682927
+    },
+    "play_game": {
+      "correct": 29,
+      "total": 35,
+      "accuracy": 0.8285714285714286
+    },
+    "play_music": {
+      "correct": 97,
+      "total": 176,
+      "accuracy": 0.5511363636363636
+    },
+    "play_podcasts": {
+      "correct": 47,
+      "total": 63,
+      "accuracy": 0.746031746031746
+    },
+    "play_radio": {
+      "correct": 53,
+      "total": 72,
+      "accuracy": 0.7361111111111112
+    },
+    "qa_currency": {
+      "correct": 39,
+      "total": 39,
+      "accuracy": 1.0
+    },
+    "qa_definition": {
+      "correct": 49,
+      "total": 57,
+      "accuracy": 0.8596491228070176
+    },
+    "qa_factoid": {
+      "correct": 103,
+      "total": 141,
+      "accuracy": 0.7304964539007093
+    },
+    "qa_maths": {
+      "correct": 25,
+      "total": 25,
+      "accuracy": 1.0
+    },
+    "qa_stock": {
+      "correct": 22,
+      "total": 26,
+      "accuracy": 0.8461538461538461
+    },
+    "recommendation_events": {
+      "correct": 35,
+      "total": 43,
+      "accuracy": 0.813953488372093
+    },
+    "recommendation_locations": {
+      "correct": 24,
+      "total": 31,
+      "accuracy": 0.7741935483870968
+    },
+    "recommendation_movies": {
+      "correct": 15,
+      "total": 20,
+      "accuracy": 0.75
+    },
+    "social_post": {
+      "correct": 50,
+      "total": 81,
+      "accuracy": 0.6172839506172839
+    },
+    "social_query": {
+      "correct": 19,
+      "total": 25,
+      "accuracy": 0.76
+    },
+    "takeaway_order": {
+      "correct": 17,
+      "total": 22,
+      "accuracy": 0.7727272727272727
+    },
+    "takeaway_query": {
+      "correct": 29,
+      "total": 35,
+      "accuracy": 0.8285714285714286
+    },
+    "transport_query": {
+      "correct": 39,
+      "total": 51,
+      "accuracy": 0.7647058823529411
+    },
+    "transport_taxi": {
+      "correct": 18,
+      "total": 23,
+      "accuracy": 0.782608695652174
+    },
+    "transport_ticket": {
+      "correct": 26,
+      "total": 35,
+      "accuracy": 0.7428571428571429
+    },
+    "transport_traffic": {
+      "correct": 13,
+      "total": 15,
+      "accuracy": 0.8666666666666667
+    },
+    "weather_query": {
+      "correct": 141,
+      "total": 156,
+      "accuracy": 0.9038461538461539
+    }
+  }
+}

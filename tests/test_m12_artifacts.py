@@ -165,6 +165,51 @@ def test_resource_ledger_uses_measured_m19_training_and_evaluation_times() -> No
     assert phase["basis"].startswith("summed runs/m19/*/seed_42/run_report.json")
 
 
+def test_resource_ledger_adds_audited_m19_interrupted_attempt_time() -> None:
+    """A discarded checkpoint attempt still consumed GPU time.
+
+    The successful resumed run report only measures the final resume session,
+    so a separately audited interrupted attempt must be included exactly once.
+    """
+    ledger = build_resource_ledger(
+        generation={"generation": {"wall_seconds": 0}},
+        training={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        evaluation={
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "finished_at": "2026-01-01T00:00:00+00:00",
+            "runs": [{}],
+        },
+        zero_shot={"wall_seconds": 0},
+        m19_batch={"status": "complete", "runs": [{"status": "completed"}] * 5},
+        m19_training_reports=[
+            {"status": "completed", "metrics": {"train_runtime": 360.0}}
+            for _ in range(5)
+        ],
+        m19_evaluation_reports=[
+            {
+                "evaluation_mode": "trained_adapter",
+                "completed": 2_974,
+                "target": 2_974,
+                "wall_seconds": 360.0,
+            }
+            for _ in range(5)
+        ],
+        m19_execution_audit={
+            "status": "complete",
+            "uncounted_interrupted_attempt_seconds": 7_200.0,
+        },
+    )
+
+    phase = ledger["phases"]["m19_equal_n_recipe_ablation"]
+    assert phase["wall_hours"] == 3.0
+    assert phase["interrupted_attempt_wall_hours"] == 2.0
+    assert phase["basis"].endswith("reports/m19_runtime_audit.json")
+
+
 def test_robustness_backfill_sums_batches_rather_than_spanning_them() -> None:
     """The backfill batches ran at different times with gaps between them, so
     bounding them with one window would bill the idle time in between."""

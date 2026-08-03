@@ -11,10 +11,10 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-08-01 09:50 +08:00 |
-| 完成到 | **v1.1.0 已發佈。專案完成。** tag、GitHub Release、兩張 HF card 均已上線並通過發佈後驗證 |
+| 執行區間 | 2026-07-27 03:14–2026-08-03 09:22 +08:00 |
+| 完成到 | **M19 已完成，v1.2.0 release candidate 正在做最後本機 gates。** 五組 equal-N ablation 均完成 500 steps + 2,974-row strict evaluation |
 | 卡住的項目 | 無 |
-| GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 19.035 h；可追溯 local total **33.475 h**；TDP 上限 15.064 kWh |
+| GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 27.972 h；可追溯 local total **42.412 h**；TDP 上限 19.085 kWh |
 | 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB |
 | API 花費 | $0（本專案不使用任何付費 API） |
 
@@ -47,6 +47,10 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 - `reports/m11_demo_evidence.json`：五句真模型 base-versus-adapter 原始輸出、
   strict validity、latency 與 adapter hash
 - `reports/m12_resource_ledger.json`：14.440 h 可追溯 primary GPU 資源帳本
+- `reports/m19_ablation.json`：五組 equal-N per-recipe ablation、delta 與
+  preregistered detectability 判讀
+- `reports/m19_runtime_audit.json`：中斷 attempt 的 log timestamps／SHA 與
+  2.084 h 防低報補記
 - `assets/m12_*.png`：主表、filter 比較、漏斗、per-intent 與方法圖
 - `src/inference/demo.py`：base vs filtered adapter 的 M11 Gradio 比較介面
 - `reports/m10_probe_manifest.json`：8,922-row evaluation-only robustness probe
@@ -54,12 +58,10 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 
 ### ➡️ 接下來的建議起點
 
-**專案的本機工作已全部完成。** 剩下的只有下面「留給使用者」那三件發佈動作。
-
-做完之後這個專案就是完整的 v1.1.0。若之後還想推進，未實作的方向有：
-per-recipe ablation（D-004 當初為成本砍掉）、Phi `full_real` 上限組（D-019
-為原則砍掉）、以及 README 裡寫的台灣知識蒸餾 + TMMLU+ roadmap。這些都是新的
-里程碑，不是收尾項目。
+**專案的 GPU 與實驗工作已全部完成。** 本次工作階段會接續完成本機 gates、
+commit／push、tag 與 GitHub Release；不需要使用者在場操作。M19 已補上原本
+D-004 因成本取消的 per-recipe ablation。Phi `full_real` 仍依 D-019 原則永久
+取消；README 的台灣知識蒸餾 + TMMLU+ 只是未來 roadmap，不是 v1.2.0 待辦。
 
 **發佈已完成**（2026-08-01，使用者明確授權後由 agent 執行）：
 
@@ -88,6 +90,22 @@ primary runs，或 M15 的預先登記判準。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-08-03 09:22 +08:00] M19 — 五組完成，進入 v1.2.0 收尾
+
+- `abl_all_eqn` 與四個 leave-one-recipe-out 組均為 1,176 real + 2,246
+  synthetic、seed 42、500 steps；五份 evaluation 各 2,974/2,974
+- exact-match delta vs control：`paraphrase` +0.50、`slot_substitution` +2.02、
+  `noise_codeswitch` -0.74、`hard_negative` +1.31 percentage points
+- 全部低於預先登記的 2.5-point detectability threshold；正式判讀是
+  `no_difference_reaches_preregistered_detectability_threshold`，不做 recipe-level
+  causal claim
+- 五組 training rows 均 3,422、unique ids 3,422；五份 Test results 均
+  2,974 rows、unique ids 2,974、generation index 0–2,973；checkpoint-500、adapter、
+  batch report 與逐組 report 全部完整
+- GPU 已回到 843 MiB／5%，Ollama 空白，M19 processes 全部自然退出
+- `abl_no_paraphrase` 被捨棄的中斷 attempt 未被 final run report 計入；以原始
+  logs SHA／timestamps 稽核補回 2.084 h。M19 共 8.937 h，local total 42.412 h
 
 ### [2026-08-01 09:50 +08:00] M16 — 完成
 
