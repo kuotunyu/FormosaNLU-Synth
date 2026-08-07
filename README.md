@@ -66,7 +66,7 @@ LoRA 使用方式見 [Model Card](https://huggingface.co/steven0226/gemma-4-e4b-
 {"intent":"weather_query","slots":[{"type":"place_name","value":"台北"},{"type":"date","value":"明天"}]}
 ```
 
-Adapter 也把 base 誤判為 `timeofday` 的「明天」修正為 `date`。兩邊 prompt 刻意不同：base 使用含合法 labels 的 zero-shot catalog prompt，adapter strike 使用 frozen SFT prompt。
+Adapter 也把 base 誤判為 `timeofday` 的「明天」修正為 `date`。兩邊 prompt 刻意不同：base 使用含合法 labels 的 zero-shot catalog prompt，adapter 使用 frozen SFT prompt。
 
 </details>
 
@@ -82,28 +82,31 @@ Adapter 也把 base 誤判為 `timeofday` 的「明天」修正為 `date`。兩�
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '20px'}}}%%
-flowchart TB
-    Inputs["輸入<br/>MASSIVE zh-TW frozen 20-shot data<br/>＋ local teacher qwen3.6:27b"]
-    Recipes["產生四類 synthetic data<br/>semantic rewriting · slot substitution<br/>real-world noise · hard negatives"]
-    Generated["11,264 generated rows"]
-    Checks["格式與標籤檢查<br/>JSON · intent / slot labels<br/>slot values · 台灣用語"]
-    Safety["去重與防止資料洩漏<br/>移除重複／離群樣本<br/>排除接近 validation / Test 的內容"]
-    Primary["3,760-row training corpus<br/>訓練前凍結，不再回溯修改"]
-    Judge["獨立模型品質稽核<br/>gpt-oss:20b 抽查 376 rows"]
-    Public["3,754-row public Dataset<br/>移除 6 筆稽核失敗樣本"]
+flowchart TD
+    subgraph Stage1 ["階段一：資料生成與初步過濾"]
+        direction LR
+        Inputs["1. 輸入資料<br/>(MASSIVE zh-TW 20-shot + Qwen3.6:27B)"] --> Recipes["2. 四類 Synthetic Data 生成<br/>(Paraphrase / Slot / Noise / Hard Neg)"] --> Generated["3. 生成 11,264 筆樣本"]
+    end
 
-    Inputs --> Recipes --> Generated --> Checks --> Safety --> Primary
-    Primary -->|"public release only (不回溯 training)"| Judge --> Public
+    subgraph Stage2 ["階段二：規則與語意品質門控 (F1-F6)"]
+        direction LR
+        Checks["4. 語法與標籤檢核<br/>(JSON 格式 / 意圖與槽位 / 台灣用語)"] --> Safety["5. 去重與防洩漏過濾<br/>(語意相似度與 Val/Test 排除)"] --> Primary["6. 凍結 3,760 筆訓練集<br/>(訓練前定案不回溯)"]
+    end
 
-    classDef source fill:#DBEAFE,stroke:#1D4ED8,stroke-width:2px,color:#212529
-    classDef process fill:#DCFCE7,stroke:#15803D,stroke-width:2px,color:#212529
-    classDef gate fill:#FEF3C7,stroke:#B45309,stroke-width:2px,color:#212529
-    classDef artifact fill:#F3E8FF,stroke:#7E22CE,stroke-width:2px,color:#212529
-    
-    class Inputs source
-    class Recipes,Generated process
-    class Checks,Safety,Judge gate
-    class Primary,Public artifact
+    subgraph Stage3 ["階段三：獨立模型品質稽核與發布 (F7)"]
+        direction LR
+        Judge["7. 獨立模型品質稽核<br/>(gpt-oss:20b 抽查 376 筆)"] --> Public["8. 公開 3,754 筆 Dataset<br/>(剔除 6 筆未通過樣本)"]
+    end
+
+    Stage1 --> Stage2 --> Stage3
+
+    classDef stageStyle fill:#e7f5ff,stroke:#1971c2,stroke-width:2px,color:#212529
+    classDef gateStyle fill:#fff9db,stroke:#f59f00,stroke-width:2px,color:#212529
+    classDef pubStyle fill:#e6fcf5,stroke:#0ca678,stroke-width:2px,color:#212529
+
+    class Stage1,Inputs,Recipes,Generated stageStyle
+    class Stage2,Checks,Safety,Primary gateStyle
+    class Stage3,Judge,Public pubStyle
 ```
 
 <details>
@@ -127,33 +130,35 @@ flowchart TB
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '20px'}}}%%
-flowchart TB
-    Contract["Shared frozen contract<br/>data · prompt · 500 steps · evaluator"]
-    Gemma["Gemma 4"]
-    Phi["Phi-4-mini"]
-    GReal["real_only<br/>seeds 42 / 43 / 44"]
-    GSyn["real_syn_filtered<br/>seeds 42 / 43 / 44"]
-    PReal["real_only<br/>seeds 42 / 43 / 44"]
-    PSyn["real_syn_filtered<br/>seeds 42 / 43 / 44"]
-    GEval["2,974-row strict Test<br/>Gemma paired predictions"]
-    PEval["2,974-row strict Test<br/>Phi paired predictions"]
-    Stats["hierarchical paired bootstrap<br/>McNemar + Holm"]
-    Criterion["preregistered cross-family criterion<br/>replicated"]
+flowchart TD
+    Contract["1. 共享凍結實驗契約<br/>(Data · Prompt · 500 Steps · Evaluator)"] --> Models
 
-    Contract --> Gemma & Phi
-    Gemma --> GReal & GSyn --> GEval
-    Phi --> PReal & PSyn --> PEval
-    GEval & PEval --> Stats --> Criterion
+    subgraph Models ["2. 雙 Student Model Family 對照訓練"]
+        direction LR
+        subgraph GemmaGroup ["Gemma 4 Family"]
+            direction LR
+            GReal["real_only (Seeds 42/43/44)"] & GSyn["real_syn_filtered (Seeds 42/43/44)"]
+        end
+        subgraph PhiGroup ["Phi-4-mini Family"]
+            direction LR
+            PReal["real_only (Seeds 42/43/44)"] & PSyn["real_syn_filtered (Seeds 42/43/44)"]
+        end
+    end
 
-    classDef contract fill:#DBEAFE,stroke:#1D4ED8,stroke-width:2px,color:#212529
-    classDef model fill:#DCFCE7,stroke:#15803D,stroke-width:2px,color:#212529
-    classDef arm fill:#FEF3C7,stroke:#B45309,stroke-width:2px,color:#212529
-    classDef evidence fill:#F3E8FF,stroke:#7E22CE,stroke-width:2px,color:#212529
-    
-    class Contract contract
-    class Gemma,Phi model
-    class GReal,GSyn,PReal,PSyn arm
-    class GEval,PEval,Stats,Criterion evidence
+    Models --> EvalStage
+
+    subgraph EvalStage ["3. 嚴格 Test 集評測與成對統計檢定"]
+        direction LR
+        GEval["2,974 筆 Test 預測 (Gemma)"] & PEval["2,974 筆 Test 預測 (Phi)"] --> Stats["分層成對 Bootstrap<br/>(McNemar + Holm 校正)"] --> Criterion["跨模型家族複製成功<br/>(Replicated)"]
+    end
+
+    classDef contractStyle fill:#fff9db,stroke:#f59f00,stroke-width:2px,color:#212529
+    classDef modelStyle fill:#e7f5ff,stroke:#1971c2,stroke-width:2px,color:#212529
+    classDef evalStyle fill:#e6fcf5,stroke:#0ca678,stroke-width:2px,color:#212529
+
+    class Contract contractStyle
+    class Models,GemmaGroup,PhiGroup,GReal,GSyn,PReal,PSyn modelStyle
+    class EvalStage,GEval,PEval,Stats,Criterion evalStyle
 ```
 
 <details>
