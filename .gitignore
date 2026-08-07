@@ -55,9 +55,14 @@ htmlcov/
 # They were untracked deliberately; history was not rewritten, so earlier
 # commits still contain them.
 .claude/
+.agents/
 .github/
 CLAUDE.md
 PLAN.md
+PROGRESS.md
+interview*.md
+INTERVIEW_PREP.md
+*.private.md
 /docs/superpowers/
 
 # ---- Crash dumps from interrupted shell tools ----
