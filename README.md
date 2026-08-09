@@ -55,7 +55,7 @@ LoRA 使用方式見 [Model Card](https://huggingface.co/steven0226/gemma-4-e4b-
 {"intent":"play_music","slots":[{"type":"artist_name","value":"周杰倫"}]}
 ```
 
-同一組五句中，base model 為 0/5，adapter 達成 **5/5 valid JSON**；差異在於 intent 辨識與穩定遵守 JSON Schema 的能力。
+同一組五句中，**base model 0/5**，adapter 達成 **5/5 valid JSON**；差異在於 intent 辨識與穩定遵守 JSON Schema 的能力。
 
 <details>
 <summary><strong>查看第二個輸出與比較邊界</strong></summary>
@@ -82,20 +82,20 @@ Adapter 也把 base 誤判為 `timeofday` 的「明天」修正為 `date`。兩�
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '18px'}}}%%
-flowchart TD
+flowchart TB
     subgraph Stage1 ["階段一：資料生成與初步過濾"]
         direction LR
-        Inputs[("1. 輸入資料<br/>(MASSIVE zh-TW 20-shot + Qwen3.6:27B)")] --> Recipes["2. 四類 Synthetic Data 生成<br/>(Paraphrase / Slot / Noise / Hard Neg)"] --> Generated(["3. 生成 11,264 筆樣本"])
+        Inputs[("1. 輸入資料<br/>MASSIVE zh-TW 20-shot + Qwen3.6:27B")] --> Recipes["2. 四類 Synthetic Data 生成<br/>Paraphrase / Slot / Noise / Hard Neg"] --> Generated(["3. 生成 11,264 筆樣本"])
     end
 
-    subgraph Stage2 ["階段二：規則與語意品質門控 (F1-F6)"]
+    subgraph Stage2 ["階段二：規則與語意品質門控"]
         direction LR
-        Checks["4. 語法與標籤檢核<br/>(JSON 格式 / 意圖槽位 / 台灣用語)"] --> Safety["5. 去重與防洩漏過濾<br/>(語意相似度與 Val/Test 排除)"] --> Primary[("6. 凍結 3,760 筆訓練集<br/>(訓練前定案不回溯)")]
+        Checks["4. 格式與標籤檢查<br/>JSON / intent / slot / 台灣用語"] --> Safety["5. 去重與防止資料洩漏<br/>語意相似度與 Val/Test 排除"] --> Primary[("6. 3,760-row training corpus<br/>訓練前凍結、不回溯修改")]
     end
 
-    subgraph Stage3 ["階段三：獨立模型品質稽核與發布 (F7)"]
+    subgraph Stage3 ["階段三：獨立稽核與發布"]
         direction LR
-        Judge["7. 獨立模型品質稽核<br/>(gpt-oss:20b 抽查 376 筆)"] --> Public[("8. 公開 3,754 筆 Dataset<br/>(剔除 6 筆未通過樣本)")]
+        Judge["7. 獨立模型品質稽核<br/>gpt-oss:20b 抽查 376 筆"] --> Public[("8. 3,754-row public Dataset<br/>剔除 6 筆未通過樣本")]
     end
 
     Stage1 --> Stage2 --> Stage3
@@ -116,7 +116,7 @@ flowchart TD
 ```
 
 <details>
-<summary><strong>F1–F7 檢查項目對照</strong></summary>
+<summary><strong>F1–F7 是什麼？</strong></summary>
 
 | Audit ID | 實際檢查內容 |
 | --- | --- |
@@ -136,7 +136,7 @@ flowchart TD
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '18px'}}}%%
-flowchart TD
+flowchart TB
     Contract[("1. 共享凍結實驗契約<br/>(Data · Prompt · 500 Steps · Evaluator)")] --> Models
 
     subgraph Models ["2. 雙 Student Model Family 對照訓練"]
@@ -155,7 +155,7 @@ flowchart TD
 
     subgraph EvalStage ["3. 嚴格 Test 集評測與成對統計檢定"]
         direction LR
-        GEval["2,974 筆 Test 預測<br/>(Gemma)"] & PEval["2,974 筆 Test 預測<br/>(Phi)"] --> Stats["分層成對 Bootstrap<br/>(McNemar + Holm 校正)"] --> Criterion[("跨模型家族複製成功<br/>(Replicated)")]
+        GEval["2,974-row Test 預測<br/>Gemma"] & PEval["2,974-row Test 預測<br/>Phi"] --> Stats["hierarchical paired bootstrap<br/>McNemar + Holm 校正"] --> Criterion[("cross-family 複製成功<br/>Replicated")]
     end
 
     classDef contractStyle fill:#fff9db,stroke:#f59f00,stroke-width:2px,color:#212529
@@ -254,13 +254,17 @@ Intent accuracy 與 exact match 另在每個 seed 執行 two-sided exact McNemar
 
 M19 將四種 synthetic recipes 進行 leave-one-out，並將每組 synthetic rows 固定為 2,246 筆；連同相同的 1,176 筆 real examples，每組訓練資料均為 3,422 筆。
 
+這是 **seed 42（n=1）** 的 composition-level 描述性比較；預先登記的 detectability metric 是 exact match，門檻為 **2.5 percentage points**。
+
 | Group | 排除的 recipe | intent acc | intent macro-F1 | slot F1 | exact match | exact Δ vs control (pp) | JSON-valid | 達門檻 |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | :---: |
-| `abl_all_eqn` | `— (equal-N control)` | 75.99% | 75.51% | 63.61% | 49.50% | +0.00 | 97.34% | 否 |
-| `abl_no_paraphrase` | `paraphrase` | 74.14% | 74.72% | 64.09% | 50.00% | +0.50 | 96.54% | 否 |
-| `abl_no_slot_substitution` | `slot_substitution` | 77.14% | 77.11% | 65.60% | 51.51% | +2.02 | 96.40% | 否 |
-| `abl_no_noise_codeswitch` | `noise_codeswitch` | 73.47% | 73.03% | 63.84% | 48.76% | -0.74 | 96.47% | 否 |
-| `abl_no_hard_negative` | `hard_negative` | 76.19% | 76.23% | 64.69% | 50.81% | +1.31 | 97.24% | 否 |
+| `abl_all_eqn` | `— (equal-N control)` | 75.99% | 75.51% | 63.61% | 49.50% | +0.00 | 97.34% | no |
+| `abl_no_paraphrase` | `paraphrase` | 74.14% | 74.72% | 64.09% | 50.00% | +0.50 | 96.54% | no |
+| `abl_no_slot_substitution` | `slot_substitution` | 77.14% | 77.11% | 65.60% | 51.51% | +2.02 | 96.40% | no |
+| `abl_no_noise_codeswitch` | `noise_codeswitch` | 73.47% | 73.03% | 63.84% | 48.76% | -0.74 | 96.47% | no |
+| `abl_no_hard_negative` | `hard_negative` | 76.19% | 76.23% | 64.69% | 50.81% | +1.31 | 97.24% | no |
+
+所有 exact-match 差異都低於預先登記門檻，因此結果不支持辨識單一 recipe 的獨立貢獻，並且**不做單一 recipe 的 causal claim**。
 
 詳細說明見 [`reports/m19_ablation.json`](reports/m19_ablation.json) 與 [`docs/M19_ABLATION_PROTOCOL.md`](docs/M19_ABLATION_PROTOCOL.md)。
 
@@ -272,13 +276,13 @@ M15 使用第二個 student family (Phi-4-mini) 重跑完全相同之 paired con
 
 | Metric | Gemma Δ [95% CI] | Phi Δ [95% CI] | 兩個 family 的 CI 都 > 0 |
 | --- | ---: | ---: | :---: |
-| `intent_accuracy` | +4.14 [+2.60, +5.59] | +5.09 [+1.83, +9.02] | 通過 |
-| `intent_macro_f1` | +2.01 [+0.35, +3.69] | +3.36 [+0.98, +5.56] | 通過 |
-| `slot_micro_f1` | +2.92 [+0.87, +4.68] | +1.80 [+0.29, +3.19] | 通過 |
-| `exact_match` | +3.86 [+2.75, +4.92] | +4.71 [+1.36, +7.59] | 通過 |
-| `json_valid_rate` | +1.57 [-0.01, +3.77] | +1.77 [+1.05, +2.63] | 未通過 |
+| `intent_accuracy` | +4.14 [+2.60, +5.59] | +5.09 [+1.83, +9.02] | ✅ |
+| `intent_macro_f1` | +2.01 [+0.35, +3.69] | +3.36 [+0.98, +5.56] | ✅ |
+| `slot_micro_f1` | +2.92 [+0.87, +4.68] | +1.80 [+0.29, +3.19] | ✅ |
+| `exact_match` | +3.86 [+2.75, +4.92] | +4.71 [+1.36, +7.59] | ✅ |
+| `json_valid_rate` | +1.57 [-0.01, +3.77] | +1.77 [+1.05, +2.63] | ❌ |
 
-兩項預先登記之 primary metrics 均通過驗證。詳細數據見 [`reports/m15_cross_model_replication.md`](reports/m15_cross_model_replication.md)。
+兩項預先登記之 primary metrics 均通過，結論為 `replicated_across_student_families`。兩個 family 分別彙總，**不 pooling**；結果不宣稱可推廣至任意 model、任務或 Dataset。詳細數據見 [`reports/m15_cross_model_replication.md`](reports/m15_cross_model_replication.md)。
 
 ---
 
@@ -290,7 +294,18 @@ Seed 42 下，3,760-row filtered corpus 相較 unfiltered-full / equal-N unfilte
 
 F1-F6 最終保留 3,760 / 11,264 rows (33.38%)。最大損失為 4,596 筆 near-duplicates，揭露了 pilot 未發現之 corpus-scale mode collapse。
 
+F7 independent audit 完成 376/376；random stratum 的觀察漏檢率為 **6.0%**（50 筆樣本，區間仍寬），並只影響公開 Dataset，不回溯改寫 frozen training corpus。
+
 ![F1–F6 filter funnel](assets/m12_filter_funnel.png)
+
+<details>
+<summary><strong>查看各 intent 的變化</strong></summary>
+
+![各 intent 的 accuracy 變化](assets/m12_intent_movement.png)
+
+單一 seed 的極端 intent 變化容易受 20-shot 基線變異影響；完整三種子解讀見 [`reports/m9_replicate_summary.md`](reports/m9_replicate_summary.md)。
+
+</details>
 
 ---
 
@@ -311,6 +326,8 @@ Primary GPU path 於單張 RTX 4090 上耗時 **14.440 h**；包含所有輔助�
 | Auxiliary tasks total | **27.972 h** | F7 + M11 + extra seeds + robustness + M15 + M16 + M19 |
 | **Local total** | **42.412 h** | 所有本機 GPU 階段 |
 | **API spend** | **$0** | 所有模型均在本機執行 |
+
+以 RTX 4090 的 450 W TDP 計算，primary core 14.440 h 對應 6.498 kWh、local total 42.412 h 對應 **19.085 kWh** 的保守 GPU-only 上限；這不是 wall-socket measurement。
 
 資源帳本位於 [`reports/m12_resource_ledger.json`](reports/m12_resource_ledger.json)。
 
@@ -346,6 +363,22 @@ Primary GPU path 於單張 RTX 4090 上耗時 **14.440 h**；包含所有輔助�
 
 詳細數據見 [`reports/m16_robustness_summary_gemma.md`](reports/m16_robustness_summary_gemma.md)。
 
+<details>
+<summary><strong>查看 seed-42 的逐 probe 拆解</strong></summary>
+
+| Group | Probe | Intent acc | Slot F1 | Exact match | JSON valid |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `real_only` | `asr_noise` | 68.49% | 58.62% | 42.54% | 98.52% |
+| `real_only` | `colloquial` | 73.50% | 61.20% | 47.98% | 98.18% |
+| `real_only` | `lexical` | 72.83% | 61.97% | 48.49% | 97.98% |
+| `real_syn_filtered` | `asr_noise` | 70.24% | 61.25% | 44.08% | 97.88% |
+| `real_syn_filtered` | `colloquial` | 74.88% | 65.69% | 51.18% | 97.68% |
+| `real_syn_filtered` | `lexical` | 74.68% | 65.48% | 51.11% | 97.98% |
+
+這些是 seed 42 的拆解，不取代上方 seeds 42–44 的 paired summary；三種擾動是 deterministic probes，不等同真實 ASR 或自然 code-switching 分布。
+
+</details>
+
 ---
 
 ## 重現步驟
@@ -363,11 +396,11 @@ python -m src.data.freeze_split --verify
 python -m scripts.check_gates
 ```
 
-`scripts.check_gates` 會自動驗證 ruff, pytest, verify_readme, verify_contributors 與 verify_closeout。
+`scripts.check_gates` 會依序執行六道檢查：`ruff`、`pytest`、`scripts.verify_readme`、`scripts.verify_contributors`、`scripts.verify_reproduce`、`scripts.verify_closeout`；任何一項失敗都會阻止推送。
 
 ---
 
-## 論文與資料集引用
+## 引用
 
 ```bibtex
 @software{kuotunyu_formosanlu_synth_2026,
@@ -379,6 +412,8 @@ python -m scripts.check_gates
   url     = {https://doi.org/10.5281/zenodo.21767493}
 }
 ```
+
+Zenodo version record：<https://zenodo.org/records/21767493>。此 DOI 固定指向 GitHub `v1.2.1` source snapshot；Dataset 與 Model 仍依各自的 license 與 card 為準。
 
 ---
 
