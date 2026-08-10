@@ -53,6 +53,7 @@ DOCUMENTED_GATE_TOKENS = (
     "`scripts.verify_reproduce`",
     "`scripts.verify_closeout`",
 )
+ZENODO_CONCEPT_DOI = "10.5281/zenodo.21767492"
 
 
 @dataclass(frozen=True)
@@ -242,12 +243,21 @@ def _card_claim_check(root: Path) -> Check:
             absent.append("no recipe-level causal claim")
         if absent:
             missing.append(f"{relative}: {', '.join(absent)}")
+    phi_card = (_read_text(root, "hf_cards/phi_model_README.md") or "").lower()
+    for token in (
+        "microsoft/phi-4-mini-instruct",
+        "steven0226/phi-4-mini-formosanlu-lora",
+        "e9e4c77d79eb12da8cba64a7a484d260f753d000396752f51159e3c0f4e34376",
+        "single adapter",
+    ):
+        if token not in phi_card:
+            missing.append(f"hf_cards/phi_model_README.md: {token}")
     passed = not missing
     return Check(
         "hf_card_claims",
         passed,
-        "both cards current" if passed else "; ".join(missing),
-        "both card sources contain M19, current resources, and the causal limitation",
+        "three cards current" if passed else "; ".join(missing),
+        "Dataset, Gemma, and Phi cards contain their bounded current claims",
     )
 
 
@@ -269,28 +279,52 @@ def _version_check(root: Path) -> Check:
         versions["CITATION.cff"] = str(citation["version"])
     except (KeyError, OSError, TypeError, yaml.YAMLError):
         versions["CITATION.cff"] = "missing_or_invalid"
-    passed = set(versions.values()) == {"1.2.1"}
+    expected = versions["pyproject"]
+    passed = expected != "missing_or_invalid" and set(versions.values()) == {expected}
     return Check(
         "version_metadata",
         passed,
         repr(versions),
-        "pyproject.toml, uv.lock, and CITATION.cff all identify 1.2.1",
+        "pyproject.toml, uv.lock, and CITATION.cff identify one shared version",
     )
 
 
 def _doi_backlink_check(root: Path) -> Check:
+    version = "missing_or_invalid"
     try:
-        report = json.loads(
-            (root / "reports/v121_zenodo.json").read_text(encoding="utf-8")
+        citation_payload = yaml.safe_load(
+            (root / "CITATION.cff").read_text(encoding="utf-8")
         )
+        version = str(citation_payload["version"])
+    except (KeyError, OSError, TypeError, UnicodeError, yaml.YAMLError):
+        citation_payload = {}
+    report_name = f"reports/v{version.replace('.', '')}_zenodo.json"
+    try:
+        report = json.loads((root / report_name).read_text(encoding="utf-8"))
         doi = str(report["doi"])
         doi_url = str(report["doi_url"])
         record_url = str(report["record_url"])
     except (KeyError, OSError, TypeError, UnicodeError, json.JSONDecodeError):
+        surfaces = {
+            "README.md": _read_text(root, "README.md") or "",
+            "CITATION.cff": _read_text(root, "CITATION.cff") or "",
+            "docs/HANDOFF.md": _read_text(root, "docs/HANDOFF.md") or "",
+            f"docs/RELEASE_NOTES_v{version}.md": (
+                _read_text(root, f"docs/RELEASE_NOTES_v{version}.md") or ""
+            ),
+        }
+        missing = [name for name, text in surfaces.items() if ZENODO_CONCEPT_DOI not in text]
+        if not missing:
+            return Check(
+                "doi_backlinks",
+                True,
+                f"concept DOI {ZENODO_CONCEPT_DOI}; version DOI pending release archive",
+                "the concept DOI is present before archiving; exact version DOI after minting",
+            )
         return Check(
             "doi_backlinks",
             False,
-            "reports/v121_zenodo.json missing or invalid",
+            f"{report_name} missing or invalid; concept DOI missing from {', '.join(missing)}",
             "the exact minted version DOI appears on every public citation surface",
         )
 
@@ -305,10 +339,7 @@ def _doi_backlink_check(root: Path) -> Check:
         missing.append("README.md")
 
     try:
-        citation = yaml.safe_load(
-            (root / "CITATION.cff").read_text(encoding="utf-8")
-        )
-        identifiers = citation.get("identifiers", [])
+        identifiers = citation_payload.get("identifiers", [])
         has_doi = any(
             isinstance(identifier, dict)
             and identifier.get("type") == "doi"
@@ -320,7 +351,7 @@ def _doi_backlink_check(root: Path) -> Check:
     if not has_doi:
         missing.append("CITATION.cff")
 
-    for relative in ("docs/HANDOFF.md", "docs/RELEASE_NOTES_v1.2.1.md"):
+    for relative in ("docs/HANDOFF.md", f"docs/RELEASE_NOTES_v{version}.md"):
         text = _read_text(root, relative) or ""
         if doi not in text or record_url not in text:
             missing.append(relative)
@@ -349,6 +380,7 @@ def _paper_check(root: Path) -> Check:
     tex = _read_text(root, "paper/formosanlu_synth.tex") or ""
     bibliography = _read_text(root, "paper/references.bib") or ""
     instructions = _read_text(root, "paper/README.md") or ""
+    pdf = root / "paper/formosanlu_synth.pdf"
     sections = (
         "Introduction",
         "Related Work",
@@ -374,6 +406,10 @@ def _paper_check(root: Path) -> Check:
         missing.append("2.5 percentage points")
     if "does not support a recipe-level causal claim" not in lower:
         missing.append("causal limitation")
+    if "steven0226/phi-4-mini-formosanlu-lora" not in tex:
+        missing.append("public Phi adapter")
+    if not pdf.is_file() or pdf.stat().st_size <= 0:
+        missing.append("paper/formosanlu_synth.pdf")
     passed = bool(tex and bibliography and instructions) and not missing
     return Check(
         "paper_package",

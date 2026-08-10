@@ -18,6 +18,7 @@ It does NOT cover:
 - MASSIVE: [AmazonScience/massive](https://github.com/alexa/massive)
 - Gemma 4: [Google Gemma documentation and Apache-2.0 license](https://ai.google.dev/gemma/docs/core)
 - Phi-4-mini: [`microsoft/Phi-4-mini-instruct`](https://huggingface.co/microsoft/Phi-4-mini-instruct)
+- Public Phi LoRA adapter: [`steven0226/phi-4-mini-formosanlu-lora`](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora), MIT; base-model license and notices still apply
 - Qwen teacher: [Qwen3.6](https://github.com/QwenLM/Qwen3.6)
 - gpt-oss judge: [`openai/gpt-oss-20b`](https://huggingface.co/openai/gpt-oss-20b)
 

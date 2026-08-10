@@ -1,0 +1,25 @@
+{
+  "adapter_bytes": 92309112,
+  "adapter_sha256": "e9e4c77d79eb12da8cba64a7a484d260f753d000396752f51159e3c0f4e34376",
+  "adapter_tensor_count": 256,
+  "anonymous_verification": true,
+  "base_model": "microsoft/Phi-4-mini-instruct",
+  "base_model_revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "adapter_config.json",
+    "adapter_model.safetensors",
+    "chat_template.jinja",
+    "release_manifest.json",
+    "tokenizer.json",
+    "tokenizer_config.json"
+  ],
+  "hub_commit": "37f77db867198d781acc1bab95ebd37a8b52462c",
+  "repo_id": "steven0226/phi-4-mini-formosanlu-lora",
+  "source_commit": "35b94c6b681cccb2d7308716a253a244bb345051",
+  "status": "public_verified",
+  "url": "https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora",
+  "verified_at": "2026-08-10T20:54:13.040744+00:00",
+  "visibility": "public"
+}

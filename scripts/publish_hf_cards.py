@@ -1,4 +1,4 @@
-"""Publish only the two v1.2.1 Hugging Face cards behind immutable guards."""
+"""Publish the three v1.2.2 Hugging Face cards behind immutable guards."""
 
 from __future__ import annotations
 
@@ -15,17 +15,21 @@ from dotenv import dotenv_values
 from huggingface_hub import HfApi
 
 from scripts.hf_release import DATASET_REPO_ID, MODEL_REPO_ID, REPO_ROOT
+from scripts.phi_hf_release import PHI_REPO_ID
 from scripts.verify_publication import (
     EXPECTED_ADAPTER_SHA256,
     EXPECTED_DATASET_SHA256,
+    EXPECTED_PHI_ADAPTER_BYTES,
+    EXPECTED_PHI_ADAPTER_SHA256,
     verify_publication,
 )
 
-CONFIRMATION_TOKEN = "HF-CARDS-V1.2.1"
+CONFIRMATION_TOKEN = "HF-CARDS-V1.2.2"
 EXPECTED_ADAPTER_BYTES = 155_609_536
 DATASET_CARD = REPO_ROOT / "hf_cards" / "dataset_README.md"
 MODEL_CARD = REPO_ROOT / "hf_cards" / "model_README.md"
-DEFAULT_REPORT = REPO_ROOT / "outputs" / "publication" / "v1.2.1" / "hf_card_update.json"
+PHI_MODEL_CARD = REPO_ROOT / "hf_cards" / "phi_model_README.md"
+DEFAULT_REPORT = REPO_ROOT / "outputs" / "publication" / "v1.2.2" / "hf_card_update.json"
 
 
 @dataclass(frozen=True)
@@ -73,6 +77,7 @@ def _sha256(path: Path) -> str:
 def _snapshots(evidence: dict[str, Any]) -> dict[str, RemoteSnapshot]:
     dataset = evidence["dataset"]
     model = evidence["model"]
+    phi_model = evidence["phi_model"]
     return {
         "dataset": RemoteSnapshot(
             files=frozenset(dataset["files"]),
@@ -84,6 +89,12 @@ def _snapshots(evidence: dict[str, Any]) -> dict[str, RemoteSnapshot]:
             revision=str(model["hub_commit"]),
             adapter_sha256=str(model["adapter_sha256"]),
             adapter_bytes=int(model["adapter_bytes"]),
+        ),
+        "phi_model": RemoteSnapshot(
+            files=frozenset(phi_model["files"]),
+            revision=str(phi_model["hub_commit"]),
+            adapter_sha256=str(phi_model["adapter_sha256"]),
+            adapter_bytes=int(phi_model["adapter_bytes"]),
         ),
     }
 
@@ -123,20 +134,30 @@ def _plan(before: dict[str, RemoteSnapshot]) -> dict[str, Any]:
                 "source_sha256": _sha256(MODEL_CARD),
                 "remote_path": "README.md",
             },
+            {
+                "repo_id": PHI_REPO_ID,
+                "repo_type": "model",
+                "source": PHI_MODEL_CARD.relative_to(REPO_ROOT).as_posix(),
+                "source_sha256": _sha256(PHI_MODEL_CARD),
+                "remote_path": "README.md",
+            },
         ],
         "immutable_expectations": {
             "dataset_train_sha256": EXPECTED_DATASET_SHA256,
             "adapter_sha256": EXPECTED_ADAPTER_SHA256,
             "adapter_bytes": EXPECTED_ADAPTER_BYTES,
+            "phi_adapter_sha256": EXPECTED_PHI_ADAPTER_SHA256,
+            "phi_adapter_bytes": EXPECTED_PHI_ADAPTER_BYTES,
             "dataset_file_set": sorted(before["dataset"].files),
             "model_file_set": sorted(before["model"].files),
+            "phi_model_file_set": sorted(before["phi_model"].files),
         },
         "before": {key: _serializable(value) for key, value in before.items()},
     }
 
 
 def publish_cards() -> dict[str, Any]:
-    """Upload two README files and prove immutable artifacts did not change."""
+    """Upload three README files and prove immutable artifacts did not change."""
     before_evidence = verify_publication()
     before = _snapshots(before_evidence)
     plan = _plan(before)
@@ -146,19 +167,20 @@ def publish_cards() -> dict[str, Any]:
     for repo_id, repo_type, source in (
         (DATASET_REPO_ID, "dataset", DATASET_CARD),
         (MODEL_REPO_ID, "model", MODEL_CARD),
+        (PHI_REPO_ID, "model", PHI_MODEL_CARD),
     ):
         result = api.upload_file(
             path_or_fileobj=source,
             path_in_repo="README.md",
             repo_id=repo_id,
             repo_type=repo_type,
-            commit_message="Docs: update v1.2.1 evidence card",
+            commit_message="Docs: update v1.2.2 evidence card",
         )
         commits[repo_id] = str(result)
 
     after_evidence = verify_publication()
     after = _snapshots(after_evidence)
-    for key in ("dataset", "model"):
+    for key in ("dataset", "model", "phi_model"):
         assert_safe_delta(before[key], after[key])
 
     report = {
@@ -179,7 +201,7 @@ def publish_cards() -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--execute", action="store_true", help="Upload both card files.")
+    parser.add_argument("--execute", action="store_true", help="Upload all card files.")
     parser.add_argument("--confirm", default="", help="Exact destructive-action token.")
     args = parser.parse_args()
 

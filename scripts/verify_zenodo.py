@@ -1,4 +1,4 @@
-"""Verify the public Zenodo archive created from the v1.2.1 GitHub release."""
+"""Verify a public Zenodo archive created from a versioned GitHub release."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import re
+import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -13,15 +14,21 @@ from typing import Any
 import requests
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_REPORT = REPO_ROOT / "reports" / "v121_zenodo.json"
 ZENODO_RECORDS_API = "https://zenodo.org/api/records"
 GITHUB_API = "https://api.github.com/repos/kuotunyu/FormosaNLU-Synth"
 GITHUB_REPOSITORY = "https://github.com/kuotunyu/FormosaNLU-Synth"
 EXPECTED_CREATOR = "kuotunyu"
-EXPECTED_VERSION = "1.2.1"
-EXPECTED_ZENODO_VERSION = f"v{EXPECTED_VERSION}"
 DOI_PATTERN = re.compile(r"^10\.5281/zenodo\.\d+$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
+
+
+def _project_version() -> str:
+    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+        return str(tomllib.load(handle)["project"]["version"])
+
+
+EXPECTED_VERSION = _project_version()
+DEFAULT_REPORT = REPO_ROOT / "reports" / f"v{EXPECTED_VERSION.replace('.', '')}_zenodo.json"
 
 
 def _get_json(url: str, *, params: dict[str, object] | None = None) -> Any:
@@ -67,6 +74,7 @@ def _software_type(metadata: dict[str, Any]) -> str:
 def validate_record(
     payload: dict[str, Any],
     expected_tag_commit: str,
+    version: str | None = None,
 ) -> dict[str, Any]:
     """Validate one Zenodo record and return normalized public evidence."""
     if not COMMIT_PATTERN.fullmatch(expected_tag_commit):
@@ -75,10 +83,13 @@ def validate_record(
     metadata = payload.get("metadata")
     if not isinstance(metadata, dict):
         raise ValueError("Zenodo record metadata is missing")
-    if metadata.get("version") != EXPECTED_ZENODO_VERSION:
+    observed_version = str(metadata.get("version", ""))
+    expected_version = version or EXPECTED_VERSION
+    expected_zenodo_version = f"v{expected_version}"
+    if observed_version != expected_zenodo_version:
         raise ValueError(
             "Zenodo version mismatch: "
-            f"{metadata.get('version')!r} != {EXPECTED_ZENODO_VERSION!r}"
+            f"{metadata.get('version')!r} != {expected_zenodo_version!r}"
         )
     if _software_type(metadata) != "software":
         raise ValueError("Zenodo resource type is not software")
@@ -144,7 +155,7 @@ def validate_record(
         "related_identifiers": sorted(identifiers),
         "files": sorted(files, key=lambda item: str(item["key"])),
         "github_repository": GITHUB_REPOSITORY,
-        "github_tag": f"v{EXPECTED_VERSION}",
+        "github_tag": f"v{expected_version}",
         "github_tag_commit": expected_tag_commit,
     }
 
@@ -154,8 +165,6 @@ def verify_zenodo(
     record_id: int | None = None,
 ) -> dict[str, Any]:
     """Find and verify exactly one public Zenodo record for ``version``."""
-    if version != EXPECTED_VERSION:
-        raise ValueError(f"This verifier is frozen to Zenodo version {EXPECTED_VERSION}")
     tag_commit = _resolve_annotated_tag(version)
     if record_id is not None:
         if record_id <= 0:
@@ -163,7 +172,7 @@ def verify_zenodo(
         record = _get_json(f"{ZENODO_RECORDS_API}/{record_id}")
         if not isinstance(record, dict):
             raise ValueError("Zenodo record response is not an object")
-        report = validate_record(record, expected_tag_commit=tag_commit)
+        report = validate_record(record, expected_tag_commit=tag_commit, version=version)
         report["verified_at"] = datetime.now(timezone.utc).isoformat()
         report["anonymous_verification"] = not bool(os.environ.get("GITHUB_TOKEN"))
         report["zenodo_api_authentication"] = "anonymous"
@@ -199,7 +208,7 @@ def verify_zenodo(
         raise ValueError(
             f"Expected exactly one public Zenodo record for {version}, found {len(matches)}"
         )
-    report = validate_record(matches[0], expected_tag_commit=tag_commit)
+    report = validate_record(matches[0], expected_tag_commit=tag_commit, version=version)
     report["verified_at"] = datetime.now(timezone.utc).isoformat()
     report["anonymous_verification"] = not bool(os.environ.get("GITHUB_TOKEN"))
     report["zenodo_api_authentication"] = "anonymous"

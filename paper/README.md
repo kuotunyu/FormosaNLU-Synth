@@ -7,10 +7,10 @@ evidence ever differ, the tracked reports are authoritative.
 
 ## Build
 
-The project records that no TeX engine is installed locally in the project environment. The package uses
-only standard Overleaf/arXiv-compatible dependencies (`article`, `booktabs`,
-`hyperref`, `geometry`, and `natbib`). Upload this directory to Overleaf or run
-the following sequence in an environment with LaTeX and BibTeX:
+The tracked `formosanlu_synth.pdf` is built from the adjacent TeX and BibTeX
+sources with Tectonic. The package uses only standard Overleaf/arXiv-compatible
+dependencies (`article`, `booktabs`, `xurl`, `hyperref`, `geometry`, and `natbib`). A
+conventional LaTeX environment can reproduce it with:
 
 ```text
 pdflatex formosanlu_synth.tex
@@ -19,6 +19,7 @@ pdflatex formosanlu_synth.tex
 pdflatex formosanlu_synth.tex
 ```
 
-No generated PDF or LaTeX auxiliary files are tracked. The repository's Python
-closeout verifier checks the manuscript structure, required limitations, and
-headline values without pretending to perform a local TeX compilation.
+LaTeX auxiliary files remain untracked. The repository's Python closeout
+verifier checks the manuscript structure, required limitations, headline
+values, and the presence of the compiled `formosanlu_synth.pdf`. The tracked
+reports are authoritative if prose and machine-readable evidence differ.

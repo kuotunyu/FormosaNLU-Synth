@@ -2,8 +2,11 @@
 
 \usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
+\usepackage{xurl}
 \usepackage{hyperref}
 \usepackage[round]{natbib}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\emergencystretch=2em
 
 \title{FormosaNLU-Synth: Filtered Synthetic Data Distillation for\\
 Traditional Chinese (Taiwan) Natural Language Understanding}
@@ -25,9 +28,10 @@ exact match by +4.14 and +3.86 percentage points, respectively.  A preregistered
 replication with Phi-4-mini yields corresponding gains of +5.09 and +4.71
 percentage points.  A single-seed equal-size recipe ablation finds that no
 leave-one-recipe-out exact-match difference reaches the preregistered 2.5-point
-detectability threshold.  We release the corpus, one Gemma adapter, code,
-machine-readable reports, checksums, and resource accounting.  This document is
-an evidence-bounded technical report rather than a peer-reviewed publication.
+detectability threshold.  We release the corpus, one Gemma adapter, one Phi
+adapter, code, machine-readable reports, checksums, and resource accounting.
+This document is an evidence-bounded technical report rather than a
+peer-reviewed publication.
 \end{abstract}
 
 \section{Introduction}
@@ -249,11 +253,12 @@ described in the data card.  The local Qwen teacher, gpt-oss judge, and primary
 Gemma student have their own Apache-2.0 upstream terms; Phi-4-mini is MIT
 licensed.  These upstream terms are not replaced by the repository license.
 
-The public model artifact is the Gemma seed-42 filtered LoRA adapter, governed by
-the applicable Gemma upstream license.  Phi-4-mini weights and Phi adapters are
-not published.  The dataset contains task utterances rather than personal user
-logs, but synthetic content can still encode stereotypes or unsafe assumptions;
-downstream users should audit performance and harms in their deployment domain.
+The public model artifacts are the seed-42 filtered LoRA adapters for Gemma and
+Phi-4-mini.  They are governed by the applicable Apache-2.0 and MIT terms,
+respectively, and neither repository redistributes base-model weights.  The
+dataset contains task utterances rather than personal user logs, but synthetic
+content can still encode stereotypes or unsafe assumptions; downstream users
+should audit performance and harms in their deployment domain.
 
 \section{Resource Accounting}
 Every model workload ran locally on one NVIDIA GeForce RTX 4090 24 GB, with no
@@ -269,11 +274,22 @@ discarded compute is not silently omitted.
 
 \section{Reproducibility}
 The public release corpus has SHA-256
-\texttt{c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665}.
+\nolinkurl{c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665}.
 The published Gemma adapter is 155,609,536 bytes with SHA-256
-\texttt{f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a}.
+\nolinkurl{f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a}.
+The published Phi adapter is 92,309,112 bytes with SHA-256
+\nolinkurl{e9e4c77d79eb12da8cba64a7a484d260f753d000396752f51159e3c0f4e34376}
+and uses the fixed base revision
+\nolinkurl{cfbefacb99257ffa30c83adab238a50856ac3083}.
 Machine-readable reports record row counts, data and prediction hashes, fixed
 seeds, model revisions, bootstrap settings, and interpretation boundaries.
+
+The versioned source, this report, checksums, and evidence files are preserved
+through the GitHub--Zenodo integration under the all-versions DOI
+\href{https://doi.org/10.5281/zenodo.21767492}{10.5281/zenodo.21767492}.
+The public Phi adapter is available at
+\url{https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora}; the public
+Gemma adapter and Dataset are linked from the source repository.
 
 Repository checks rebuild reported README values from tracked reports, audit the
 sole-contributor history, verify documented commands, and validate publication

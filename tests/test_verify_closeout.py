@@ -154,6 +154,13 @@ def test_repository_metadata_checks_pass() -> None:
     assert failed.isdisjoint(required)
 
 
+def test_repository_version_metadata_identifies_v122() -> None:
+    check = _check(Path(__file__).resolve().parents[1], "version_metadata")
+
+    assert check.passed is True
+    assert "1.2.2" in check.observed
+
+
 def test_rejects_missing_doi_backlinks(tmp_path: Path) -> None:
     reports = tmp_path / "reports"
     docs = tmp_path / "docs"

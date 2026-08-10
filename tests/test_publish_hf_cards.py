@@ -53,6 +53,8 @@ def test_rejects_dataset_adapter_or_file_set_mutation(field: str, value: object)
 
 
 def test_execute_requires_exact_confirmation() -> None:
-    assert validate_confirmation("HF-CARDS-V1.2.1") is None
+    assert validate_confirmation("HF-CARDS-V1.2.2") is None
+    with pytest.raises(ValueError):
+        validate_confirmation("HF-CARDS-V1.2.1")
     with pytest.raises(ValueError):
         validate_confirmation("yes")

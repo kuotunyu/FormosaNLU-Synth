@@ -47,7 +47,30 @@
     "url": "https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora",
     "visibility": "public"
   },
+  "phi_model": {
+    "adapter_bytes": 92309112,
+    "adapter_sha256": "e9e4c77d79eb12da8cba64a7a484d260f753d000396752f51159e3c0f4e34376",
+    "adapter_tensor_count": 256,
+    "base_model": "microsoft/Phi-4-mini-instruct",
+    "base_model_revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
+    "files": [
+      ".gitattributes",
+      "LICENSE",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "release_manifest.json",
+      "tokenizer.json",
+      "tokenizer_config.json"
+    ],
+    "hub_commit": "37f77db867198d781acc1bab95ebd37a8b52462c",
+    "license": "mit",
+    "repo_id": "steven0226/phi-4-mini-formosanlu-lora",
+    "url": "https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora",
+    "visibility": "public"
+  },
   "schema_version": 1,
   "status": "public_verified",
-  "verified_at": "2026-08-03T04:54:51.108239+00:00"
+  "verified_at": "2026-08-10T21:13:04.404255+00:00"
 }

@@ -10,6 +10,7 @@ from typing import Any
 
 import requests
 from huggingface_hub import HfApi, hf_hub_download
+from safetensors import safe_open
 
 from scripts.hf_release import (
     BASE_MODEL_ID,
@@ -19,6 +20,22 @@ from scripts.hf_release import (
     MODEL_REPO_ID,
     REPO_ROOT,
 )
+from scripts.phi_hf_release import (
+    BASE_MODEL_ID as PHI_BASE_MODEL_ID,
+)
+from scripts.phi_hf_release import (
+    BASE_MODEL_REVISION as PHI_BASE_MODEL_REVISION,
+)
+from scripts.phi_hf_release import (
+    EXPECTED_ADAPTER_SHA256 as EXPECTED_PHI_ADAPTER_SHA256,
+)
+from scripts.phi_hf_release import (
+    EXPECTED_TENSOR_COUNT as EXPECTED_PHI_TENSOR_COUNT,
+)
+from scripts.phi_hf_release import (
+    PHI_MODEL_FILES,
+    PHI_REPO_ID,
+)
 
 DEFAULT_REPORT = REPO_ROOT / "reports" / "m13_publication.json"
 GITHUB_API = "https://api.github.com/repos/kuotunyu/FormosaNLU-Synth"
@@ -26,14 +43,57 @@ GITHUB_CONTRIBUTORS_API = f"{GITHUB_API}/contributors?per_page=100"
 GITHUB_URL = "https://github.com/kuotunyu/FormosaNLU-Synth"
 DATASET_URL = f"https://huggingface.co/datasets/{DATASET_REPO_ID}"
 MODEL_URL = f"https://huggingface.co/{MODEL_REPO_ID}"
+PHI_MODEL_URL = f"https://huggingface.co/{PHI_REPO_ID}"
 EXPECTED_ADAPTER_SHA256 = "f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a"
 EXPECTED_DATASET_SHA256 = "c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665"
+EXPECTED_PHI_ADAPTER_BYTES = 92_309_112
 
 
 def _get_json(url: str) -> Any:
     response = requests.get(url, timeout=60)
     response.raise_for_status()
     return response.json()
+
+
+def validate_phi_evidence(
+    *,
+    files: set[str],
+    private: bool,
+    license_id: str,
+    base_model: str,
+    base_model_revision: str,
+    adapter_sha256: str,
+    adapter_bytes: int,
+    adapter_tensor_count: int,
+) -> dict[str, Any]:
+    """Validate the immutable public Phi adapter contract."""
+    expected_files = PHI_MODEL_FILES | {".gitattributes"}
+    if files != expected_files:
+        raise ValueError(f"Unexpected public Phi files: {sorted(files)}")
+    if private:
+        raise ValueError("Phi adapter repository is not public")
+    if license_id.lower() != "mit":
+        raise ValueError("Public Phi adapter license metadata mismatch")
+    if base_model != PHI_BASE_MODEL_ID:
+        raise ValueError("Public Phi adapter base model mismatch")
+    if base_model_revision != PHI_BASE_MODEL_REVISION:
+        raise ValueError("Public Phi adapter base model revision mismatch")
+    if adapter_sha256 != EXPECTED_PHI_ADAPTER_SHA256:
+        raise ValueError("Public Phi adapter SHA-256 mismatch")
+    if adapter_bytes != EXPECTED_PHI_ADAPTER_BYTES:
+        raise ValueError("Public Phi adapter byte size mismatch")
+    if adapter_tensor_count != EXPECTED_PHI_TENSOR_COUNT:
+        raise ValueError("Public Phi adapter tensor count mismatch")
+    return {
+        "visibility": "public",
+        "files": sorted(files),
+        "license": license_id.lower(),
+        "base_model": base_model,
+        "base_model_revision": base_model_revision,
+        "adapter_sha256": adapter_sha256,
+        "adapter_bytes": adapter_bytes,
+        "adapter_tensor_count": adapter_tensor_count,
+    }
 
 
 def verify_publication() -> dict[str, Any]:
@@ -49,11 +109,13 @@ def verify_publication() -> dict[str, Any]:
     api = HfApi(token=False)
     dataset = api.dataset_info(DATASET_REPO_ID, files_metadata=True)
     model = api.model_info(MODEL_REPO_ID, files_metadata=True)
+    phi_model = api.model_info(PHI_REPO_ID, files_metadata=True)
     if dataset.private is not False or model.private is not False:
         raise ValueError("One or more Hugging Face repositories are not public")
 
     dataset_files = {item.rfilename for item in dataset.siblings}
     model_files = {item.rfilename for item in model.siblings}
+    phi_model_files = {item.rfilename for item in phi_model.siblings}
     if dataset_files != DATASET_FILES | {".gitattributes"}:
         raise ValueError(f"Unexpected public dataset files: {dataset_files}")
     if model_files != MODEL_FILES | {".gitattributes"}:
@@ -93,6 +155,47 @@ def verify_publication() -> dict[str, Any]:
         raise ValueError("Public adapter LFS SHA-256 mismatch")
     if int(adapter_entry.size or 0) != 155_609_536:
         raise ValueError("Public adapter byte size mismatch")
+
+    phi_card = phi_model.card_data.to_dict()
+    phi_config_path = Path(
+        hf_hub_download(PHI_REPO_ID, "adapter_config.json", token=False)
+    )
+    phi_config = json.loads(phi_config_path.read_text(encoding="utf-8"))
+    phi_manifest_path = Path(
+        hf_hub_download(PHI_REPO_ID, "release_manifest.json", token=False)
+    )
+    phi_manifest = json.loads(phi_manifest_path.read_text(encoding="utf-8"))
+    phi_adapter_entry = next(
+        item
+        for item in phi_model.siblings
+        if item.rfilename == "adapter_model.safetensors"
+    )
+    if phi_adapter_entry.lfs is None:
+        raise ValueError("Public Phi adapter is not backed by immutable LFS metadata")
+    phi_adapter_path = Path(
+        hf_hub_download(PHI_REPO_ID, "adapter_model.safetensors", token=False)
+    )
+    with safe_open(phi_adapter_path, framework="pt") as handle:
+        phi_tensor_count = len(handle.keys())
+    phi_evidence = validate_phi_evidence(
+        files=phi_model_files,
+        private=bool(phi_model.private),
+        license_id=str(phi_card.get("license", "")),
+        base_model=str(phi_config.get("base_model_name_or_path", "")),
+        base_model_revision=str(phi_config.get("revision", "")),
+        adapter_sha256=str(phi_adapter_entry.lfs.sha256),
+        adapter_bytes=int(phi_adapter_entry.size or 0),
+        adapter_tensor_count=phi_tensor_count,
+    )
+    manifest_contract = {
+        "base_model": PHI_BASE_MODEL_ID,
+        "base_model_revision": PHI_BASE_MODEL_REVISION,
+        "adapter_sha256": EXPECTED_PHI_ADAPTER_SHA256,
+        "adapter_bytes": EXPECTED_PHI_ADAPTER_BYTES,
+        "adapter_tensor_count": EXPECTED_PHI_TENSOR_COUNT,
+    }
+    if any(phi_manifest.get(key) != value for key, value in manifest_contract.items()):
+        raise ValueError("Public Phi release manifest does not match the frozen contract")
 
     viewer_response = requests.get(
         "https://datasets-server.huggingface.co/first-rows",
@@ -145,6 +248,12 @@ def verify_publication() -> dict[str, Any]:
             "adapter_sha256": adapter_entry.lfs.sha256,
             "adapter_bytes": int(adapter_entry.size or 0),
             "license": model_card["license"],
+        },
+        "phi_model": {
+            "url": PHI_MODEL_URL,
+            "repo_id": PHI_REPO_ID,
+            "hub_commit": phi_model.sha,
+            **phi_evidence,
         },
     }
 

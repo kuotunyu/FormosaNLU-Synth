@@ -5,6 +5,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PAPER = REPO_ROOT / "paper" / "formosanlu_synth.tex"
+PAPER_PDF = REPO_ROOT / "paper" / "formosanlu_synth.pdf"
 BIBLIOGRAPHY = REPO_ROOT / "paper" / "references.bib"
 BUILD_README = REPO_ROOT / "paper" / "README.md"
 
@@ -15,8 +16,16 @@ def _json(relative: str) -> dict:
 
 def test_paper_package_files_exist() -> None:
     assert PAPER.is_file()
+    assert PAPER_PDF.is_file()
     assert BIBLIOGRAPHY.is_file()
     assert BUILD_README.is_file()
+
+
+def test_paper_documents_the_public_phi_adapter() -> None:
+    tex = PAPER.read_text(encoding="utf-8")
+
+    assert "steven0226/phi-4-mini-formosanlu-lora" in tex
+    assert "Phi adapters are not published" not in tex
 
 
 def test_paper_contains_required_sections() -> None:
@@ -95,7 +104,8 @@ def test_bibliography_uses_primary_sources_and_official_model_cards() -> None:
 def test_build_readme_documents_reproducible_external_build() -> None:
     instructions = BUILD_README.read_text(encoding="utf-8")
 
-    assert "no TeX engine is installed locally" in instructions
+    assert "Tectonic" in instructions
+    assert "formosanlu_synth.pdf" in instructions
     assert "technical report, not a peer-reviewed publication" in instructions
     assert "tracked reports are authoritative" in instructions
     commands = (

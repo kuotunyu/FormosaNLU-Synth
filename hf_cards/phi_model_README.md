@@ -35,6 +35,7 @@ weights**。
 | Frozen revision | `cfbefacb99257ffa30c83adab238a50856ac3083` |
 | Training arm | `real_syn_filtered` |
 | Seed | `42` |
+| Adapter SHA-256 | `e9e4c77d79eb12da8cba64a7a484d260f753d000396752f51159e3c0f4e34376` |
 | Adapter type | LoRA，`r=16`、`alpha=32`、dropout `0.05` |
 | Target modules | `qkv_proj`、`o_proj`、`gate_up_proj`、`down_proj` |
 | Steps | `500` |
@@ -42,7 +43,8 @@ weights**。
 | Source | [`kuotunyu/FormosaNLU-Synth`](https://github.com/kuotunyu/FormosaNLU-Synth) |
 | DOI | [`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492) (all versions) |
 
-`release_manifest.json` 記錄 adapter SHA-256、byte size、tensor count、base revision、training
+這是一個可下載的 **single adapter**，不是六組 runs 的合併權重。`release_manifest.json`
+記錄 adapter SHA-256、byte size、tensor count、base revision、training
 arm 與 source commit。上傳 bundle 僅允許 inference 所需檔案；optimizer state、checkpoints、
 `training_args.bin` 與本機路徑不會發布。
 

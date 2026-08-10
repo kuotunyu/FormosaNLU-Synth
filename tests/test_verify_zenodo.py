@@ -45,7 +45,11 @@ def _record() -> dict[str, object]:
 
 
 def test_validate_record_accepts_exact_public_software_archive() -> None:
-    report = validate_record(_record(), expected_tag_commit=TAG_COMMIT)
+    report = validate_record(
+        _record(),
+        expected_tag_commit=TAG_COMMIT,
+        version="1.2.1",
+    )
 
     assert report["status"] == "public_verified"
     assert report["doi"] == "10.5281/zenodo.12345678"
@@ -60,6 +64,38 @@ def test_validate_record_accepts_exact_public_software_archive() -> None:
             "size": 1234,
         }
     ]
+
+
+def test_validate_record_accepts_the_requested_release_version() -> None:
+    record = _record()
+    metadata = record["metadata"]
+    assert isinstance(metadata, dict)
+    metadata["version"] = "v1.2.2"
+    metadata["related_identifiers"] = [
+        {
+            "identifier": (
+                "https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2"
+            ),
+            "relation": "isSupplementTo",
+            "scheme": "url",
+        }
+    ]
+    record["files"] = [
+        {
+            "key": "kuotunyu-FormosaNLU-Synth-v1.2.2.zip",
+            "size": 1234,
+            "checksum": "md5:0123456789abcdef0123456789abcdef",
+        }
+    ]
+
+    report = validate_record(
+        record,
+        expected_tag_commit=TAG_COMMIT,
+        version="1.2.2",
+    )
+
+    assert report["version"] == "v1.2.2"
+    assert report["github_tag"] == "v1.2.2"
 
 
 @pytest.mark.parametrize(
@@ -85,7 +121,11 @@ def test_validate_record_rejects_wrong_publication_identity(
         nested[inner] = value
 
     with pytest.raises(ValueError, match=message):
-        validate_record(record, expected_tag_commit=TAG_COMMIT)
+        validate_record(
+            record,
+            expected_tag_commit=TAG_COMMIT,
+            version="1.2.1",
+        )
 
 
 def test_validate_record_rejects_unrelated_repository() -> None:
@@ -101,7 +141,11 @@ def test_validate_record_rejects_unrelated_repository() -> None:
     ]
 
     with pytest.raises(ValueError, match="repository"):
-        validate_record(record, expected_tag_commit=TAG_COMMIT)
+        validate_record(
+            record,
+            expected_tag_commit=TAG_COMMIT,
+            version="1.2.1",
+        )
 
 
 def test_validate_record_requires_archive_file_metadata() -> None:
@@ -109,7 +153,11 @@ def test_validate_record_requires_archive_file_metadata() -> None:
     record["files"] = []
 
     with pytest.raises(ValueError, match="archive files"):
-        validate_record(record, expected_tag_commit=TAG_COMMIT)
+        validate_record(
+            record,
+            expected_tag_commit=TAG_COMMIT,
+            version="1.2.1",
+        )
 
 
 def test_verify_zenodo_can_retrieve_a_known_public_record(

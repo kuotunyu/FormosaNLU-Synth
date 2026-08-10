@@ -131,13 +131,17 @@ bootstrap 後，intent accuracy 的平均提升為 +4.14 個百分點（95% CI
 **範圍**：兩個 family、一份 frozen dataset、一種 training contract；兩個
 family 分別彙總、不 pooling，不宣稱推廣到其他 dataset、任務或任意 model。
 
-### v1.2.1 evidence release 與 M19 equal-N ablation
+### v1.2.2 evidence release 與 M19 equal-N ablation
 
-[GitHub v1.2.1 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
-只補齊文件、授權範圍、technical report 與保存 metadata。**Dataset rows and
-Model tensors did not change.** 本 Dataset 仍是相同的 3,754 rows，train
+[GitHub v1.2.2 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
+補齊 technical report、Phi-4-mini LoRA、授權範圍與保存 metadata。**Dataset
+rows did not change.** 本 Dataset 仍是相同的 3,754 rows，train
 SHA-256 仍為
 `c65d7209d953e144299625f6a9224b98557b2677d55258a463a2992e5acf4665`。
+Gemma 與 Phi 的公開 adapters 分別位於
+[`steven0226/gemma-4-e4b-formosanlu-lora`](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)
+與
+[`steven0226/phi-4-mini-formosanlu-lora`](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora)。
 
 M19 是 equal-N composition comparison：Gemma seed 42 的 control 與四個
 leave-one-recipe-out 組都使用 1,176 real + 2,246 synthetic rows。Exact match
@@ -189,7 +193,7 @@ FormosaNLU Synth：
 
 ```text
 kuotunyu. FormosaNLU Synthetic Data Distillation for Traditional Chinese
-(Taiwan) NLU, version 1.2.1. 2026.
+(Taiwan) NLU, version 1.2.2. 2026. DOI: 10.5281/zenodo.21767492.
 https://github.com/kuotunyu/FormosaNLU-Synth
 ```
 

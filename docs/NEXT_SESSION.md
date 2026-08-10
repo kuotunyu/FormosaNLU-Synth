@@ -1,7 +1,9 @@
 # NEXT_SESSION.md — 接手指南
 
-> **最後更新**：2026-08-03，v1.2.1 已發布並由 Zenodo 保存
-> **目前狀態**：專案完成，沒有待跑的 GPU 階段，也沒有需要使用者操作的發布步驟。
+> **最後更新**：2026-08-11，v1.2.2 publication closeout 進行中
+> **目前狀態**：所有研究與 GPU 階段完成；Phi adapter 已公開，technical report
+> PDF 已產生。只剩 v1.2.2 tag／GitHub Release／Zenodo version DOI 與最終驗證，
+> 不需要使用者操作。
 
 ---
 
@@ -14,11 +16,12 @@ JSON 輸出）的 low-resource 表現。
 公開產物：
 
 - GitHub：<https://github.com/kuotunyu/FormosaNLU-Synth>
-- GitHub Release：[v1.2.1](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
-- Zenodo：[record 21767493](https://zenodo.org/records/21767493)，version DOI
-  [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493)
+- GitHub latest stable Release：[v1.2.1](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)；v1.2.2 RC 正在封版
+- Zenodo all versions：[`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492)
 - HF Dataset：`steven0226/formosa-nlu-synth-v1`（3,754 rows）
-- HF Model：`steven0226/gemma-4-e4b-formosanlu-lora`
+- HF Gemma Model：`steven0226/gemma-4-e4b-formosanlu-lora`
+- HF Phi Model：`steven0226/phi-4-mini-formosanlu-lora`（public、seed 42、SHA-256 verified）
+- Technical report：`paper/formosanlu_synth.pdf`（evidence-bounded，非 peer reviewed）
 
 核心 paired 結果已在 Gemma 4 E4B 與 Phi-4-mini 兩個 student family 複製；M19
 再完成五組 equal-N per-recipe ablation。四個 leave-one-recipe-out 組別相對
@@ -50,11 +53,12 @@ commit 只前進 `main`，不得移動已公開 tag。`v1.2.0` 與更早 tags �
 
 ---
 
-## 2. 現在沒有待辦
+## 2. 現在的 publication 待辦
 
 - 不需再跑 M19、M16、M15、M9、F7、generation、extra seeds 或 Colab。
-- 不需重傳 Hugging Face Dataset／Model；其資料與權重 hash 刻意維持不變。
-- 不需建立新 tag 或修改既有 tag。
+- 只同步三張 Hugging Face cards；Dataset、Gemma 與 Phi 的資料／權重 hash 不得改變。
+- 建立新的 annotated tag `v1.2.2`；不得移動 `v1.2.1` 或更早 tags。
+- 建立 GitHub Release，等待 Zenodo 產生 version DOI，再回填精確 backlink。
 - README 依使用者決定維持正體中文（台灣，`zh-TW`）為主，專有名詞保留原文。
 
 若之後要做台灣知識蒸餾、TMMLU+、真實 ASR error 或自然 code-switching corpus，

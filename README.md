@@ -1,9 +1,9 @@
 # FormosaNLU — Synthetic Data Distillation for Low-resource NLU
 
-[![Release](https://img.shields.io/badge/release-v1.2.1-2EA44F)](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
+[![Release](https://img.shields.io/badge/release-v1.2.2-2EA44F)](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
 [![Dataset](https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E)](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1)
 [![Model](https://img.shields.io/badge/Hugging%20Face-Model-FFD21E)](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21767493-1682D4)](https://doi.org/10.5281/zenodo.21767493)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21767492-1682D4)](https://doi.org/10.5281/zenodo.21767492)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2EA44F.svg)](LICENSE)
 
 以本機 open-weight teacher 生成與過濾 synthetic data，並於 20-shot MASSIVE `zh-TW` 上驗證改善 intent classification、slot filling 與 strict JSON output 之成效。效果已於 Gemma 與 Phi-4-mini 兩個 student model families 上以相同之 paired contract 完成複製。
@@ -16,7 +16,7 @@
 
 ![三種子主要結果](assets/m12_main_results.png)
 
-> **專案已完成**。GitHub、Hugging Face Dataset、Gemma LoRA adapter 與 Zenodo source archive 均已公開，並通過匿名下載、hash 與 citation 驗證。
+> **專案已完成**。GitHub、Hugging Face Dataset、Gemma／Phi LoRA adapters 與 Zenodo source archive 均已公開，並通過匿名下載、hash 與 citation 驗證。
 
 ---
 
@@ -25,10 +25,11 @@
 | 產物類型 | 位置 | 驗證狀態 |
 | --- | --- | --- |
 | Source、pipeline、reports | [GitHub](https://github.com/kuotunyu/FormosaNLU-Synth) | Public；Contributors 僅 `kuotunyu` |
-| v1.2.1 immutable source archive | [Zenodo](https://zenodo.org/records/21767493) | Public；version DOI [`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493) |
+| Versioned source archive | [Zenodo](https://doi.org/10.5281/zenodo.21767492) | Public；concept DOI 固定指向所有 versions |
 | 3,754-row F1–F7 corpus | [Hugging Face Dataset](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) | Public；Dataset Viewer 與匿名載入通過 |
 | Filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) | Public；PEFT config、686 tensors 與 SHA-256 通過 |
-| English technical report | [LaTeX source 與 build 說明](paper/README.md) | Evidence-bounded technical report；尚未 peer review |
+| Phi filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora) | Public；fixed revision、256 tensors 與 SHA-256 通過 |
+| English technical report | [PDF](paper/formosanlu_synth.pdf) · [source](paper/formosanlu_synth.tex) | Evidence-bounded archival technical report；尚未 peer review |
 
 ```python
 from datasets import load_dataset
@@ -407,13 +408,13 @@ python -m scripts.check_gates
   author  = {kuotunyu},
   title   = {FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU},
   year    = {2026},
-  version = {1.2.1},
-  doi     = {10.5281/zenodo.21767493},
-  url     = {https://doi.org/10.5281/zenodo.21767493}
+  version = {1.2.2},
+  doi     = {10.5281/zenodo.21767492},
+  url     = {https://doi.org/10.5281/zenodo.21767492}
 }
 ```
 
-Zenodo version record：<https://zenodo.org/records/21767493>。此 DOI 固定指向 GitHub `v1.2.1` source snapshot；Dataset 與 Model 仍依各自的 license 與 card 為準。
+Zenodo all-versions record：<https://doi.org/10.5281/zenodo.21767492>。每個 GitHub release 都會產生 immutable version DOI；Dataset 與 Model 仍依各自的 license 與 card 為準。
 
 ---
 
@@ -424,6 +425,6 @@ Zenodo version record：<https://zenodo.org/records/21767493>。此 DOI 固定�
 | 本 repository 程式碼 | MIT ([LICENSE](LICENSE)) |
 | MASSIVE `zh-TW` seed data | CC BY 4.0 |
 | Teacher, judge 與 Gemma student weights | Apache-2.0 |
-| Phi-4-mini replication model weights | MIT |
+| Phi-4-mini base weights 與公開 seed-42 LoRA adapter | MIT；base model notices 仍適用 |
 | Synthetic dataset | 詳見 [`docs/data_card.md`](docs/data_card.md) |
-| LoRA adapter | Apache-2.0 |
+| Gemma LoRA adapter | Apache-2.0 |

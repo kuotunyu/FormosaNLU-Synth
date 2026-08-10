@@ -11,8 +11,8 @@
 
 | 項目 | 內容 |
 |---|---|
-| 執行區間 | 2026-07-27 03:14–2026-08-03 14:20 +08:00 |
-| 完成到 | **v1.2.1 已發布並由 Zenodo 保存，專案完成。** 研究、GPU 階段、publication metadata、Hugging Face cards、GitHub Release 與 DOI 均已驗證 |
+| 執行區間 | 2026-07-27 03:14–2026-08-11（v1.2.2 closeout 進行中） |
+| 完成到 | **v1.2.2 release candidate。** 所有研究與 GPU 階段完成；Phi seed-42 filtered LoRA 已公開且匿名驗證，technical report PDF 已產生；待建立 immutable tag／GitHub Release 與 Zenodo version DOI |
 | 卡住的項目 | 無 |
 | GPU 時數 | primary core **14.440 h**（刻意未變）；auxiliary 27.972 h；可追溯 local total **42.412 h**；TDP 上限 19.085 kWh |
 | 磁碟增加 | Gemma 4 14.924 GiB；Phi-4-mini 約 7.16 GiB；BGE-M3 2.293 GB；Marian 必要檔 630.6 MB |
@@ -58,10 +58,16 @@ Phi-4-mini 固定 revision 與 artifact audit 已完成。原始 2-step strict s
 
 ### ➡️ 接下來的建議起點
 
-**專案的 GPU、實驗與 v1.2.1 publication closeout 已全部完成。** M19 已補上原本 D-004
+**專案的 GPU 與實驗全部完成；目前只剩 v1.2.2 publication closeout。** M19 已補上原本 D-004
 因成本取消的 per-recipe ablation；五組差異都未達預先登記的 2.5-point 門檻，
 negative result 已完整公開。Phi `full_real` 仍依 D-019 原則永久取消；README 的
 台灣知識蒸餾 + TMMLU+ 只是未來 roadmap，不是未完成待辦。
+
+v1.2.2 新增公開 Phi adapter
+[`steven0226/phi-4-mini-formosanlu-lora`](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora)、
+tracked technical report PDF 與 release checksums。Zenodo all-versions concept DOI 為
+[`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492)；建立 v1.2.2
+GitHub Release 後才會產生本版本的 immutable version DOI。
 
 **v1.2.1 發布與保存已完成**（2026-08-03）：
 
@@ -100,6 +106,15 @@ primary runs，或 M15 的預先登記判準。
 
 > 格式：`### [時間] 里程碑 — 狀態`，內容含產出、驗證結果、耗時。
 > 卡住時另加：完整錯誤訊息、試過的兩種修法、建議下一步。
+
+### [2026-08-11] v1.2.2 release candidate — 進行中
+
+- 公開 Phi seed-42 `real_syn_filtered` LoRA；匿名檔案 allowlist、base revision、
+  92,309,112 bytes、256 tensors 與 SHA-256 `e9e4c77d…4e34376` 均通過
+- 產生 evidence-bounded English technical report PDF；原始 M15 smoke failure、
+  M19 negative result 與所有限制均保留，不宣稱 peer review
+- 開始把 GitHub／HF／Zenodo publication verifiers 擴充到 v1.2.2；既有
+  `v1.2.1` tag 仍固定指向 `1f42372e97c98212f192362ec441c034815b37d5`
 
 ### [2026-08-03 14:20 +08:00] v1.2.1 DOI closeout — 完成
 

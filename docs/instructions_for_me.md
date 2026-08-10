@@ -1,8 +1,8 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：v1.2.1 已發布、由 Zenodo 保存，專案完成。**
+> **狀態：v1.2.2 publication closeout 進行中。**
 > 這份檔保留已完成的 Colab、Hugging Face 與 GitHub 操作紀錄，供未來重現；
-> 目前沒有需要使用者執行的步驟。
+> 所有研究／GPU 工作已完成，目前沒有需要使用者執行的步驟。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
 
 ---
@@ -11,8 +11,9 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**無。v1.2.1 已於 2026-08-03 完成發布，version DOI 為
-[`10.5281/zenodo.21767493`](https://doi.org/10.5281/zenodo.21767493)。**
+**無。Agent 正在完成 v1.2.2 tag、GitHub Release、Zenodo version DOI 與最終
+publication verification。Zenodo all-versions concept DOI 為
+[`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492)。**
 
 | 動作 | 結果 |
 |---|---|
@@ -22,6 +23,8 @@
 | Zenodo | ✅ [record 21767493](https://zenodo.org/records/21767493)，creator 僅 `kuotunyu` |
 | Release preflight | ✅ `public_verified`，blocking 為空 |
 | Hugging Face artifacts | ✅ 刻意不變；Dataset 仍 3,754 rows、Gemma adapter SHA 未變 |
+| Phi adapter | ✅ `steven0226/phi-4-mini-formosanlu-lora` 已公開；92,309,112 bytes、256 tensors、SHA-256 verified |
+| Technical report | ✅ `paper/formosanlu_synth.pdf` 已本機編譯與 render；將納入 v1.2.2 release |
 | Contributors | ✅ GitHub API 複驗只有 `kuotunyu` |
 
 v1.2.1 是 publication-layer evidence 版本，不是 Dataset／Model artifact 版本，

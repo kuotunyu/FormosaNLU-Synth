@@ -77,11 +77,13 @@ hierarchical 95% CI 下界都大於零，判準在看到結果前即凍結。那
 [FormosaNLU-Synth](https://github.com/kuotunyu/FormosaNLU-Synth) 的
 cross-model 報告。
 
-### v1.2.1 evidence release 與 M19 equal-N ablation
+### v1.2.2 evidence release 與 M19 equal-N ablation
 
-[GitHub v1.2.1 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)
-只更新 publication metadata、technical report 與 card 說明。**Dataset rows and
-Model tensors did not change.** 此 Gemma adapter 仍是相同的 155,609,536-byte
+[GitHub v1.2.2 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
+新增可下載的
+[`steven0226/phi-4-mini-formosanlu-lora`](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora)，
+並更新 publication metadata、technical report 與 cards。**此 Gemma adapter
+tensors did not change.** 它仍是相同的 155,609,536-byte
 artifact，SHA-256 仍為
 `f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a`。
 
@@ -98,7 +100,7 @@ leave-one-recipe-out 組都使用 1,176 real + 2,246 synthetic rows：
 預先登記的 detectability threshold 是 **2.5 percentage points**；沒有任何組別
 達到。這是 **single seed (n=1); descriptive comparison only**。This does not support a recipe-level causal claim.
 這是 Dataset composition 的限制性證據，
-不是這個公開 adapter 的額外 headline evaluation，也沒有可下載的 Phi adapter。
+不是這個公開 Gemma adapter 的額外 headline evaluation。
 
 Seed-42 的 8,922-row deterministic robustness probe：
 
