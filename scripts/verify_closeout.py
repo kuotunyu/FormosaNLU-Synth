@@ -54,6 +54,27 @@ DOCUMENTED_GATE_TOKENS = (
     "`scripts.verify_closeout`",
 )
 ZENODO_CONCEPT_DOI = "10.5281/zenodo.21767492"
+TECHNICAL_REPORT_DOI = "10.5281/zenodo.21879155"
+TECHNICAL_REPORT_RECORD_URL = "https://zenodo.org/records/21879155"
+TECHNICAL_REPORT_EVIDENCE = "reports/v122_technical_report_zenodo.json"
+TECHNICAL_REPORT_TITLE = (
+    "FormosaNLU-Synth: Filtered Synthetic Data Distillation for Traditional "
+    "Chinese (Taiwan) Natural Language Understanding"
+)
+TECHNICAL_REPORT_FILES = {
+    "formosanlu_synth.pdf": (
+        65163,
+        "md5:525864c3318f5de28242b89a9dc4e285",
+    ),
+    "formosanlu_synth.tex": (
+        16593,
+        "md5:059fbf16c13a353ba3caba09a6790712",
+    ),
+    "references.bib": (
+        2756,
+        "md5:f7a9161247f4659f730175b1101df298",
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -339,14 +360,8 @@ def _doi_backlink_check(root: Path) -> Check:
         missing.append("README.md")
 
     try:
-        identifiers = citation_payload.get("identifiers", [])
-        has_doi = any(
-            isinstance(identifier, dict)
-            and identifier.get("type") == "doi"
-            and str(identifier.get("value")) == doi
-            for identifier in identifiers
-        )
-    except (AttributeError, OSError, TypeError, UnicodeError, yaml.YAMLError):
+        has_doi = str(citation_payload.get("doi", "")) == doi
+    except (AttributeError, TypeError):
         has_doi = False
     if not has_doi:
         missing.append("CITATION.cff")
@@ -361,6 +376,96 @@ def _doi_backlink_check(root: Path) -> Check:
         not missing,
         f"exact DOI {doi} on all surfaces" if not missing else ", ".join(missing),
         "the exact minted version DOI appears on every public citation surface",
+    )
+
+
+def _technical_report_archive_check(root: Path) -> Check:
+    try:
+        report = json.loads(
+            (root / TECHNICAL_REPORT_EVIDENCE).read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return Check(
+            "technical_report_archive",
+            False,
+            f"{TECHNICAL_REPORT_EVIDENCE} missing or invalid",
+            "the public Technical note and its three anonymously verified files are pinned",
+        )
+
+    missing: list[str] = []
+    expected_fields = {
+        "status": "public_verified",
+        "anonymous_verification": True,
+        "downloads_verified": True,
+        "doi": TECHNICAL_REPORT_DOI,
+        "doi_url": f"https://doi.org/{TECHNICAL_REPORT_DOI}",
+        "record_url": TECHNICAL_REPORT_RECORD_URL,
+        "creator_names": ["kuotunyu"],
+        "resource_type": "publication-technicalnote",
+        "license": "cc-by-4.0",
+        "language": "eng",
+        "related_software_doi": "10.5281/zenodo.21879133",
+    }
+    for field, expected in expected_fields.items():
+        if report.get(field) != expected:
+            missing.append(f"evidence:{field}")
+
+    observed_files: dict[str, tuple[object, object]] = {}
+    files = report.get("files")
+    if isinstance(files, list):
+        for item in files:
+            if isinstance(item, dict) and isinstance(item.get("key"), str):
+                observed_files[item["key"]] = (item.get("size"), item.get("checksum"))
+    if observed_files != TECHNICAL_REPORT_FILES:
+        missing.append("evidence:files")
+
+    surfaces = {
+        "README.md": _read_text(root, "README.md") or "",
+        "docs/HANDOFF.md": _read_text(root, "docs/HANDOFF.md") or "",
+        "docs/RELEASE_NOTES_v1.2.2.md": (
+            _read_text(root, "docs/RELEASE_NOTES_v1.2.2.md") or ""
+        ),
+    }
+    for relative, text in surfaces.items():
+        if TECHNICAL_REPORT_DOI not in text or TECHNICAL_REPORT_RECORD_URL not in text:
+            missing.append(relative)
+
+    try:
+        citation = yaml.safe_load((root / "CITATION.cff").read_text(encoding="utf-8"))
+        preferred = citation.get("preferred-citation", {})
+        citation_has_doi = isinstance(preferred, dict) and {
+            "authors": preferred.get("authors"),
+            "doi": str(preferred.get("doi", "")),
+            "title": str(preferred.get("title", "")),
+            "type": str(preferred.get("type", "")),
+            "url": str(preferred.get("url", "")),
+            "year": preferred.get("year"),
+        } == {
+            "authors": [{"name": "kuotunyu"}],
+            "doi": TECHNICAL_REPORT_DOI,
+            "title": TECHNICAL_REPORT_TITLE,
+            "type": "generic",
+            "url": f"https://doi.org/{TECHNICAL_REPORT_DOI}",
+            "year": 2026,
+        }
+    except (AttributeError, OSError, TypeError, UnicodeError, yaml.YAMLError):
+        citation_has_doi = False
+    if not citation_has_doi:
+        missing.append("CITATION.cff")
+
+    paper = _read_text(root, "paper/formosanlu_synth.tex") or ""
+    if TECHNICAL_REPORT_DOI not in paper:
+        missing.append("paper/formosanlu_synth.tex")
+
+    return Check(
+        "technical_report_archive",
+        not missing,
+        (
+            f"Technical note {TECHNICAL_REPORT_DOI} and three files pinned"
+            if not missing
+            else ", ".join(missing)
+        ),
+        "the public Technical note and its three anonymously verified files are pinned",
     )
 
 
@@ -431,6 +536,7 @@ def collect_checks(repo_root: Path = REPO_ROOT) -> list[Check]:
         _card_claim_check(repo_root),
         _version_check(repo_root),
         _doi_backlink_check(repo_root),
+        _technical_report_archive_check(repo_root),
         _license_scope_check(repo_root),
         _paper_check(repo_root),
     ]

@@ -1,0 +1,35 @@
+{
+  "anonymous_verification": true,
+  "concept_doi": "10.5281/zenodo.21767492",
+  "concept_doi_url": "https://doi.org/10.5281/zenodo.21767492",
+  "creator_names": [
+    "kuotunyu"
+  ],
+  "doi": "10.5281/zenodo.21879133",
+  "doi_url": "https://doi.org/10.5281/zenodo.21879133",
+  "files": [
+    {
+      "checksum": "md5:407974d8d232eca5c8f1b3145117e44e",
+      "key": "kuotunyu/FormosaNLU-Synth-v1.2.2.zip",
+      "size": 1569737
+    }
+  ],
+  "github_api_authentication": "anonymous",
+  "github_repository": "https://github.com/kuotunyu/FormosaNLU-Synth",
+  "github_tag": "v1.2.2",
+  "github_tag_commit": "d9ea6bb4dd6c80c5c4f5aaa65ad81c1de45725e7",
+  "publication_date": "2026-08-10",
+  "record_id": 21879133,
+  "record_url": "https://zenodo.org/records/21879133",
+  "related_identifiers": [
+    "10.5281/zenodo.21879155",
+    "https://github.com/kuotunyu/FormosaNLU-Synth/tree/v1.2.2"
+  ],
+  "resource_type": "software",
+  "schema_version": 1,
+  "status": "public_verified",
+  "title": "FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU",
+  "verified_at": "2026-08-10T21:52:43.757932+00:00",
+  "version": "v1.2.2",
+  "zenodo_api_authentication": "anonymous"
+}

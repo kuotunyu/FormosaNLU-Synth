@@ -19,8 +19,10 @@ def test_public_release_metadata_is_versioned() -> None:
     )
 
     assert citation["version"] == "1.2.2"
-    assert str(citation["date-released"]) == "2026-08-11"
+    assert str(citation["date-released"]) == "2026-08-10"
     assert citation["authors"] == [{"name": "kuotunyu"}]
+    assert citation["doi"] == "10.5281/zenodo.21879133"
+    assert citation["preferred-citation"]["doi"] == "10.5281/zenodo.21879155"
     assert pyproject["project"]["version"] == "1.2.2"
     assert editable_package["version"] == "1.2.2"
 

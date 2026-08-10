@@ -1,6 +1,6 @@
 # instructions_for_me.md — 換你做的事
 
-> **狀態：v1.2.2 publication closeout 進行中。**
+> **狀態：v1.2.2 publication closeout 完成。**
 > 這份檔保留已完成的 Colab、Hugging Face 與 GitHub 操作紀錄，供未來重現；
 > 所有研究／GPU 工作已完成，目前沒有需要使用者執行的步驟。
 > 所有「請你做」的步驟都會標上**預期耗時**與**做完怎麼確認成功**。
@@ -11,20 +11,19 @@
 
 <!-- 每次更新時把這一節換成當下真正要你做的事；沒有就寫「無」 -->
 
-**無。Agent 正在完成 v1.2.2 tag、GitHub Release、Zenodo version DOI 與最終
-publication verification。Zenodo all-versions concept DOI 為
-[`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492)。**
+**無。v1.2.2 tag、GitHub Release、Hugging Face cards、Zenodo version DOI 與
+publication verification 均已完成。**
 
 | 動作 | 結果 |
 |---|---|
 | M19 五組 equal-N ablation | ✅ 五組各 500 steps + 2,974-row strict evaluation |
-| Annotated tag `v1.2.1` | ✅ 指向 `1f42372e97c98212f192362ec441c034815b37d5`，tagger `kuotunyu` |
-| GitHub Release | ✅ [v1.2.1](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.1)，非 draft、非 prerelease |
-| Zenodo | ✅ [record 21767493](https://zenodo.org/records/21767493)，creator 僅 `kuotunyu` |
+| Annotated tag `v1.2.2` | ✅ 指向 `d9ea6bb4dd6c80c5c4f5aaa65ad81c1de45725e7`，tagger `kuotunyu` |
+| GitHub Release | ✅ [v1.2.2](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)，非 draft、非 prerelease，7 assets hashes verified |
+| Zenodo | ✅ [record 21879133](https://zenodo.org/records/21879133)，DOI `10.5281/zenodo.21879133`，creator 僅 `kuotunyu` |
 | Release preflight | ✅ `public_verified`，blocking 為空 |
-| Hugging Face artifacts | ✅ 刻意不變；Dataset 仍 3,754 rows、Gemma adapter SHA 未變 |
+| Hugging Face artifacts | ✅ 三張 cards 已同步；Dataset／Gemma／Phi artifact hashes 未變 |
 | Phi adapter | ✅ `steven0226/phi-4-mini-formosanlu-lora` 已公開；92,309,112 bytes、256 tensors、SHA-256 verified |
-| Technical report | ✅ `paper/formosanlu_synth.pdf` 已本機編譯與 render；將納入 v1.2.2 release |
+| Technical report | ✅ [Zenodo record 21879155](https://zenodo.org/records/21879155)，DOI `10.5281/zenodo.21879155`；CC BY 4.0、3 個檔案匿名下載及 MD5 verified |
 | Contributors | ✅ GitHub API 複驗只有 `kuotunyu` |
 
 v1.2.1 是 publication-layer evidence 版本，不是 Dataset／Model artifact 版本，

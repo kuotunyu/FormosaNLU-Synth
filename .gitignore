@@ -46,6 +46,13 @@ htmlcov/
 *.parquet
 *.arrow
 
+# ---- LaTeX build intermediates (the source and rendered PDF are tracked) ----
+/paper/*.aux
+/paper/*.bbl
+/paper/*.blg
+/paper/*.log
+/paper/*.out
+
 # NOTE: splits/ and reports/ ARE tracked on purpose.
 # The frozen split manifest and the milestone reports are part of the
 # reproducibility claim and must live in git.

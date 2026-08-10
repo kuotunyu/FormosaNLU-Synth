@@ -634,3 +634,27 @@ timestamps 與 SHA-256 建立 `reports/m19_runtime_audit.json`，把被捨棄 at
 ---
 
 <!-- 新決策從 D-022 開始往下加。格式照上面：日期 / 狀態 / 決策 / 考慮過的選項 / 理由 / 什麼情況該推翻 -->
+
+## D-022 — software archive 與 technical report 分開取得 DOI
+
+- **日期**：2026-08-11
+- **狀態**：`accepted-complete`
+- **決策**：保留 GitHub–Zenodo 整合產生的 v1.2.2 software archive DOI
+  `10.5281/zenodo.21879133`，並將 evidence-bounded English technical report 另以
+  Zenodo `Technical note` 封存，正式 DOI 為 `10.5281/zenodo.21879155`。兩筆記錄已以
+  `Documents`／`Is documented by` related work 互相連結；report 使用 CC BY 4.0，source code 仍使用 MIT，各公開
+  Dataset／adapter 則依自己的 card 與 upstream license。
+
+**理由**：software archive 是 tag snapshot，適合重現 source、reports 與 checksums；
+technical report 是可獨立閱讀與引用的敘事文件。分開封存避免把「software DOI」誤寫成
+「paper DOI」，也不需要移動已公開的 `v1.2.2` tag。報告明確標示未經 peer review，
+不將 Zenodo preservation 說成期刊或會議審查。
+
+**不可改寫的邊界**：report 只能解釋已凍結的結果，不得新增事後挑選的 headline、
+改變 preregistered criterion、隱藏 M15 smoke amendment 或把 M19 single-seed negative
+result 升級成 causal claim。
+
+**什麼情況該推翻**：若未來有正式 peer-reviewed 版本，建立新的 version／related
+identifier 並清楚標示關係；不得覆寫本次 archival technical note。
+
+---

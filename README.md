@@ -3,7 +3,7 @@
 [![Release](https://img.shields.io/badge/release-v1.2.2-2EA44F)](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
 [![Dataset](https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E)](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1)
 [![Model](https://img.shields.io/badge/Hugging%20Face-Model-FFD21E)](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21767492-1682D4)](https://doi.org/10.5281/zenodo.21767492)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21879133-1682D4)](https://doi.org/10.5281/zenodo.21879133)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2EA44F.svg)](LICENSE)
 
 以本機 open-weight teacher 生成與過濾 synthetic data，並於 20-shot MASSIVE `zh-TW` 上驗證改善 intent classification、slot filling 與 strict JSON output 之成效。效果已於 Gemma 與 Phi-4-mini 兩個 student model families 上以相同之 paired contract 完成複製。
@@ -25,11 +25,11 @@
 | 產物類型 | 位置 | 驗證狀態 |
 | --- | --- | --- |
 | Source、pipeline、reports | [GitHub](https://github.com/kuotunyu/FormosaNLU-Synth) | Public；Contributors 僅 `kuotunyu` |
-| Versioned source archive | [Zenodo](https://doi.org/10.5281/zenodo.21767492) | Public；concept DOI 固定指向所有 versions |
+| Versioned source archive | [Zenodo v1.2.2](https://zenodo.org/records/21879133) | Public；immutable version DOI；creator 僅 `kuotunyu` |
 | 3,754-row F1–F7 corpus | [Hugging Face Dataset](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) | Public；Dataset Viewer 與匿名載入通過 |
 | Filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) | Public；PEFT config、686 tensors 與 SHA-256 通過 |
 | Phi filtered seed-42 LoRA | [Hugging Face Model](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora) | Public；fixed revision、256 tensors 與 SHA-256 通過 |
-| English technical report | [PDF](paper/formosanlu_synth.pdf) · [source](paper/formosanlu_synth.tex) | Evidence-bounded archival technical report；尚未 peer review |
+| English technical report | [Zenodo Technical note](https://zenodo.org/records/21879155) · [DOI](https://doi.org/10.5281/zenodo.21879155) · [source](paper/formosanlu_synth.tex) | CC BY 4.0；匿名下載驗證通過；尚未 peer review |
 
 ```python
 from datasets import load_dataset
@@ -409,12 +409,12 @@ python -m scripts.check_gates
   title   = {FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU},
   year    = {2026},
   version = {1.2.2},
-  doi     = {10.5281/zenodo.21767492},
-  url     = {https://doi.org/10.5281/zenodo.21767492}
+  doi     = {10.5281/zenodo.21879133},
+  url     = {https://doi.org/10.5281/zenodo.21879133}
 }
 ```
 
-Zenodo all-versions record：<https://doi.org/10.5281/zenodo.21767492>。每個 GitHub release 都會產生 immutable version DOI；Dataset 與 Model 仍依各自的 license 與 card 為準。
+v1.2.2 immutable software archive：<https://zenodo.org/records/21879133>；all-versions concept DOI：<https://doi.org/10.5281/zenodo.21767492>。English technical report 另以 Technical note DOI <https://doi.org/10.5281/zenodo.21879155> 保存。Dataset 與 Model 仍依各自的 license 與 card 為準。
 
 ---
 

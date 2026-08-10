@@ -9,7 +9,7 @@
       "release_manifest.json",
       "schema.json"
     ],
-    "hub_commit": "c64ec47fd0c80544cbc1bdae61bf2a9d849558c4",
+    "hub_commit": "7afb17a4e67e07ab849af3e1eb3af5caca420f94",
     "license": "cc-by-4.0",
     "repo_id": "steven0226/formosa-nlu-synth-v1",
     "rows": 3754,
@@ -41,7 +41,7 @@
       "tokenizer.json",
       "tokenizer_config.json"
     ],
-    "hub_commit": "cc6a0c7164d81408238c31dccc6714199c0e0ccc",
+    "hub_commit": "4a445e5a42bc3c289daec9ca47313ab69248c446",
     "license": "apache-2.0",
     "repo_id": "steven0226/gemma-4-e4b-formosanlu-lora",
     "url": "https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora",
@@ -64,7 +64,7 @@
       "tokenizer.json",
       "tokenizer_config.json"
     ],
-    "hub_commit": "0e4aacb424d6cdb9a5a202a901e58e4926b313ab",
+    "hub_commit": "b1f65b020233952d0e22e014ff7499fb6c877c0b",
     "license": "mit",
     "repo_id": "steven0226/phi-4-mini-formosanlu-lora",
     "url": "https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora",
@@ -72,5 +72,5 @@
   },
   "schema_version": 1,
   "status": "public_verified",
-  "verified_at": "2026-08-10T21:21:53.175684+00:00"
+  "verified_at": "2026-08-10T21:58:45.483759+00:00"
 }

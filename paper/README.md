@@ -5,6 +5,11 @@ It summarizes only claims already supported by the
 tracked machine-readable reports. If manuscript prose and machine-readable
 evidence ever differ, the tracked reports are authoritative.
 
+The archival Technical note is public at
+<https://doi.org/10.5281/zenodo.21879155>. Its three-file allowlist, checksums,
+license, creator, related software DOI, and anonymous downloads are recorded in
+`../reports/v122_technical_report_zenodo.json`.
+
 ## Build
 
 The tracked `formosanlu_synth.pdf` is built from the adjacent TeX and BibTeX

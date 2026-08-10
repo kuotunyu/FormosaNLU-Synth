@@ -1,13 +1,14 @@
 cff-version: 1.2.0
-message: "If you use this software, dataset, or adapter, please cite it using this metadata."
+message: "Please cite the software DOI for the release and preferred-citation for the accompanying technical report."
 title: "FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU"
 type: software
 version: 1.2.2
-date-released: 2026-08-11
+date-released: 2026-08-10
 authors:
   - name: kuotunyu
 repository-code: "https://github.com/kuotunyu/FormosaNLU-Synth"
 url: "https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1"
+doi: "10.5281/zenodo.21879133"
 license: MIT
 keywords:
   - synthetic data
@@ -29,3 +30,11 @@ identifiers:
   - type: url
     value: "https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora"
     description: "Public Phi-4-mini LoRA adapter"
+preferred-citation:
+  authors:
+    - name: kuotunyu
+  doi: "10.5281/zenodo.21879155"
+  title: "FormosaNLU-Synth: Filtered Synthetic Data Distillation for Traditional Chinese (Taiwan) Natural Language Understanding"
+  type: generic
+  url: "https://doi.org/10.5281/zenodo.21879155"
+  year: 2026

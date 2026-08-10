@@ -82,7 +82,8 @@ cross-model 報告。
 [GitHub v1.2.2 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
 新增可下載的
 [`steven0226/phi-4-mini-formosanlu-lora`](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora)，
-並更新 publication metadata、technical report 與 cards。**此 Gemma adapter
+並以 [archival Technical note](https://doi.org/10.5281/zenodo.21879155)
+保存 technical report，另更新 publication metadata 與 cards。**此 Gemma adapter
 tensors did not change.** 它仍是相同的 155,609,536-byte
 artifact，SHA-256 仍為
 `f70f423814dcd47943c92c0beb8b08a4e7f65e60a44355d3dcd95bed9f0bd60a`。
@@ -187,3 +188,16 @@ model.eval()
 ## License
 
 Gemma 4 與此 adapter 使用 Apache License 2.0。
+
+## Citation
+
+```bibtex
+@software{kuotunyu_formosanlu_synth_2026,
+  author  = {kuotunyu},
+  title   = {FormosaNLU Synthetic Data Distillation for Traditional Chinese (Taiwan) NLU},
+  year    = {2026},
+  version = {1.2.2},
+  doi     = {10.5281/zenodo.21879133},
+  url     = {https://doi.org/10.5281/zenodo.21879133}
+}
+```

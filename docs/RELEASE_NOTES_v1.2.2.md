@@ -1,6 +1,9 @@
 # v1.2.2 — Phi adapter and archival technical report
 
-[Zenodo all versions](https://doi.org/10.5281/zenodo.21767492) ·
+[Zenodo v1.2.2](https://zenodo.org/records/21879133) ·
+[DOI 10.5281/zenodo.21879133](https://doi.org/10.5281/zenodo.21879133) ·
+[Technical note](https://zenodo.org/records/21879155) ·
+[Technical note DOI 10.5281/zenodo.21879155](https://doi.org/10.5281/zenodo.21879155) ·
 [GitHub Release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
 
 v1.2.2 把已完成的第二個 student family 證據轉成可直接重用的公開 artifact，並將
@@ -12,7 +15,7 @@ preregistered criterion。
 
 - [`steven0226/phi-4-mini-formosanlu-lora`](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora)：
   `real_syn_filtered` seed-42 Phi-4-mini LoRA adapter。
-- [`paper/formosanlu_synth.pdf`](../paper/formosanlu_synth.pdf)：由 tracked LaTeX 與
+- [`formosanlu_synth.pdf`](https://github.com/kuotunyu/FormosaNLU-Synth/releases/download/v1.2.2/formosanlu_synth.pdf)：由 tracked LaTeX 與
   bibliography 編譯的 archival technical report。
 - `reports/m20_phi_adapter_publication.json`：authenticated upload、remote SHA-256、
   file allowlist、visibility 與 anonymous verification evidence。
@@ -51,6 +54,10 @@ delta 都為正，且各自 hierarchical 95% CI 下界大於零。
 ## Release evidence assets
 
 GitHub Release 附上 technical report PDF、Phi paired／cross-family reports、Phi publication
-evidence、資源帳本與 `SHA256SUMS.txt`。Zenodo concept DOI
-[`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492) 連結所有 versions；
-v1.2.2 的 version DOI 由 release archive minting 後另行回填至 `main`。
+evidence、資源帳本與 `SHA256SUMS.txt`。Zenodo 已將 tag `v1.2.2` 保存為 immutable
+[record 21879133](https://zenodo.org/records/21879133)，version DOI 為
+[`10.5281/zenodo.21879133`](https://doi.org/10.5281/zenodo.21879133)；all-versions concept
+DOI [`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492) 保持不變。
+English technical report 另以 Zenodo Technical note
+[`10.5281/zenodo.21879155`](https://doi.org/10.5281/zenodo.21879155) 封存，並與
+software record 雙向連結；公開檔案與本機 tracked PDF／TeX／BibTeX 的 MD5 完全一致。

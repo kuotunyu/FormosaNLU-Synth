@@ -1,0 +1,39 @@
+{
+  "anonymous_verification": true,
+  "creator_names": [
+    "kuotunyu"
+  ],
+  "doi": "10.5281/zenodo.21879155",
+  "doi_url": "https://doi.org/10.5281/zenodo.21879155",
+  "downloads_verified": true,
+  "files": [
+    {
+      "checksum": "md5:525864c3318f5de28242b89a9dc4e285",
+      "key": "formosanlu_synth.pdf",
+      "size": 65163
+    },
+    {
+      "checksum": "md5:059fbf16c13a353ba3caba09a6790712",
+      "key": "formosanlu_synth.tex",
+      "size": 16593
+    },
+    {
+      "checksum": "md5:f7a9161247f4659f730175b1101df298",
+      "key": "references.bib",
+      "size": 2756
+    }
+  ],
+  "language": "eng",
+  "license": "cc-by-4.0",
+  "publication_date": "2026-08-10",
+  "record_id": 21879155,
+  "record_url": "https://zenodo.org/records/21879155",
+  "related_software_doi": "10.5281/zenodo.21879133",
+  "resource_type": "publication-technicalnote",
+  "schema_version": 1,
+  "status": "public_verified",
+  "title": "FormosaNLU-Synth: Filtered Synthetic Data Distillation for Traditional Chinese (Taiwan) Natural Language Understanding",
+  "verified_at": "2026-08-10T21:49:51.887924+00:00",
+  "version": "1.0.0",
+  "zenodo_api_authentication": "anonymous"
+}

@@ -24,6 +24,7 @@ def test_collect_checks_reports_missing_inputs_instead_of_raising(tmp_path: Path
         "model_license_language",
         "version_metadata",
         "doi_backlinks",
+        "technical_report_archive",
         "license_scope",
         "paper_package",
     }.issubset(failed)
@@ -219,7 +220,7 @@ def test_accepts_exact_doi_backlinks(tmp_path: Path) -> None:
     (tmp_path / "CITATION.cff").write_text(
         "cff-version: 1.2.0\n"
         "version: 1.2.1\n"
-        f"identifiers:\n  - type: doi\n    value: {doi}\n",
+        f"doi: {doi}\n",
         encoding="utf-8",
     )
     (docs / "HANDOFF.md").write_text(
@@ -269,6 +270,158 @@ def test_rejects_fragile_zenodo_svg_badge(tmp_path: Path) -> None:
 
     assert check.passed is False
     assert "README.md" in check.observed
+
+
+def test_rejects_missing_technical_report_archive_evidence(tmp_path: Path) -> None:
+    check = _check(tmp_path, "technical_report_archive")
+
+    assert check.passed is False
+    assert "v122_technical_report_zenodo.json" in check.observed
+
+
+def test_accepts_exact_technical_report_archive_evidence(tmp_path: Path) -> None:
+    doi = "10.5281/zenodo.21879155"
+    record_url = "https://zenodo.org/records/21879155"
+    reports = tmp_path / "reports"
+    docs = tmp_path / "docs"
+    paper = tmp_path / "paper"
+    reports.mkdir()
+    docs.mkdir()
+    paper.mkdir()
+    (reports / "v122_technical_report_zenodo.json").write_text(
+        json.dumps(
+            {
+                "status": "public_verified",
+                "anonymous_verification": True,
+                "downloads_verified": True,
+                "doi": doi,
+                "doi_url": f"https://doi.org/{doi}",
+                "record_url": record_url,
+                "creator_names": ["kuotunyu"],
+                "resource_type": "publication-technicalnote",
+                "license": "cc-by-4.0",
+                "language": "eng",
+                "related_software_doi": "10.5281/zenodo.21879133",
+                "files": [
+                    {
+                        "key": "formosanlu_synth.pdf",
+                        "size": 65163,
+                        "checksum": "md5:525864c3318f5de28242b89a9dc4e285",
+                    },
+                    {
+                        "key": "formosanlu_synth.tex",
+                        "size": 16593,
+                        "checksum": "md5:059fbf16c13a353ba3caba09a6790712",
+                    },
+                    {
+                        "key": "references.bib",
+                        "size": 2756,
+                        "checksum": "md5:f7a9161247f4659f730175b1101df298",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "CITATION.cff").write_text(
+        "cff-version: 1.2.0\n"
+        "preferred-citation:\n"
+        "  authors:\n"
+        "    - name: kuotunyu\n"
+        f"  doi: {doi}\n"
+        "  title: 'FormosaNLU-Synth: Filtered Synthetic Data Distillation for "
+        "Traditional Chinese (Taiwan) Natural Language Understanding'\n"
+        "  type: generic\n"
+        f"  url: https://doi.org/{doi}\n"
+        "  year: 2026\n",
+        encoding="utf-8",
+    )
+    (docs / "HANDOFF.md").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+    (docs / "RELEASE_NOTES_v1.2.2.md").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+    (paper / "formosanlu_synth.tex").write_text(
+        f"{doi}\n{record_url}\n",
+        encoding="utf-8",
+    )
+
+    assert _check(tmp_path, "technical_report_archive").passed is True
+
+
+def test_rejects_technical_report_doi_as_software_identifier(tmp_path: Path) -> None:
+    doi = "10.5281/zenodo.21879155"
+    reports = tmp_path / "reports"
+    docs = tmp_path / "docs"
+    paper = tmp_path / "paper"
+    reports.mkdir()
+    docs.mkdir()
+    paper.mkdir()
+    evidence = {
+        "status": "public_verified",
+        "anonymous_verification": True,
+        "downloads_verified": True,
+        "doi": doi,
+        "doi_url": f"https://doi.org/{doi}",
+        "record_url": "https://zenodo.org/records/21879155",
+        "creator_names": ["kuotunyu"],
+        "resource_type": "publication-technicalnote",
+        "license": "cc-by-4.0",
+        "language": "eng",
+        "related_software_doi": "10.5281/zenodo.21879133",
+        "files": [
+            {"key": key, "size": size, "checksum": checksum}
+            for key, size, checksum in (
+                (
+                    "formosanlu_synth.pdf",
+                    65163,
+                    "md5:525864c3318f5de28242b89a9dc4e285",
+                ),
+                (
+                    "formosanlu_synth.tex",
+                    16593,
+                    "md5:059fbf16c13a353ba3caba09a6790712",
+                ),
+                (
+                    "references.bib",
+                    2756,
+                    "md5:f7a9161247f4659f730175b1101df298",
+                ),
+            )
+        ],
+    }
+    (reports / "v122_technical_report_zenodo.json").write_text(
+        json.dumps(evidence),
+        encoding="utf-8",
+    )
+    for relative in (
+        tmp_path / "README.md",
+        docs / "HANDOFF.md",
+        docs / "RELEASE_NOTES_v1.2.2.md",
+        paper / "formosanlu_synth.tex",
+    ):
+        relative.write_text(
+            f"{doi}\nhttps://zenodo.org/records/21879155\n",
+            encoding="utf-8",
+        )
+    (tmp_path / "CITATION.cff").write_text(
+        "cff-version: 1.2.0\n"
+        "identifiers:\n"
+        f"  - type: doi\n    value: {doi}\n",
+        encoding="utf-8",
+    )
+
+    check = _check(tmp_path, "technical_report_archive")
+
+    assert check.passed is False
+    assert "CITATION.cff" in check.observed
 
 
 def test_markdown_link_check_ignores_fenced_code_examples(tmp_path: Path) -> None:

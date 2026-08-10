@@ -41,7 +41,7 @@ weights**。
 | Steps | `500` |
 | Public Dataset | [`steven0226/formosa-nlu-synth-v1`](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) |
 | Source | [`kuotunyu/FormosaNLU-Synth`](https://github.com/kuotunyu/FormosaNLU-Synth) |
-| DOI | [`10.5281/zenodo.21767492`](https://doi.org/10.5281/zenodo.21767492) (all versions) |
+| DOI | [`10.5281/zenodo.21879133`](https://doi.org/10.5281/zenodo.21879133) (v1.2.2) |
 
 這是一個可下載的 **single adapter**，不是六組 runs 的合併權重。`release_manifest.json`
 記錄 adapter SHA-256、byte size、tensor count、base revision、training
@@ -67,7 +67,7 @@ arm 與 source commit。上傳 bundle 僅允許 inference 所需檔案；optimiz
 
 - [Phi paired statistics](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.2/reports/m15_phi4mini_paired_statistics.md)
 - [Cross-family replication](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.2/reports/m15_cross_model_replication.md)
-- [Technical report](https://github.com/kuotunyu/FormosaNLU-Synth/blob/v1.2.2/paper/formosanlu_synth.pdf)
+- [Archival Technical note](https://doi.org/10.5281/zenodo.21879155)（evidence-bounded；not peer reviewed）
 
 ## Load the adapter
 
@@ -116,7 +116,7 @@ model.eval()
   title   = {FormosaNLU Synthetic Data Distillation for Traditional Chinese NLU},
   year    = {2026},
   version = {1.2.2},
-  doi     = {10.5281/zenodo.21767492},
-  url     = {https://github.com/kuotunyu/FormosaNLU-Synth}
+  doi     = {10.5281/zenodo.21879133},
+  url     = {https://doi.org/10.5281/zenodo.21879133}
 }
 ```

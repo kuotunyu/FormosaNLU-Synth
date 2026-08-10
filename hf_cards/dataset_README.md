@@ -134,6 +134,7 @@ family 分別彙總、不 pooling，不宣稱推廣到其他 dataset、任務或
 ### v1.2.2 evidence release 與 M19 equal-N ablation
 
 [GitHub v1.2.2 evidence release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2)
+與 [archival Technical note](https://doi.org/10.5281/zenodo.21879155)
 補齊 technical report、Phi-4-mini LoRA、授權範圍與保存 metadata。**Dataset
 rows did not change.** 本 Dataset 仍是相同的 3,754 rows，train
 SHA-256 仍為
@@ -193,7 +194,7 @@ FormosaNLU Synth：
 
 ```text
 kuotunyu. FormosaNLU Synthetic Data Distillation for Traditional Chinese
-(Taiwan) NLU, version 1.2.2. 2026. DOI: 10.5281/zenodo.21767492.
+(Taiwan) NLU, version 1.2.2. 2026. DOI: 10.5281/zenodo.21879133.
 https://github.com/kuotunyu/FormosaNLU-Synth
 ```
 
