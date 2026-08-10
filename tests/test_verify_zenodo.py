@@ -137,6 +137,30 @@ def test_verify_zenodo_can_retrieve_a_known_public_record(
     assert calls == [("https://zenodo.org/api/records/12345678", None)]
 
 
+def test_verify_zenodo_search_uses_public_title_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Discovery must match the public title, not require the repo slug."""
+
+    def fake_get_json(
+        url: str,
+        *,
+        params: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        assert url == zenodo.ZENODO_RECORDS_API
+        assert params is not None
+        hits = [_record()] if params["q"] == "FormosaNLU" else []
+        return {"hits": {"hits": hits}}
+
+    monkeypatch.setattr(zenodo, "_get_json", fake_get_json)
+    monkeypatch.setattr(zenodo, "_resolve_annotated_tag", lambda version: TAG_COMMIT)
+
+    report = zenodo.verify_zenodo(version="1.2.1")
+
+    assert report["record_id"] == 12345678
+    assert report["status"] == "public_verified"
+
+
 def test_get_json_scopes_github_token_to_github_api(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

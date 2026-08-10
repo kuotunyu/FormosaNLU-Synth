@@ -175,7 +175,7 @@ def verify_zenodo(
     search = _get_json(
         ZENODO_RECORDS_API,
         params={
-            "q": '"FormosaNLU-Synth"',
+            "q": "FormosaNLU",
             "all_versions": "true",
             "size": 25,
             "sort": "mostrecent",
