@@ -6,12 +6,12 @@ import argparse
 import json
 import os
 import re
-import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import requests
+import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ZENODO_RECORDS_API = "https://zenodo.org/api/records"

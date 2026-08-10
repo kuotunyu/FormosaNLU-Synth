@@ -18,11 +18,11 @@ def test_public_release_metadata_is_versioned() -> None:
         if package["name"] == "formosanlu" and package.get("source") == {"editable": "."}
     )
 
-    assert citation["version"] == "1.2.1"
-    assert str(citation["date-released"]) == "2026-08-03"
+    assert citation["version"] == "1.2.2"
+    assert str(citation["date-released"]) == "2026-08-11"
     assert citation["authors"] == [{"name": "kuotunyu"}]
-    assert pyproject["project"]["version"] == "1.2.1"
-    assert editable_package["version"] == "1.2.1"
+    assert pyproject["project"]["version"] == "1.2.2"
+    assert editable_package["version"] == "1.2.2"
 
 
 def test_data_card_has_no_pre_release_placeholders() -> None:

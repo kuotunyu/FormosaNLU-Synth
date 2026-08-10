@@ -7,7 +7,6 @@ import pytest
 
 from scripts.build_v122_release_assets import ASSET_SOURCES, build_assets
 
-
 EXPECTED_ASSETS = {
     "formosanlu_synth_v1.2.2.pdf",
     "m15_cross_model_replication.json",
