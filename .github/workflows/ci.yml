@@ -40,4 +40,8 @@ jobs:
         run: uv run python -m scripts.verify_readme
 
       - name: Verify sole-contributor history
-        run: uv run python scripts/verify_contributors.py --history-only
+        env:
+          AUDIT_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          uv run python scripts/verify_contributors.py
+          --history-only --revision "$AUDIT_REVISION"

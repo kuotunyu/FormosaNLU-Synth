@@ -90,6 +90,17 @@ def _git_optional(*args: str) -> str | None:
     return completed.stdout.strip()
 
 
+def load_history(revision: str | None = None) -> list[CommitIdentity]:
+    """Load the intended history, excluding a CI provider's synthetic merge ref."""
+    target = revision or "--all"
+    raw = _git(
+        "log",
+        target,
+        "--format=%H%x1f%an%x1f%ae%x1f%cn%x1f%ce%x1f%B%x1e",
+    )
+    return parse_git_log(raw)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -97,13 +108,15 @@ def main() -> int:
         action="store_true",
         help="Audit committed identities and trailers without requiring local Git config.",
     )
-    args = parser.parse_args()
-    raw = _git(
-        "log",
-        "--all",
-        "--format=%H%x1f%an%x1f%ae%x1f%cn%x1f%ce%x1f%B%x1e",
+    parser.add_argument(
+        "--revision",
+        help=(
+            "Audit this commit and its ancestors instead of every local ref. "
+            "CI should pass the pull-request head SHA to exclude synthetic merge commits."
+        ),
     )
-    records = parse_git_log(raw)
+    args = parser.parse_args()
+    records = load_history(args.revision)
     errors = audit_history(records)
     identity_checked = False
     if not args.history_only:

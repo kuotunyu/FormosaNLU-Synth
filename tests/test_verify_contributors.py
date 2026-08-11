@@ -80,3 +80,37 @@ def test_present_local_config_is_returned_stripped(monkeypatch) -> None:
     )
 
     assert module._git_optional("config", "--local", "user.name") == "kuotunyu"
+
+
+def test_load_history_can_target_the_pr_head_instead_of_the_synthetic_merge(
+    monkeypatch,
+) -> None:
+    import scripts.verify_contributors as module
+
+    record = _record()
+    raw = "\x1f".join(
+        [
+            record.commit,
+            record.author_name,
+            record.author_email,
+            record.committer_name,
+            record.committer_email,
+            record.body,
+        ]
+    ) + "\x1e"
+    captured: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str) -> str:
+        captured.append(args)
+        return raw
+
+    monkeypatch.setattr(module, "_git", fake_git)
+
+    assert module.load_history("pr-head-sha") == [record]
+    assert captured == [
+        (
+            "log",
+            "pr-head-sha",
+            "--format=%H%x1f%an%x1f%ae%x1f%cn%x1f%ce%x1f%B%x1e",
+        )
+    ]
