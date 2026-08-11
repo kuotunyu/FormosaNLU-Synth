@@ -6,6 +6,8 @@ import pytest
 import yaml
 
 from scripts import m19_ablation
+from src.synthetic.recipes.base import RecipePlan
+from src.training import ablation
 from src.training.ablation import (
     ABLATION_GROUPS,
     CONTROL_GROUP,
@@ -78,7 +80,9 @@ def test_m19_accepts_the_real_completed_evaluation_report_schema(
     assert m19_ablation._eval_complete(CONTROL_GROUP)
 
 
-def test_plan_mismatch_is_an_error_not_a_silent_relabel(tmp_path) -> None:
+def test_plan_mismatch_is_an_error_not_a_silent_relabel(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """The recipe comes from a rebuilt plan; if it disagrees with the corpus the
     mapping is meaningless and must fail loudly."""
     corpus = tmp_path / "corpus.jsonl"
@@ -93,6 +97,17 @@ def test_plan_mismatch_is_an_error_not_a_silent_relabel(tmp_path) -> None:
         + "\n",
         encoding="utf-8",
     )
+    plan = RecipePlan(
+        recipe="paraphrase",
+        prompt_version="test.v1",
+        style="massive_like",
+        system_prompt="system",
+        user_prompt="user",
+        expected_intent="planned_intent",
+        expected_slots=(),
+        seed_sample_id="seed-1",
+    )
+    monkeypatch.setattr(ablation, "_plans", lambda: (plan,))
 
     with pytest.raises(ValueError, match="plan/corpus mismatch"):
         recipe_by_row_id(corpus)
