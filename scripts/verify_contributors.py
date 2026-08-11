@@ -15,6 +15,10 @@ ALLOWED_EMAILS = frozenset(
     }
 )
 REQUIRED_LOCAL_EMAIL = "61350295+kuotunyu@users.noreply.github.com"
+ALLOWED_COMMITTERS = frozenset(
+    {(ALLOWED_NAME, email) for email in ALLOWED_EMAILS}
+    | {("GitHub", "noreply@github.com")}
+)
 TRAILER_PATTERN = re.compile(
     r"^(?:Co-Authored-By|Co-Author|Coauthor)\s*:",
     flags=re.IGNORECASE | re.MULTILINE,
@@ -49,12 +53,25 @@ def audit_history(records: list[CommitIdentity]) -> list[str]:
         short = record.commit[:12]
         if record.author_name != ALLOWED_NAME:
             errors.append(f"{short}: unexpected author name {record.author_name!r}")
-        if record.committer_name != ALLOWED_NAME:
-            errors.append(f"{short}: unexpected committer name {record.committer_name!r}")
         if record.author_email not in ALLOWED_EMAILS:
             errors.append(f"{short}: unexpected author email {record.author_email!r}")
-        if record.committer_email not in ALLOWED_EMAILS:
-            errors.append(f"{short}: unexpected committer email {record.committer_email!r}")
+        committer = (record.committer_name, record.committer_email)
+        if committer not in ALLOWED_COMMITTERS:
+            allowed_names = {name for name, _ in ALLOWED_COMMITTERS}
+            allowed_emails = {email for _, email in ALLOWED_COMMITTERS}
+            if record.committer_name not in allowed_names:
+                errors.append(
+                    f"{short}: unexpected committer name {record.committer_name!r}"
+                )
+            if record.committer_email not in allowed_emails:
+                errors.append(
+                    f"{short}: unexpected committer email {record.committer_email!r}"
+                )
+            if (
+                record.committer_name in allowed_names
+                and record.committer_email in allowed_emails
+            ):
+                errors.append(f"{short}: unexpected committer identity {committer!r}")
         if TRAILER_PATTERN.search(record.body):
             errors.append(f"{short}: co-author trailer is forbidden")
     return errors
@@ -151,7 +168,7 @@ def main() -> int:
     scope = "history and local identity" if identity_checked else "history"
     print(
         f"Contributor audit passed ({scope}): {len(records)} commits, "
-        f"author/committer {ALLOWED_NAME}, no co-author trailers."
+        f"author {ALLOWED_NAME}, approved committers, no co-author trailers."
     )
     return 0
 

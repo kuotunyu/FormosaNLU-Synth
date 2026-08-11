@@ -41,12 +41,29 @@ def test_audit_rejects_other_identity_and_coauthor_trailer() -> None:
         [
             _record(
                 author_name="someone-else",
+                committer_name="someone-else",
+                committer_email="other@example.com",
                 body="M8: unsafe\n\nCo-Authored-By: Other <other@example.com>",
             )
         ]
     )
     assert any("unexpected author name" in error for error in errors)
+    assert any("unexpected committer name" in error for error in errors)
+    assert any("unexpected committer email" in error for error in errors)
     assert any("co-author trailer" in error for error in errors)
+
+
+def test_audit_accepts_github_as_platform_committer_for_maintainer_authored_commit() -> None:
+    errors = audit_history(
+        [
+            _record(
+                committer_name="GitHub",
+                committer_email="noreply@github.com",
+            )
+        ]
+    )
+
+    assert errors == []
 
 
 def test_unset_local_config_returns_none_instead_of_raising(monkeypatch) -> None:
