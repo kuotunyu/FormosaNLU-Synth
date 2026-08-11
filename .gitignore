@@ -63,7 +63,10 @@ htmlcov/
 # commits still contain them.
 .claude/
 .agents/
-.github/
+.github/*
+!.github/workflows/
+.github/workflows/*
+!.github/workflows/ci.yml
 CLAUDE.md
 PLAN.md
 PROGRESS.md

@@ -14,6 +14,34 @@ METRICS = (
 )
 
 
+@pytest.fixture(autouse=True)
+def frozen_ablation_plan(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep report-unit tests independent of the private MASSIVE seed pool."""
+    plan = {
+        "equal_n": 2_246,
+        "groups": {
+            "abl_all_eqn": {"excluded_recipe": None, "synthetic_rows": 2_246},
+            "abl_no_paraphrase": {
+                "excluded_recipe": "paraphrase",
+                "synthetic_rows": 2_246,
+            },
+            "abl_no_slot_substitution": {
+                "excluded_recipe": "slot_substitution",
+                "synthetic_rows": 2_246,
+            },
+            "abl_no_noise_codeswitch": {
+                "excluded_recipe": "noise_codeswitch",
+                "synthetic_rows": 2_246,
+            },
+            "abl_no_hard_negative": {
+                "excluded_recipe": "hard_negative",
+                "synthetic_rows": 2_246,
+            },
+        },
+    }
+    monkeypatch.setattr("scripts.build_m19_report.build_plan", lambda *, seed: plan)
+
+
 def _evaluation(group: str, *, exact_match: float) -> dict[str, object]:
     metrics = {metric: 0.75 for metric in METRICS}
     metrics["exact_match"] = exact_match
