@@ -154,7 +154,7 @@ def _write_report(
                 f"- Completed: {len(records)}/{target_count}",
                 f"- Model: `{model_id}` via text-only `{text_only_class}`",
                 (
-                    f"- Adapter: `{adapter_dir}` (group `{group}`, seed `{seed}`)"
+                    f"- Adapter: `{payload['adapter_dir']}` (group `{group}`, seed `{seed}`)"
                     if adapter_dir is not None
                     else "- Adapter: none (zero-shot baseline)"
                 ),
