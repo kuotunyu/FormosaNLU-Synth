@@ -2,7 +2,7 @@
 
 - Completed: 2974/2974
 - Model: `microsoft/Phi-4-mini-instruct` via text-only `AutoModelForCausalLM`
-- Adapter: `C:\Users\3Hml\Desktop\mySyntheticData\3_FormosaNLU\runs\m15\phi4mini\real_only\seed_43\adapter` (group `real_only`, seed `43`)
+- Adapter: `runs/m15/phi4mini/real_only/seed_43/adapter` (group `real_only`, seed `43`)
 - Quantization: NF4 + double quant, bf16 compute
 - Prompt template: `formosanlu_nlu.v1`; label catalog not included
 - Constrained decoding: **disabled**

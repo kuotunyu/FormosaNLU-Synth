@@ -1,12 +1,9 @@
 """Run every pre-push gate in one command.
 
-GitHub Actions used to run these on a clean Linux checkout before each push.
-That workflow is no longer part of the published repository, so this script is
-the local replacement. Run it before every push; a non-zero exit means at
+GitHub Actions runs the clean-checkout subset on pushes and pull requests.
+This local gate adds reproducibility and publication-closeout audits that need
+the full local context. Run it before every push; a non-zero exit means at
 least one gate failed and the push should not happen.
-
-The gates retain the former CI checks and add local reproducibility and
-publication-closeout audits in a fixed order.
 """
 
 from __future__ import annotations
@@ -44,6 +41,11 @@ def build_gates() -> list[Gate]:
             name="verify_readme",
             description="Every README number recomputes from tracked reports",
             command=[python, "-m", "scripts.verify_readme"],
+        ),
+        Gate(
+            name="verify_public_paths",
+            description="Tracked public text contains no personal machine paths",
+            command=[python, "-m", "scripts.verify_public_paths"],
         ),
         Gate(
             name="verify_contributors",

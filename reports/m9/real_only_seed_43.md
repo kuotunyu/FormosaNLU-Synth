@@ -2,7 +2,7 @@
 
 - Completed: 2974/2974
 - Model: `google/gemma-4-E4B-it` via text-only `Gemma4ForCausalLM`
-- Adapter: `C:\Users\3Hml\Desktop\mySyntheticData\3_FormosaNLU\runs\real_only\seed_43\adapter` (group `real_only`, seed `43`)
+- Adapter: `runs/real_only/seed_43/adapter` (group `real_only`, seed `43`)
 - Quantization: NF4 + double quant, bf16 compute
 - Prompt template: `formosanlu_nlu.v1`; label catalog not included
 - Constrained decoding: **disabled**

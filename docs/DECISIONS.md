@@ -10,7 +10,7 @@
 
 - **日期**：2026-07-27
 - **狀態**：`accepted`
-- **決策**：整個專案在 `C:\Users\3Hml\Desktop\mySyntheticData\3_FormosaNLU` 以 Windows 原生執行，不遷移到 WSL。
+- **決策**：整個專案在 repository root 以 Windows 原生執行，不遷移到 WSL。
 
 **考慮過的選項**
 

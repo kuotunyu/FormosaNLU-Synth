@@ -2,7 +2,7 @@
 
 - Completed: 2974/2974
 - Model: `google/gemma-4-E4B-it` via text-only `Gemma4ForCausalLM`
-- Adapter: `C:\Users\3Hml\Desktop\mySyntheticData\3_FormosaNLU\runs\real_syn_unfiltered_eqn\seed_42\adapter` (group `real_syn_unfiltered_eqn`, seed `42`)
+- Adapter: `runs/real_syn_unfiltered_eqn/seed_42/adapter` (group `real_syn_unfiltered_eqn`, seed `42`)
 - Quantization: NF4 + double quant, bf16 compute
 - Prompt template: `formosanlu_nlu.v1`; label catalog not included
 - Constrained decoding: **disabled**

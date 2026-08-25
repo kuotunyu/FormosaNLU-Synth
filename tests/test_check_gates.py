@@ -6,13 +6,13 @@ import pytest
 
 from scripts.check_gates import Gate, build_gates, run_gates
 
-# The CI workflow that used to enforce these is no longer tracked, so the gate
-# list itself is now the only thing standing between a regression and a push.
-# These tests exist so a gate cannot be dropped quietly.
+# The local gate is stricter than clean-checkout CI. These tests exist so a
+# pre-push check cannot be dropped quietly.
 REQUIRED_GATES = {
     "ruff",
     "pytest",
     "verify_readme",
+    "verify_public_paths",
     "verify_contributors",
     "verify_reproduce",
     "verify_closeout",
@@ -29,6 +29,7 @@ def test_gates_run_in_the_documented_order() -> None:
         "ruff",
         "pytest",
         "verify_readme",
+        "verify_public_paths",
         "verify_contributors",
         "verify_reproduce",
         "verify_closeout",

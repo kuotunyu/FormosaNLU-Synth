@@ -39,6 +39,9 @@ jobs:
       - name: Verify README evidence
         run: uv run python -m scripts.verify_readme
 
+      - name: Verify public paths
+        run: uv run python -m scripts.verify_public_paths
+
       - name: Verify sole-contributor history
         env:
           AUDIT_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
