@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from src.gpu_safety import assert_safe_gpu_launch, safety_status
+from src.public_paths import public_artifact_path
 from src.training.train import DEFAULT_CONFIG, REPO_ROOT
 
 GROUPS = ("real_only", "real_syn_filtered")
@@ -205,11 +206,19 @@ def execute(
     for spec in specs:
         row = {
             **asdict(spec),
-            "adapter_dir": str(spec.adapter_dir),
-            "output": str(spec.output),
-            "primary_report": str(spec.primary_report),
-            "report_json": str(spec.report_json),
-            "report_markdown": str(spec.report_markdown),
+            "adapter_dir": public_artifact_path(
+                spec.adapter_dir, project_root=REPO_ROOT
+            ),
+            "output": public_artifact_path(spec.output, project_root=REPO_ROOT),
+            "primary_report": public_artifact_path(
+                spec.primary_report, project_root=REPO_ROOT
+            ),
+            "report_json": public_artifact_path(
+                spec.report_json, project_root=REPO_ROOT
+            ),
+            "report_markdown": public_artifact_path(
+                spec.report_markdown, project_root=REPO_ROOT
+            ),
             "status": "pending",
         }
         payload["runs"].append(row)

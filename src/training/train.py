@@ -14,6 +14,7 @@ from typing import Any
 
 import yaml
 
+from src.public_paths import public_artifact_path
 from src.training.data import (
     group_examples,
     prompt_completion_rows,
@@ -263,10 +264,20 @@ def train_group(
         "trainable_percent": 100 * trainable_parameters / total_parameters,
         "peak_gpu_allocated_mib": torch.cuda.max_memory_allocated() / (1024**2),
         "peak_gpu_reserved_mib": torch.cuda.max_memory_reserved() / (1024**2),
-        "resumed_from": str(checkpoint) if checkpoint else None,
-        "best_model_checkpoint": trainer.state.best_model_checkpoint,
+        "resumed_from": (
+            public_artifact_path(checkpoint, project_root=REPO_ROOT)
+            if checkpoint
+            else None
+        ),
+        "best_model_checkpoint": (
+            public_artifact_path(
+                trainer.state.best_model_checkpoint, project_root=REPO_ROOT
+            )
+            if trainer.state.best_model_checkpoint
+            else None
+        ),
         "global_step": trainer.state.global_step,
-        "adapter_dir": str(adapter_dir),
+        "adapter_dir": public_artifact_path(adapter_dir, project_root=REPO_ROOT),
         "metrics": training_result.metrics,
     }
     (output_dir / "run_report.json").write_text(

@@ -49,6 +49,7 @@ DOCUMENTED_GATE_TOKENS = (
     "`ruff`",
     "`pytest`",
     "`scripts.verify_readme`",
+    "`scripts.verify_public_paths`",
     "`scripts.verify_contributors`",
     "`scripts.verify_reproduce`",
     "`scripts.verify_closeout`",
@@ -181,18 +182,18 @@ def _next_session_report_check(root: Path) -> Check:
 def _gate_documentation_check(root: Path) -> Check:
     text = _read_text(root, "README.md") or ""
     missing = [token.strip("`") for token in DOCUMENTED_GATE_TOKENS if token not in text]
-    describes_six = "六道檢查" in text
-    passed = bool(text) and describes_six and not missing
+    describes_seven = "七道檢查" in text
+    passed = bool(text) and describes_seven and not missing
     observed_parts = []
-    if not describes_six:
-        observed_parts.append("README does not say 六道檢查")
+    if not describes_seven:
+        observed_parts.append("README does not say 七道檢查")
     if missing:
         observed_parts.append(f"missing: {', '.join(missing)}")
     return Check(
         "gate_documentation",
         passed,
-        "all six gates documented" if passed else "; ".join(observed_parts),
-        "README names all six scripts.check_gates checks",
+        "all seven gates documented" if passed else "; ".join(observed_parts),
+        "README names all seven scripts.check_gates checks",
     )
 
 

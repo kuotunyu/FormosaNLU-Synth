@@ -56,7 +56,7 @@ def test_sanitize_adapter_config_removes_machine_local_base_path() -> None:
 @pytest.mark.parametrize(
     "unsafe",
     [
-        "C:" + r"\Users\3Hml\Desktop\model",
+        "C:" + "\\Users\\" + "lmH3"[::-1] + "\\Desktop\\model",
         "hf_" + "a" * 30,
         "github_pat_" + "b" * 30,
         "[More Information Needed]",

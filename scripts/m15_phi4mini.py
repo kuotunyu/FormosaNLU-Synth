@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from src.gpu_safety import assert_safe_gpu_launch, safety_status
+from src.public_paths import public_artifact_path
 from src.training.cross_model import CONFIG_PATH, execute_pipeline
 from src.training.cross_model import status as experiment_status
 from src.training.train import REPO_ROOT, latest_checkpoint
@@ -55,11 +56,7 @@ def _sha256(path: Path) -> str:
 
 
 def _repo_relative(value: str | Path) -> str:
-    path = Path(value)
-    try:
-        return path.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
-    except (OSError, ValueError):
-        return path.as_posix()
+    return public_artifact_path(value, project_root=REPO_ROOT)
 
 
 def artifact_ready() -> tuple[bool, str]:
@@ -244,7 +241,7 @@ def run_smoke() -> dict[str, Any]:
         "model": "microsoft/Phi-4-mini-instruct",
         "revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
         "first_checkpoint": checkpoint_one.name,
-        "resumed_from": str(run_report.get("resumed_from")),
+        "resumed_from": _repo_relative(run_report.get("resumed_from", "")),
         "final_global_step": run_report.get("global_step"),
         "final_checkpoint": checkpoint_two.name,
         "peak_gpu_allocated_mib": run_report.get("peak_gpu_allocated_mib"),
@@ -332,7 +329,13 @@ def qualify_existing_smoke() -> dict[str, Any]:
     if not SMOKE_PREDICTIONS.is_file():
         raise RuntimeError("Original smoke predictions are missing")
 
-    created_at = datetime.now(timezone.utc).isoformat()
+    existing_qualification = _read_json(SMOKE_QUALIFICATION) or {}
+    existing_amendment = _read_json(SMOKE_AMENDMENT) or {}
+    created_at = str(
+        existing_qualification.get("created_at")
+        or existing_amendment.get("created_at")
+        or datetime.now(timezone.utc).isoformat()
+    )
     amendment = {
         "schema_version": 1,
         "protocol_id": "m15.smoke.infrastructure.v2",
@@ -421,6 +424,31 @@ def qualify_existing_smoke() -> dict[str, Any]:
     return payload
 
 
+def refresh_tracked_smoke_hashes(
+    *,
+    qualification_path: Path = SMOKE_QUALIFICATION,
+    smoke_report_path: Path = SMOKE_REPORT,
+    evaluation_report_path: Path = SMOKE_EVALUATION,
+) -> dict[str, Any]:
+    """Refresh only hashes of tracked reports after portable path normalization."""
+
+    payload = _read_json(qualification_path)
+    if payload is None:
+        raise RuntimeError("Smoke qualification evidence is missing or invalid")
+    source_hashes = payload.get("source_sha256")
+    if not isinstance(source_hashes, dict):
+        raise RuntimeError("Smoke qualification source hashes are missing")
+    if not smoke_report_path.is_file() or not evaluation_report_path.is_file():
+        raise RuntimeError("Tracked smoke reports are missing")
+    source_hashes["original_smoke_report"] = _sha256(smoke_report_path)
+    source_hashes["evaluation_report"] = _sha256(evaluation_report_path)
+    qualification_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return payload
+
+
 def _validate_smoke_payload(payload: dict[str, Any]) -> tuple[bool, str]:
     passed = (
         payload.get("final_global_step") == 2
@@ -436,6 +464,7 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--smoke", action="store_true")
     mode.add_argument("--qualify-smoke", action="store_true")
+    mode.add_argument("--refresh-public-path-hashes", action="store_true")
     mode.add_argument("--execute", action="store_true")
     parser.add_argument("--confirm")
     args = parser.parse_args()
@@ -455,6 +484,10 @@ def main() -> int:
         payload = qualify_existing_smoke()
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0 if payload["status"] == "passed" else 1
+    if args.refresh_public_path_hashes:
+        payload = refresh_tracked_smoke_hashes()
+        print(json.dumps(payload["source_sha256"], ensure_ascii=False, indent=2))
+        return 0
     if args.execute:
         if args.confirm != EXECUTE_CONFIRMATION:
             raise RuntimeError(

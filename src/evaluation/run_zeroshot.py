@@ -20,6 +20,7 @@ from src.evaluation.metrics import (
     diagnostic_counts,
     per_intent_accuracy,
 )
+from src.public_paths import public_artifact_path
 from src.synthetic.checkpoint import JsonlCheckpoint
 from src.training.model import load_quantized_causal_model
 from src.training.prompt_template import TEMPLATE_VERSION, build_prompt_messages
@@ -102,7 +103,11 @@ def _write_report(
         "zero_shot_prompt_includes_label_catalog": (
             label_catalog_included if evaluation_mode == "zero_shot" else False
         ),
-        "adapter_dir": str(adapter_dir) if adapter_dir is not None else None,
+        "adapter_dir": (
+            public_artifact_path(adapter_dir, project_root=REPO_ROOT)
+            if adapter_dir is not None
+            else None
+        ),
         "group": group,
         "seed": seed,
         "constrained_decoding": False,

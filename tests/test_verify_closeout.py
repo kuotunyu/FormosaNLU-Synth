@@ -95,16 +95,32 @@ def test_accepts_next_session_report_paths_that_exist(tmp_path: Path) -> None:
 
 def test_rejects_readme_that_omits_a_check_gate(tmp_path: Path) -> None:
     (tmp_path / "README.md").write_text(
-        "`scripts.check_gates` 會依序執行五道檢查："
+        "`scripts.check_gates` 會依序執行六道檢查："
         "`ruff`、`pytest`、`scripts.verify_readme`、"
-        "`scripts.verify_contributors`、`scripts.verify_reproduce`。\n",
+        "`scripts.verify_contributors`、`scripts.verify_reproduce`、"
+        "`scripts.verify_closeout`。\n",
         encoding="utf-8",
     )
 
     check = _check(tmp_path, "gate_documentation")
 
     assert check.passed is False
-    assert "verify_closeout" in check.observed
+    assert "verify_public_paths" in check.observed
+
+
+def test_accepts_the_actual_seven_gate_contract(tmp_path: Path) -> None:
+    (tmp_path / "README.md").write_text(
+        "`scripts.check_gates` 會依序執行七道檢查："
+        "`ruff`、`pytest`、`scripts.verify_readme`、"
+        "`scripts.verify_public_paths`、`scripts.verify_contributors`、"
+        "`scripts.verify_reproduce`、`scripts.verify_closeout`。\n",
+        encoding="utf-8",
+    )
+
+    check = _check(tmp_path, "gate_documentation")
+
+    assert check.passed is True
+    assert check.observed == "all seven gates documented"
 
 
 def test_rejects_internal_process_documents_from_public_tree(tmp_path: Path) -> None:

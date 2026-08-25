@@ -17,6 +17,7 @@ from src.inference.demo import (
     GemmaComparisonRuntime,
     MockComparisonRuntime,
 )
+from src.public_paths import public_artifact_path
 from src.training.train import REPO_ROOT
 
 CONFIRMATION = "M11-DEMO-EVIDENCE-4090"
@@ -67,7 +68,7 @@ def build_report(
         "status": "complete" if runtime_mode == "real" else "mock_validation",
         "runtime_mode": runtime_mode,
         "model": "google/gemma-4-E4B-it",
-        "adapter_dir": str(adapter_dir),
+        "adapter_dir": public_artifact_path(adapter_dir, project_root=REPO_ROOT),
         "adapter_tree_sha256": (
             _tree_digest(adapter_dir) if adapter_dir.is_dir() else None
         ),

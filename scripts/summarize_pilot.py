@@ -9,6 +9,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from src.public_paths import public_artifact_path
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = REPO_ROOT / "data" / "generated" / "pilot.jsonl"
 DEFAULT_COST = REPO_ROOT / "logs" / "cost.json"
@@ -32,15 +34,13 @@ def summarize(input_path: Path, cost_path: Path) -> dict[str, Any]:
         raise ValueError("Pilot contains duplicate synthetic sample ids")
 
     cost = json.loads(cost_path.read_text(encoding="utf-8"))
-    try:
-        relative_input = str(input_path.relative_to(REPO_ROOT))
-    except ValueError:
-        relative_input = str(input_path.resolve())
+    relative_input = public_artifact_path(input_path, project_root=REPO_ROOT)
+    input_candidates = {Path(relative_input), input_path.resolve()}
     session = next(
         (
             item
             for item in reversed(cost["sessions"])
-            if Path(item["output"]) == Path(relative_input)
+            if Path(item["output"]) in input_candidates
             and item["complete_records"] == len(records)
         ),
         None,

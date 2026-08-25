@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from src.evaluation.report import METRICS
+from src.public_paths import resolve_artifact_path
 from src.training.train import REPO_ROOT
 
 DEFAULT_JSON = REPO_ROOT / "runs" / "m13_release_preflight.json"
@@ -320,7 +321,10 @@ def _robustness_status(
                 return f"{group}_contract_mismatch"
             expected_adapter = (repo_root / "runs" / group / "seed_42" / "adapter").resolve()
             if (
-                Path(str(group_report.get("adapter_dir"))).resolve() != expected_adapter
+                resolve_artifact_path(
+                    str(group_report.get("adapter_dir")), project_root=repo_root
+                )
+                != expected_adapter
                 or not expected_adapter.is_dir()
             ):
                 return f"{group}_adapter_mismatch"
@@ -442,7 +446,9 @@ def _m11_evidence_status(
             if not isinstance(latency, (int, float)) or latency < 0:
                 return "prediction_invalid"
     try:
-        adapter_dir = Path(str(report["adapter_dir"])).resolve()
+        adapter_dir = resolve_artifact_path(
+            str(report["adapter_dir"]), project_root=repo_root
+        )
         root = repo_root.resolve()
         adapter_dir.relative_to(root)
         if not adapter_dir.is_dir():

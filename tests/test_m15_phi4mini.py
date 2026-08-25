@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import hashlib
+import json
+
 from scripts.m15_phi4mini import (
     EXECUTE_CONFIRMATION,
     QUALIFY_CONFIRMATION,
@@ -7,6 +10,7 @@ from scripts.m15_phi4mini import (
     _prediction_structure,
     _validate_qualification_payload,
     _validate_smoke_payload,
+    refresh_tracked_smoke_hashes,
 )
 
 
@@ -82,3 +86,44 @@ def test_amended_smoke_gate_is_infrastructure_only() -> None:
     assert _validate_qualification_payload(payload)[0]
     payload["structure"]["json_syntax_valid"] = 31
     assert not _validate_qualification_payload(payload)[0]
+
+
+def test_public_path_hash_refresh_needs_only_the_tracked_reports(tmp_path) -> None:
+    smoke = tmp_path / "smoke.json"
+    evaluation = tmp_path / "evaluation.json"
+    qualification = tmp_path / "qualification.json"
+    smoke.write_text('{"path":"runs/smoke"}\n', encoding="utf-8")
+    evaluation.write_text('{"path":"runs/evaluation"}\n', encoding="utf-8")
+    qualification.write_text(
+        json.dumps(
+            {
+                "created_at": "preserved",
+                "source_sha256": {
+                    "original_smoke_report": "old-smoke",
+                    "evaluation_report": "old-evaluation",
+                    "predictions": "preserve-predictions",
+                    "run_report": "preserve-run",
+                    "protocol_amendment": "preserve-amendment",
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    payload = refresh_tracked_smoke_hashes(
+        qualification_path=qualification,
+        smoke_report_path=smoke,
+        evaluation_report_path=evaluation,
+    )
+
+    assert payload["created_at"] == "preserved"
+    assert payload["source_sha256"]["original_smoke_report"] == hashlib.sha256(
+        smoke.read_bytes()
+    ).hexdigest()
+    assert payload["source_sha256"]["evaluation_report"] == hashlib.sha256(
+        evaluation.read_bytes()
+    ).hexdigest()
+    assert payload["source_sha256"]["predictions"] == "preserve-predictions"
+    assert payload["source_sha256"]["run_report"] == "preserve-run"
+    assert payload["source_sha256"]["protocol_amendment"] == "preserve-amendment"

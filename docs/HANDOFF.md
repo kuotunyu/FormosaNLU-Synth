@@ -214,7 +214,7 @@ Gemma seed-42 矩陣，不因加入第二個 family 而稀釋。
   `PLAN.md` 移出版本控制（保留本機、不重寫歷史），CI 因此曾暫時關閉。
   **目前狀態（2026-08-11 起）**：tracked `.github/workflows/ci.yml` 已恢復 clean-checkout
   驗證；`scripts/check_gates.py` 保留為範圍更嚴格、push 前必跑的本機 gate
-- 修好 `D:\anaconda3` 的裸 `python` 啟動失敗（一個 cp950 編碼的失效 editable
+- 修好本機 Anaconda 安裝的裸 `python` 啟動失敗（一個 cp950 編碼的失效 editable
   `.pth`，指向已刪除的專案）。原檔備份在暫存目錄
 
 **續作（2026-08-01 02:00–03:00 +08:00）：**

@@ -8,7 +8,7 @@
   "evaluation_mode": "trained_adapter",
   "label_catalog_included": false,
   "zero_shot_prompt_includes_label_catalog": false,
-  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\real_syn_filtered\\seed_44\\adapter",
+  "adapter_dir": "runs/real_syn_filtered/seed_44/adapter",
   "group": "real_syn_filtered",
   "seed": 44,
   "constrained_decoding": false,

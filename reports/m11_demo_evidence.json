@@ -4,7 +4,7 @@
   "status": "complete",
   "runtime_mode": "real",
   "model": "google/gemma-4-E4B-it",
-  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\real_syn_filtered\\seed_42\\adapter",
+  "adapter_dir": "runs/real_syn_filtered/seed_42/adapter",
   "adapter_tree_sha256": "fec6f9214022eae0fb7ece8a29a7cfdb90188fd770829045dc6b1ee0e5faccac",
   "prompt_template": "formosanlu_nlu.v1",
   "unconstrained_decoding": true,

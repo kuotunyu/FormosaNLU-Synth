@@ -15,6 +15,7 @@ import yaml
 
 from src.evaluation.metrics import aggregate_metrics, diagnostic_counts
 from src.evaluation.run_zeroshot import _gpu_used_mib
+from src.public_paths import public_artifact_path
 from src.synthetic.checkpoint import JsonlCheckpoint
 from src.training.model import load_quantized_causal_model
 from src.training.prompt_template import build_prompt_messages
@@ -100,7 +101,7 @@ def build_probe_report(
         "evaluation_mode": "trained_adapter_robustness_probe",
         "group": group,
         "seed": seed,
-        "adapter_dir": str(adapter_dir),
+        "adapter_dir": public_artifact_path(adapter_dir, project_root=REPO_ROOT),
         "target": len(records),
         "completed": len(records),
         "probe_kind_counts": dict(

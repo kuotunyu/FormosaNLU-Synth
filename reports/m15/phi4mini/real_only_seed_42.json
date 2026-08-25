@@ -8,7 +8,7 @@
   "evaluation_mode": "trained_adapter",
   "label_catalog_included": false,
   "zero_shot_prompt_includes_label_catalog": false,
-  "adapter_dir": "C:\\Users\\3Hml\\Desktop\\mySyntheticData\\3_FormosaNLU\\runs\\m15\\phi4mini\\real_only\\seed_42\\adapter",
+  "adapter_dir": "runs/m15/phi4mini/real_only/seed_42/adapter",
   "group": "real_only",
   "seed": 42,
   "constrained_decoding": false,

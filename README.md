@@ -399,7 +399,7 @@ python -m src.data.freeze_split --verify
 python -m scripts.check_gates
 ```
 
-`scripts.check_gates` 會依序執行六道檢查：`ruff`、`pytest`、`scripts.verify_readme`、`scripts.verify_contributors`、`scripts.verify_reproduce`、`scripts.verify_closeout`；任何一項失敗都會阻止推送。
+`scripts.check_gates` 會依序執行七道檢查：`ruff`、`pytest`、`scripts.verify_readme`、`scripts.verify_public_paths`、`scripts.verify_contributors`、`scripts.verify_reproduce`、`scripts.verify_closeout`；任何一項失敗都會阻止推送。
 
 ---
 
