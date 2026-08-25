@@ -150,7 +150,8 @@ shards，以及六組訓練所需的 synthetic / Standard Aug 資料；**不含*
 |---|---|
 | Drive 的 `runs/real_only/seed_42/` 整個資料夾 | `results/colab/real_only/seed_42/` |
 
-下載的檔案會落在 Windows 的 `Downloads`。直接跟我說「檔案在 `C:\Users\3Hml\Downloads\xxx.zip`，幫我歸位」，我會自己搬。
+下載的檔案通常會落在 Windows 的 `Downloads`。請把實際 ZIP 路徑提供給 repository owner，
+再由 owner 驗證內容並移到 repository-relative 的 `results/colab/real_only/seed_42/`。
 
 ### A-5. 怎麼確認成功
 

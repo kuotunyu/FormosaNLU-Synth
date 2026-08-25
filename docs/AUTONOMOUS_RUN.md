@@ -1,7 +1,7 @@
 # AUTONOMOUS_RUN.md — 無人監督執行守則
 
-> ⚠️ **歷史文件，已封存。** 本專案已在 v1.2.1 完成全部研究與發布工作，這份
-> runbook 只保留原始執行脈絡，**不得再視為現行授權、待辦清單或啟動 GPU 的
+> ⚠️ **歷史文件，已封存。** 本專案目前已完成 v1.2.2 發布；這份 runbook
+> 只保留截至 v1.2.1 的原始執行脈絡，**不得再視為現行授權、待辦清單或啟動 GPU 的
 > 依據**。目前權威狀態請讀 [`NEXT_SESSION.md`](NEXT_SESSION.md)；任何新研究必須
 > 另立 milestone、protocol 與使用者授權。
 >
@@ -65,7 +65,7 @@
 
 ### 關於 Ollama 模型存放位置
 
-**不要動 `OLLAMA_MODELS`。** 原本考慮改指 D: 槽，但 C: 尚有約 203GB，33GB 綽綽有餘，而搬遷需要改系統環境變數並重啟 Ollama 服務——那是系統層變更，不在授權範圍。維持預設的 `C:\Users\3Hml\.ollama`。
+**不要動 `OLLAMA_MODELS`。** 原本考慮改指 D: 槽，但 C: 尚有約 203GB，33GB 綽綽有餘，而搬遷需要改系統環境變數並重啟 Ollama 服務——那是系統層變更，不在授權範圍。歷史執行期間維持預設的 `%USERPROFILE%\.ollama`。
 
 ---
 
@@ -284,10 +284,10 @@ Phi 的 32-row smoke 找出 `run_probe` 呼叫寫死 Gemma 的 loader，已改�
    `formosanlu-filter`、`formosanlu-train`、`formosanlu-eval`。
 5. 起草 v1.1.0 release notes 與 HF card 更新內容，**只寫檔案、不發佈**。
 6. 每完成一塊就 commit + **push**（push 已獲授權）。
-   ⚠️ **CI 已於 2026-08-01 移除**（D-020），clean-checkout 的自動驗證不再存在。
-   因此 **每次 push 前必須先跑 `python -m scripts.check_gates` 且全綠**——
-   它會依序執行 ruff、pytest、`verify_readme`、`verify_contributors`。
-   沒跑就 push，等於沒有任何把關。
+   **歷史狀態（2026-08-01）**：D-020 移除 workflow 後，clean-checkout CI 曾暫時不存在。
+   **目前狀態（2026-08-11 起）**：tracked `.github/workflows/ci.yml` 已恢復 clean-checkout
+   自動驗證；`python -m scripts.check_gates` 仍是範圍更嚴格的本機 pre-push gate，
+   每次 push 前必須全綠。詳見 D-023。
 
 ### 11.3 今夜的硬性禁止（在 §7 之外額外強調）
 

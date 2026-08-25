@@ -210,16 +210,18 @@ Gemma seed-42 矩陣，不因加入第二個 family 而稀釋。
 - dataset card、data card、model card 補上跨 family 結果與範圍限制
 - 四個專案 skill 全數建立（generate／filter／train／eval，本機）
 - `docs/RELEASE_NOTES_v1.1.0.md` 草稿完成
-- 依使用者要求，`.claude/`、`.github/`、`CLAUDE.md`、`PLAN.md` 移出版本控制
-  （保留本機、不重寫歷史）；**CI 因此關閉**，新增 `scripts/check_gates.py`
-  作為本機替代，push 前必跑
+- **歷史狀態（2026-08-01）**：依使用者要求，`.claude/`、`.github/`、`CLAUDE.md`、
+  `PLAN.md` 移出版本控制（保留本機、不重寫歷史），CI 因此曾暫時關閉。
+  **目前狀態（2026-08-11 起）**：tracked `.github/workflows/ci.yml` 已恢復 clean-checkout
+  驗證；`scripts/check_gates.py` 保留為範圍更嚴格、push 前必跑的本機 gate
 - 修好 `D:\anaconda3` 的裸 `python` 啟動失敗（一個 cp950 編碼的失效 editable
   `.pth`，指向已刪除的專案）。原檔備份在暫存目錄
 
 **續作（2026-08-01 02:00–03:00 +08:00）：**
 
-- `scripts/check_gates.py`：CI 移除後的本機替代，一次跑完四道門檻。
-  `tests/test_check_gates.py` 釘住門檻清單不得被悄悄拿掉
+- `scripts/check_gates.py`：2026-08-01 CI 空窗期間建立的本機替代；目前仍是比
+  clean-checkout CI 更嚴格的 pre-push gate。`tests/test_check_gates.py` 釘住門檻清單
+  不得被悄悄拿掉
 - **重現性抽驗**：split manifest 重新驗證得到相同 SHA256
   `c3c9b568…`；`check_env` 十項全 PASS
 - `scripts/report_robustness_seeds.py`：跨 seed 的 robustness 彙總器。

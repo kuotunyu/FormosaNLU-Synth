@@ -658,3 +658,24 @@ result 升級成 causal claim。
 identifier 並清楚標示關係；不得覆寫本次 archival technical note。
 
 ---
+
+## D-023 — clean-checkout CI restored after archival closeout
+
+- **日期**：2026-08-25
+- **狀態**：`accepted`
+- **決策**：D-020 正確描述 2026-08-01 當時 `.github/workflows/ci.yml` 被移出版本控制、
+  clean-checkout CI 暫停的狀態；它對 current `main` 的 CI 敘述已被本決策取代。
+  自 2026-08-11 的 `bc81c0e` 起，tracked `.github/workflows/ci.yml` 再次於 push／PR 執行
+  Ruff、非本機 artifact tests、README evidence 與 contributor-history audit。
+
+**本機 gate 邊界**：`scripts/check_gates.py` 保留為更嚴格的 pre-push gate；除了 CI 的
+clean-checkout checks，還執行需要完整本機脈絡的 reproduce 與 closeout verifier。
+恢復 CI 不代表可以略過本機 gate，也不改寫 D-020 所記錄的歷史狀態。
+
+**考慮過但沒選**：刪除或改寫 D-020。拒絕，因為 D-020 是 2026-08-01 的正確歷史決策；
+以後續 superseding decision 區分 historical state 與 current state，能保留決策鏈。
+
+**什麼情況該推翻**：tracked workflow 再次移除，或本機與 CI gate 的責任邊界實質改變時，
+新增後續決策，不覆寫 D-020 或本決策的歷史記錄。
+
+---

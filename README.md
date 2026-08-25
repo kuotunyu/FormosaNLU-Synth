@@ -8,6 +8,8 @@
 
 以本機 open-weight teacher 生成與過濾 synthetic data，並於 20-shot MASSIVE `zh-TW` 上驗證改善 intent classification、slot filling 與 strict JSON output 之成效。效果已於 Gemma 與 Phi-4-mini 兩個 student model families 上以相同之 paired contract 完成複製。
 
+快速審閱請走 [`五分鐘 reviewer path`](docs/REVIEWER_PATH.md)。
+
 | 核心證據 | 結果說明 |
 | --- | --- |
 | **Gemma (3 paired seeds)** | intent accuracy **+4.14 pp**；joint exact match **+3.86 pp** |

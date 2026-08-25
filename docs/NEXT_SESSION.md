@@ -62,7 +62,7 @@ commit 只前進 `main`，不得移動已公開 tag。`v1.2.1` 與更早 tags �
 - README 依使用者決定維持正體中文（台灣，`zh-TW`）為主，專有名詞保留原文。
 
 若之後要做台灣知識蒸餾、TMMLU+、真實 ASR error 或自然 code-switching corpus，
-那是新里程碑／新研究，不是 v1.2.1 的欠件。開始前應另立 protocol、凍結判準與
+那是新里程碑／新研究，不是 v1.2.2 的欠件。開始前應另立 protocol、凍結判準與
 資源預算，不能把 M19 的 single-seed 結果事後升級成 recipe-level causal claim。
 
 ---
@@ -76,7 +76,9 @@ commit 只前進 `main`，不得移動已公開 tag。`v1.2.1` 與更早 tags �
 4. Git author／committer 只能是
    `kuotunyu <61350295+kuotunyu@users.noreply.github.com>`，commit 不得有
    `Co-Authored-By`；GitHub Contributors 只能有 `kuotunyu`。
-5. CI 已依 D-020 移除。任何 push 前都必須執行：
+5. **歷史狀態（2026-08-01）**：CI 曾依 D-020 移除；**目前狀態（2026-08-11 起）**：
+   tracked `.github/workflows/ci.yml` 已恢復 clean-checkout 驗證。下列本機 gate 範圍更嚴格，
+   任何 push 前仍必須執行：
 
    ```powershell
    .\.venv\Scripts\python.exe -m scripts.check_gates --quiet
