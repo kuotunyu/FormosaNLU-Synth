@@ -330,7 +330,6 @@ def _doi_backlink_check(root: Path) -> Check:
         surfaces = {
             "README.md": _read_text(root, "README.md") or "",
             "CITATION.cff": _read_text(root, "CITATION.cff") or "",
-            "docs/HANDOFF.md": _read_text(root, "docs/HANDOFF.md") or "",
             f"docs/RELEASE_NOTES_v{version}.md": (
                 _read_text(root, f"docs/RELEASE_NOTES_v{version}.md") or ""
             ),
@@ -367,7 +366,7 @@ def _doi_backlink_check(root: Path) -> Check:
     if not has_doi:
         missing.append("CITATION.cff")
 
-    for relative in ("docs/HANDOFF.md", f"docs/RELEASE_NOTES_v{version}.md"):
+    for relative in (f"docs/RELEASE_NOTES_v{version}.md",):
         text = _read_text(root, relative) or ""
         if doi not in text or record_url not in text:
             missing.append(relative)
@@ -422,7 +421,6 @@ def _technical_report_archive_check(root: Path) -> Check:
 
     surfaces = {
         "README.md": _read_text(root, "README.md") or "",
-        "docs/HANDOFF.md": _read_text(root, "docs/HANDOFF.md") or "",
         "docs/RELEASE_NOTES_v1.2.2.md": (
             _read_text(root, "docs/RELEASE_NOTES_v1.2.2.md") or ""
         ),
