@@ -198,7 +198,6 @@ def test_rejects_missing_doi_backlinks(tmp_path: Path) -> None:
         "cff-version: 1.2.0\nversion: 1.2.1\nidentifiers: []\n",
         encoding="utf-8",
     )
-    (docs / "HANDOFF.md").write_text("No DOI yet.\n", encoding="utf-8")
     (docs / "RELEASE_NOTES_v1.2.1.md").write_text(
         "No DOI yet.\n",
         encoding="utf-8",
@@ -239,10 +238,6 @@ def test_accepts_exact_doi_backlinks(tmp_path: Path) -> None:
         f"doi: {doi}\n",
         encoding="utf-8",
     )
-    (docs / "HANDOFF.md").write_text(
-        f"{doi}\n{record_url}\n",
-        encoding="utf-8",
-    )
     (docs / "RELEASE_NOTES_v1.2.1.md").write_text(
         f"{doi}\n{record_url}\n",
         encoding="utf-8",
@@ -276,7 +271,6 @@ def test_rejects_fragile_zenodo_svg_badge(tmp_path: Path) -> None:
         f"identifiers:\n  - type: doi\n    value: {doi}\n",
         encoding="utf-8",
     )
-    (docs / "HANDOFF.md").write_text(f"{doi}\n{record_url}\n", encoding="utf-8")
     (docs / "RELEASE_NOTES_v1.2.1.md").write_text(
         f"{doi}\n{record_url}\n",
         encoding="utf-8",
@@ -356,10 +350,6 @@ def test_accepts_exact_technical_report_archive_evidence(tmp_path: Path) -> None
         "  year: 2026\n",
         encoding="utf-8",
     )
-    (docs / "HANDOFF.md").write_text(
-        f"{doi}\n{record_url}\n",
-        encoding="utf-8",
-    )
     (docs / "RELEASE_NOTES_v1.2.2.md").write_text(
         f"{doi}\n{record_url}\n",
         encoding="utf-8",
@@ -419,7 +409,6 @@ def test_rejects_technical_report_doi_as_software_identifier(tmp_path: Path) -> 
     )
     for relative in (
         tmp_path / "README.md",
-        docs / "HANDOFF.md",
         docs / "RELEASE_NOTES_v1.2.2.md",
         paper / "formosanlu_synth.tex",
     ):
