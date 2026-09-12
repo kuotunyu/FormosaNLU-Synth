@@ -69,7 +69,9 @@ commit 只前進 `main`，不得移動已公開 tag。`v1.2.1` 與更早 tags �
 
 ## 3. 接手時的安全鐵律
 
-1. 先讀 `CLAUDE.md`、`docs/DECISIONS.md`、`docs/HANDOFF.md`。
+1. 公開 checkout 先讀本文件、`README.md` 與 `docs/DECISIONS.md`。
+   `CLAUDE.md`、`PLAN.md`、`docs/HANDOFF.md` 是 owner-only 工作記憶，
+   不隨 Git 發布，也不是 clean-checkout 驗證的前置條件；本機接手時才補讀。
 2. 不改 frozen corpus、thresholds、prompt、training config、strict parser、seeds
    或 evaluation contract。
 3. 不重跑已完成階段；需要新實驗時建立新 milestone 與預先登記 protocol。
@@ -106,7 +108,7 @@ commit 只前進 `main`，不得移動已公開 tag。`v1.2.1` 與更早 tags �
 - `reports/m19_runtime_audit.json`：M19 中斷 attempt 的 hash-anchored resource audit
 - `reports/m12_resource_ledger.json`：完整本機 GPU 資源帳本
 - `docs/DECISIONS.md`：不可事後改寫的設計與判讀紀錄
-- `docs/HANDOFF.md`：最新發布與完整工作日誌
+- `docs/HANDOFF.md`（owner-only，不隨 Git 發布）：完整本機工作日誌
 
 ---
 
