@@ -50,9 +50,12 @@ MODEL_FILES = {
 }
 MODEL_SOURCE_FILES = MODEL_FILES - {"LICENSE", "README.md"}
 TEXT_SUFFIXES = {"", ".json", ".jsonl", ".jinja", ".md", ".txt"}
+# Assembled from fragments, as in scripts/verify_public_paths.py, so the literal
+# account name never appears in a tracked file.
+_ACCOUNT_NAME = re.escape("".join(("3", "Hml")))
 SECRET_OR_LOCAL_PATH = re.compile(
     r"(?:[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/]"
-    r"|(?:^|[\\/])3Hml(?:[\\/]|$)"
+    rf"|(?:^|[\\/]){_ACCOUNT_NAME}(?:[\\/]|$)"
     r"|hf_[A-Za-z0-9]{20,}"
     r"|github_pat_[A-Za-z0-9_]{20,}"
     r"|sk-[A-Za-z0-9_-]{20,})",
