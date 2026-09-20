@@ -81,7 +81,7 @@ F7 independent audit 完成 376/376；random stratum 的觀察漏檢率為 **6.0
 
 ## 魯棒性測試 (Robustness Probe)
 
-包含 8,922 筆測試資料，涵蓋 typo、code-switching 與 ASR-like noise。
+包含 8,922 筆測試資料：2,974 筆 Test 各以規則改寫成 `colloquial`、`lexical`、`asr_noise` 三種 probe。
 
 ### 三種子 Paired Delta 評測
 
