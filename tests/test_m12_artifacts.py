@@ -5,10 +5,12 @@ from pathlib import Path
 from scripts.build_m12_artifacts import build_resource_ledger
 from scripts.verify_readme import (
     expected_ablation_rows,
+    expected_headline_rows,
     expected_main_rows,
     expected_paired_markers,
     expected_publication_markers,
     expected_replicate_rows,
+    expected_robustness_headline,
     expected_robustness_rows,
     readme_diagram_checks,
 )
@@ -16,8 +18,7 @@ from scripts.verify_readme import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_readme_diagram_checks_require_two_focused_flows() -> None:
-    readme = """```mermaid
+DATA_FLOW = """```mermaid
 flowchart TB
 MASSIVE --> 格式與標籤檢查 --> 去重與防止資料洩漏
 去重與防止資料洩漏 --> 3,760-row training corpus
@@ -25,8 +26,17 @@ MASSIVE --> 格式與標籤檢查 --> 去重與防止資料洩漏
 classDef source fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A
 classDef artifact fill:#F3E8FF,stroke:#7E22CE,color:#3B0764
 ```
-<details>
-<summary><strong>F1–F7 是什麼？</strong></summary>
+"""
+
+PAIRED_FLOW = """```mermaid
+flowchart TB
+real_only --> 2,974-row --> hierarchical paired --> cross-family
+real_syn_filtered --> 2,974-row
+```
+"""
+
+METHOD_DOC = (
+    """### F1–F7 是什麼？
 
 | F1 | JSON 格式 |
 | F2 | labels 合法 |
@@ -35,15 +45,27 @@ classDef artifact fill:#F3E8FF,stroke:#7E22CE,color:#3B0764
 | F5 | 去重與多樣性 |
 | F6 | 防止資料洩漏 |
 | F7 | 獨立品質稽核 |
-</details>
-```mermaid
-flowchart TB
-real_only --> 2,974-row --> hierarchical paired --> cross-family
-real_syn_filtered --> 2,974-row
-```
 """
+    + PAIRED_FLOW
+)
 
-    assert all(readme_diagram_checks(readme).values())
+
+def test_diagram_checks_require_one_readme_flow_and_one_method_doc_flow() -> None:
+    assert all(readme_diagram_checks(DATA_FLOW, METHOD_DOC).values())
+
+
+def test_diagram_checks_reject_a_second_readme_diagram() -> None:
+    checks = readme_diagram_checks(DATA_FLOW + PAIRED_FLOW, METHOD_DOC)
+
+    assert not checks["README keeps exactly one Mermaid diagram"]
+
+
+def test_diagram_checks_require_the_paired_flow_and_glossary_in_method_doc() -> None:
+    checks = readme_diagram_checks(DATA_FLOW, "")
+
+    assert not checks["method doc keeps exactly one Mermaid diagram"]
+    assert not checks["F1-F7 audit glossary in method doc"]
+    assert not checks["paired evidence diagram in method doc"]
 
 
 def test_readme_diagram_checks_reject_horizontal_code_only_filter_flow() -> None:
@@ -51,14 +73,9 @@ def test_readme_diagram_checks_reject_horizontal_code_only_filter_flow() -> None
 flowchart LR
 MASSIVE --> F1-F4 --> F5-F6 --> F7
 ```
-```mermaid
-flowchart TB
-real_only --> 2,974-row --> hierarchical paired --> cross-family
-real_syn_filtered --> 2,974-row
-```
 """
 
-    assert not all(readme_diagram_checks(readme).values())
+    assert not readme_diagram_checks(readme, METHOD_DOC)["vertical reader-first data pipeline"]
 
 
 def test_readme_diagram_checks_reject_one_overloaded_diagram() -> None:
@@ -68,17 +85,16 @@ MASSIVE --> F1-F4 --> F5-F6 --> F7 --> real_only --> cross-family
 ```
 """
 
-    assert not readme_diagram_checks(readme)["exactly two Mermaid diagrams"]
+    checks = readme_diagram_checks(readme, "")
+
+    assert not checks["vertical reader-first data pipeline"]
+    assert not checks["paired evidence diagram in method doc"]
 
 
 def test_publication_static_pipeline_image_has_markdown_block_boundaries() -> None:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    method_doc = (ROOT / "docs" / "method.md").read_text(encoding="utf-8")
 
-    assert (
-        "</summary>\n\n"
-        "![FormosaNLU pipeline](assets/m12_pipeline.png)\n\n"
-        "</details>"
-    ) in readme
+    assert "\n\n![FormosaNLU pipeline](../assets/m12_pipeline.png)\n\n" in method_doc
 
 
 def test_resource_ledger_uses_measured_phase_times() -> None:
@@ -537,3 +553,55 @@ def test_expected_paired_markers_are_derived_from_report() -> None:
         "+3.86",
         "[+2.75, +4.92]",
     ]
+
+
+def test_expected_headline_rows_are_derived_from_reports() -> None:
+    replicates = {
+        "metrics": {
+            "real_only": {
+                "intent_accuracy": {"mean": 0.7334},
+                "exact_match": {"mean": 0.4867},
+            },
+            "real_syn_filtered": {
+                "intent_accuracy": {"mean": 0.7747},
+                "exact_match": {"mean": 0.5252},
+            },
+        }
+    }
+    paired = {
+        "hierarchical_bootstrap": {
+            "metrics": {
+                "intent_accuracy": {
+                    "mean_delta_percentage_points": 4.14,
+                    "hierarchical_bootstrap_95_ci_percentage_points": [2.60, 5.59],
+                },
+                "exact_match": {
+                    "mean_delta_percentage_points": 3.86,
+                    "hierarchical_bootstrap_95_ci_percentage_points": [2.75, 4.92],
+                },
+            }
+        }
+    }
+    cross_model = {
+        "metrics": {
+            "intent_accuracy": {
+                "phi": {"mean_delta_percentage_points": 5.09, "ci": [1.83, 9.02]}
+            },
+            "exact_match": {
+                "phi": {"mean_delta_percentage_points": 4.71, "ci": [1.36, 7.59]}
+            },
+        }
+    }
+
+    assert expected_headline_rows(replicates, paired, cross_model) == [
+        "| Gemma 4 E4B | 73.34% → 77.47%（**+4.14 pp**，95% CI [+2.60, +5.59]） "
+        "| 48.67% → 52.52%（**+3.86 pp**，95% CI [+2.75, +4.92]） |",
+        "| Phi-4-mini | **+5.09 pp**，95% CI [+1.83, +9.02] "
+        "| **+4.71 pp**，95% CI [+1.36, +7.59] |",
+    ]
+
+
+def test_expected_robustness_headline_is_derived_from_summary() -> None:
+    summary = {"paired_filtered_minus_real_only": {"exact_match": {"mean": 0.0358}}}
+
+    assert expected_robustness_headline(summary) == "+3.58 pp"

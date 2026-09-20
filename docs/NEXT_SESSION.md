@@ -99,6 +99,8 @@ commit 只前進 `main`，不得移動已公開 tag。`v1.2.1` 與更早 tags �
 ## 4. 主要證據入口
 
 - `README.md`：研究問題、方法、主結果、限制與重現入口
+- `docs/results.md`：自 README 移出的完整結果表（主表、三種子、M19、robustness、GPU 時數、公開產物驗證狀態）
+- `docs/method.md`：自 README 移出的實驗設定、F1–F7 說明與成對實驗流程圖
 - `reports/m10_main_results.md`：Gemma primary 七行主表
 - `reports/m14_paired_statistics.md`：paired statistics
 - `reports/m15_cross_model_replication.json`：Phi cross-family replication

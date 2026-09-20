@@ -1,4 +1,10 @@
-"""Verify that README headline numbers reproduce from tracked reports."""
+"""Verify that README and its linked detail documents reproduce from tracked reports.
+
+README carries the headline evidence. The full result tables live in
+docs/results.md and the method detail in docs/method.md. Every number is still
+formatted from the raw report and must appear verbatim in the one document that
+publishes it, so moving a table out of README never unbinds it from evidence.
+"""
 
 from __future__ import annotations
 
@@ -10,6 +16,8 @@ from typing import Any
 from src.training.train import REPO_ROOT
 
 README = REPO_ROOT / "README.md"
+RESULTS_DOC = REPO_ROOT / "docs" / "results.md"
+METHOD_DOC = REPO_ROOT / "docs" / "method.md"
 M10 = REPO_ROOT / "reports" / "m10_main_results.json"
 M9_REPLICATES = REPO_ROOT / "reports" / "m9_replicate_summary.json"
 M10_ROBUSTNESS = REPO_ROOT / "reports" / "m10_robustness.json"
@@ -36,16 +44,21 @@ DESCRIPTIONS = {
 }
 
 
-def readme_diagram_checks(readme: str) -> dict[str, bool]:
-    """Verify that README keeps two focused, code-aligned Mermaid flows."""
-    mermaid_blocks = [
-        section.split("```", 1)[0]
-        for section in readme.split("```mermaid")[1:]
-    ]
-    data_flow = mermaid_blocks[0] if mermaid_blocks else ""
-    paired_flow = mermaid_blocks[1] if len(mermaid_blocks) > 1 else ""
+def _mermaid_blocks(text: str) -> list[str]:
+    return [section.split("```", 1)[0] for section in text.split("```mermaid")[1:]]
+
+
+def readme_diagram_checks(readme: str, method_doc: str) -> dict[str, bool]:
+    """Verify the README data-flow diagram and the paired flow in docs/method.md."""
+    readme_blocks = _mermaid_blocks(readme)
+    method_blocks = _mermaid_blocks(method_doc)
+    data_flow = readme_blocks[0] if readme_blocks else ""
+    paired_flow = method_blocks[0] if method_blocks else ""
     return {
-        "exactly two Mermaid diagrams": readme.count("```mermaid") == 2,
+        "README keeps exactly one Mermaid diagram": readme.count("```mermaid") == 1,
+        "method doc keeps exactly one Mermaid diagram": (
+            method_doc.count("```mermaid") == 1
+        ),
         "vertical reader-first data pipeline": (
             "flowchart TB" in data_flow
             and all(
@@ -65,11 +78,11 @@ def readme_diagram_checks(readme: str) -> dict[str, bool]:
                 re.search(rf"\bF{stage}\b", data_flow) for stage in range(1, 8)
             )
         ),
-        "collapsed F1-F7 audit glossary": (
-            "<summary><strong>F1–F7 是什麼？</strong></summary>" in readme
-            and all(f"| F{stage} |" in readme for stage in range(1, 8))
+        "F1-F7 audit glossary in method doc": (
+            "F1–F7 是什麼？" in method_doc
+            and all(f"| F{stage} |" in method_doc for stage in range(1, 8))
         ),
-        "paired evidence diagram": all(
+        "paired evidence diagram in method doc": all(
             marker in paired_flow
             for marker in (
                 "real_only",
@@ -171,6 +184,37 @@ def expected_paired_markers(report: dict[str, Any]) -> list[str]:
     return markers
 
 
+def expected_headline_rows(
+    replicates: dict[str, Any], paired: dict[str, Any], cross_model: dict[str, Any]
+) -> list[str]:
+    """Return the two first-screen rows, one per student family.
+
+    Gemma shows the three-seed means next to the M14 paired delta and interval;
+    Phi shows the M15 paired delta and interval. Nothing is retyped by hand.
+    """
+
+    def delta(mean: float, low: float, high: float) -> str:
+        return f"**{mean:+.2f} pp**，95% CI [{low:+.2f}, {high:+.2f}]"
+
+    gemma_cells = []
+    phi_cells = []
+    for metric in ("intent_accuracy", "exact_match"):
+        real = replicates["metrics"]["real_only"][metric]["mean"]
+        filtered = replicates["metrics"]["real_syn_filtered"][metric]["mean"]
+        item = paired["hierarchical_bootstrap"]["metrics"][metric]
+        low, high = item["hierarchical_bootstrap_95_ci_percentage_points"]
+        gemma_cells.append(
+            f"{real:.2%} → {filtered:.2%}"
+            f"（{delta(item['mean_delta_percentage_points'], low, high)}）"
+        )
+        phi = cross_model["metrics"][metric]["phi"]
+        phi_cells.append(delta(phi["mean_delta_percentage_points"], *phi["ci"]))
+    return [
+        f"| Gemma 4 E4B | {gemma_cells[0]} | {gemma_cells[1]} |",
+        f"| Phi-4-mini | {phi_cells[0]} | {phi_cells[1]} |",
+    ]
+
+
 def expected_cross_model_rows(report: dict[str, Any]) -> list[str]:
     """Return the M15 cross-model table rows that must appear verbatim.
 
@@ -210,6 +254,12 @@ def expected_demo_examples(evidence: dict[str, Any], utterances: list[str]) -> l
     return expected
 
 
+def expected_robustness_headline(summary: dict[str, Any]) -> str:
+    """Return the across-seed exact-match delta README quotes in one sentence."""
+    item = summary["paired_filtered_minus_real_only"]["exact_match"]
+    return f"{item['mean'] * 100:+.2f} pp"
+
+
 def expected_robustness_seed_rows(summary: dict[str, Any]) -> list[str]:
     """Return the across-seed paired-delta rows, in percentage points.
 
@@ -246,6 +296,8 @@ def expected_ablation_rows(report: dict[str, Any]) -> list[str]:
 def verify_readme(
     *,
     readme: str,
+    results_doc: str,
+    method_doc: str,
     m10: dict[str, Any],
     generation: dict[str, Any],
     resources: dict[str, Any],
@@ -258,35 +310,51 @@ def verify_readme(
     robustness_seeds: dict[str, dict[str, Any]] | None = None,
     ablation: dict[str, Any] | None = None,
 ) -> list[str]:
+    """Check each published number in the one document that carries it.
+
+    `readme` holds the headline evidence, `results_doc` (docs/results.md) the
+    full result tables, and `method_doc` (docs/method.md) the method detail.
+    """
     checks: list[tuple[str, bool]] = []
-    checks.extend(readme_diagram_checks(readme).items())
+    checks.extend(readme_diagram_checks(readme, method_doc).items())
     for expected in expected_main_rows(m10):
-        checks.append((f"main row {expected.split('|')[1].strip()}", expected in readme))
+        checks.append(
+            (
+                f"main row {expected.split('|')[1].strip()} (docs/results.md)",
+                expected in results_doc,
+            )
+        )
     if replicates is not None:
         checks.append(("three-seed summary complete", replicates.get("status") == "complete"))
         for expected in expected_replicate_rows(replicates):
             checks.append(
                 (
-                    f"three-seed row {expected.split('|')[1].strip()}",
-                    expected in readme,
+                    f"three-seed row {expected.split('|')[1].strip()} (docs/results.md)",
+                    expected in results_doc,
                 )
+            )
+    if replicates is not None and paired is not None and cross_model is not None:
+        for expected in expected_headline_rows(replicates, paired, cross_model):
+            checks.append(
+                (f"headline row {expected.split('|')[1].strip()}", expected in readme)
             )
     if robustness is not None:
         checks.append(("robustness report complete", robustness.get("status") == "complete"))
         for expected in expected_robustness_rows(robustness):
             checks.append(
                 (
-                    f"robustness row {' / '.join(expected.split('|')[1:3]).strip()}",
-                    expected in readme,
+                    f"robustness row {' / '.join(expected.split('|')[1:3]).strip()} "
+                    "(docs/results.md)",
+                    expected in results_doc,
                 )
             )
     if publication is not None:
         checks.append(("public release verified", publication.get("status") == "public_verified"))
         checks.append(
             (
-                "public contributors only kuotunyu",
+                "public contributors only kuotunyu (docs/results.md)",
                 publication["github"].get("contributors_only_kuotunyu") is True
-                and "Contributors 僅 `kuotunyu`" in readme,
+                and "Contributors 僅 `kuotunyu`" in results_doc,
             )
         )
         for marker in expected_publication_markers(publication):
@@ -303,6 +371,9 @@ def verify_readme(
         )
         for marker in expected_paired_markers(paired):
             checks.append((f"paired marker {marker}", marker in readme))
+            checks.append(
+                (f"paired marker {marker} (docs/results.md)", marker in results_doc)
+            )
     if cross_model is not None:
         criterion = cross_model["preregistered_replication_criterion"]
         checks.append(
@@ -345,83 +416,92 @@ def verify_readme(
                 (f"cross-model row {row.split('|')[1].strip()}", row in readme)
             )
     # Only enforced once every expected seed has landed, so a partial summary
-    # cannot be quoted in README as if it were the finished evidence.
+    # cannot be quoted as if it were the finished evidence.
     for target, summary in sorted((robustness_seeds or {}).items()):
         if summary.get("status") != "complete":
             continue
         seeds = summary["seeds"]
-        checks.append(
-            (
-                f"robustness seeds stated ({target})",
-                len(seeds) >= 3 and all(str(seed) in readme for seed in seeds),
+        for label, document in (("README", readme), ("docs/results.md", results_doc)):
+            checks.append(
+                (
+                    f"robustness seeds stated ({target}, {label})",
+                    len(seeds) >= 3 and all(str(seed) in document for seed in seeds),
+                )
             )
-        )
+            checks.append(
+                (
+                    f"robustness no longer claims a single seed ({target}, {label})",
+                    "robustness 只使用 seed 42" not in document
+                    and "Robustness 只比較 seed-42 adapters" not in document,
+                )
+            )
         checks.append(
             (
-                f"robustness no longer claims a single seed ({target})",
-                "robustness 只使用 seed 42" not in readme
-                and "Robustness 只比較 seed-42 adapters" not in readme,
+                f"robustness headline {target}",
+                expected_robustness_headline(summary) in readme,
             )
         )
         for row in expected_robustness_seed_rows(summary):
             checks.append(
                 (
-                    f"robustness seed row {target} {row.split('|')[1].strip()}",
-                    row in readme,
+                    f"robustness seed row {target} {row.split('|')[1].strip()} "
+                    "(docs/results.md)",
+                    row in results_doc,
                 )
             )
 
     if ablation is not None:
         checks.append(("M19 ablation complete", ablation.get("status") == "complete"))
-        checks.append(
-            (
-                "M19 single-seed scope disclosed",
-                "seed 42（n=1）" in readme,
-            )
+        threshold = (
+            f"{ablation['detectability_threshold_percentage_points']:.1f} percentage points"
         )
-        checks.append(
-            (
-                "M19 detectability threshold disclosed",
+        # README states the negative result in one sentence and docs/results.md
+        # carries the table, so both must keep the same three disclosures.
+        for label, document in (("README", readme), ("docs/results.md", results_doc)):
+            checks.append(
+                (f"M19 single-seed scope disclosed ({label})", "seed 42（n=1）" in document)
+            )
+            checks.append(
+                (f"M19 detectability threshold disclosed ({label})", threshold in document)
+            )
+            checks.append(
                 (
-                    f"{ablation['detectability_threshold_percentage_points']:.1f} "
-                    "percentage points"
+                    f"M19 no recipe-level causal claim ({label})",
+                    ablation.get("causal_claim_allowed") is False
+                    and "不做單一 recipe 的 causal claim" in document,
                 )
-                in readme,
             )
-        )
-        checks.append(
-            (
-                "M19 no recipe-level causal claim",
-                ablation.get("causal_claim_allowed") is False
-                and "不做單一 recipe 的 causal claim" in readme,
-            )
-        )
         for expected in expected_ablation_rows(ablation):
             checks.append(
-                (f"M19 row {expected.split('|')[1].strip()}", expected in readme)
+                (
+                    f"M19 row {expected.split('|')[1].strip()} (docs/results.md)",
+                    expected in results_doc,
+                )
             )
 
-    # The worked examples are the only place README shows raw model output, so
-    # they must come from the evidence file verbatim.
-    demo_utterances = ["播放周杰倫", "台北明天會不會下雨"]
-    for expected in expected_demo_examples(m11, demo_utterances):
+    # The worked examples are the only place raw model output is shown, so they
+    # must come from the evidence file verbatim: one in README, both in the doc.
+    for expected in expected_demo_examples(m11, ["播放周杰倫"]):
+        checks.append((f"demo example {expected[:24]}", expected in readme))
+    for expected in expected_demo_examples(m11, ["播放周杰倫", "台北明天會不會下雨"]):
+        checks.append(
+            (f"demo example {expected[:24]} (docs/results.md)", expected in results_doc)
+        )
+    for label, document in (("README", readme), ("docs/results.md", results_doc)):
         checks.append(
             (
-                f"demo example {expected[:24]}",
-                expected in readme,
+                f"demo prompt asymmetry disclosed ({label})",
+                "zero-shot" in document and "catalog" in document,
             )
         )
-    checks.append(
-        (
-            "demo prompt asymmetry disclosed",
-            "zero-shot" in readme and "catalog" in readme,
-        )
-    )
 
     filtered_gap = m10["gap_closed"]["real_syn_filtered"]["exact_match"]
     comparisons = m11["comparisons"]
     base_valid = sum(bool(row["base"]["valid"]) for row in comparisons)
     adapted_valid = sum(bool(row["adapted"]["valid"]) for row in comparisons)
+    phases = resources["phases"]
+    core_hours = f"{resources['measured_core_gpu_hours']:.3f} h"
+    total_hours = f"{resources['measured_total_local_gpu_hours']:.3f} h"
     checks.extend(
         [
             (
@@ -449,29 +529,24 @@ def verify_readme(
                 (f"{generation['f7_audit']['random_stratum']['observed_miss_rate']:.1%}" in readme),
             ),
             (
-                "training hours",
-                f"{resources['phases']['primary_training_seed_42']['wall_hours']:.3f} h" in readme,
+                "training hours (docs/results.md)",
+                f"{phases['primary_training_seed_42']['wall_hours']:.3f} h" in results_doc,
             ),
             (
-                "evaluation hours",
-                f"{resources['phases']['trained_evaluation_seed_42']['wall_hours']:.3f} h"
-                in readme,
+                "evaluation hours (docs/results.md)",
+                f"{phases['trained_evaluation_seed_42']['wall_hours']:.3f} h" in results_doc,
             ),
+            ("core GPU hours", core_hours in readme),
+            ("core GPU hours (docs/results.md)", core_hours in results_doc),
             (
-                "core GPU hours",
-                f"{resources['measured_core_gpu_hours']:.3f} h" in readme,
+                "auxiliary GPU hours (docs/results.md)",
+                f"{resources['measured_auxiliary_gpu_hours']:.3f} h" in results_doc,
             ),
+            ("local total GPU hours", total_hours in readme),
+            ("local total GPU hours (docs/results.md)", total_hours in results_doc),
             (
-                "auxiliary GPU hours",
-                f"{resources['measured_auxiliary_gpu_hours']:.3f} h" in readme,
-            ),
-            (
-                "local total GPU hours",
-                f"{resources['measured_total_local_gpu_hours']:.3f} h" in readme,
-            ),
-            (
-                "local total TDP envelope",
-                (f"{resources['gpu_tdp_total_energy_upper_bound_kwh']:.3f} kWh" in readme),
+                "local total TDP envelope (docs/results.md)",
+                f"{resources['gpu_tdp_total_energy_upper_bound_kwh']:.3f} kWh" in results_doc,
             ),
             (
                 "M11 base strict validity",
@@ -481,17 +556,20 @@ def verify_readme(
                 "M11 adapted strict validity",
                 f"{adapted_valid}/{len(comparisons)} valid JSON" in readme,
             ),
-            ("M12 placeholders removed", "FILL AT M12" not in readme),
+            (
+                "M12 placeholders removed",
+                all("FILL AT M12" not in text for text in (readme, results_doc, method_doc)),
+            ),
         ]
     )
-    for asset in (
-        "m12_main_results.png",
-        "m12_filter_comparison.png",
-        "m12_filter_funnel.png",
-        "m12_intent_movement.png",
-        "m12_pipeline.png",
+    for asset, label, document in (
+        ("m12_main_results.png", "README", readme),
+        ("m12_filter_comparison.png", "docs/results.md", results_doc),
+        ("m12_filter_funnel.png", "docs/results.md", results_doc),
+        ("m12_intent_movement.png", "docs/results.md", results_doc),
+        ("m12_pipeline.png", "docs/method.md", method_doc),
     ):
-        checks.append((f"asset {asset}", f"assets/{asset}" in readme))
+        checks.append((f"asset {asset} ({label})", f"assets/{asset}" in document))
 
     failed = [name for name, passed in checks if not passed]
     if failed:
@@ -502,6 +580,8 @@ def verify_readme(
 def main() -> int:
     checks = verify_readme(
         readme=README.read_text(encoding="utf-8"),
+        results_doc=RESULTS_DOC.read_text(encoding="utf-8"),
+        method_doc=METHOD_DOC.read_text(encoding="utf-8"),
         m10=_load(M10),
         generation=_load(GENERATION),
         resources=_load(RESOURCES),
