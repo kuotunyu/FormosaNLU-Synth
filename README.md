@@ -19,7 +19,7 @@
 | Phi-4-mini | **+5.09 pp**，95% CI [+1.83, +9.02] | **+4.71 pp**，95% CI [+1.36, +7.59] |
 
 - **全程在本機完成**：teacher 生成 **11,264** 筆，七道過濾後留下 **3,760** 筆用於訓練；單張 RTX 4090，API 花費 **$0**。
-- **公開產物**：[GitHub v1.2.2 release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2) · [Hugging Face Dataset（3,754-row）](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) · [Gemma LoRA](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) · [Phi-4-mini LoRA](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora) · [原始碼封存 DOI](https://doi.org/10.5281/zenodo.21879133) · [English technical report](https://doi.org/10.5281/zenodo.21879155)（尚未 peer review）
+- **公開產物**：[GitHub v1.2.2 release](https://github.com/kuotunyu/FormosaNLU-Synth/releases/tag/v1.2.2) · [Hugging Face Dataset（3,754-row）](https://huggingface.co/datasets/steven0226/formosa-nlu-synth-v1) · [Gemma LoRA](https://huggingface.co/steven0226/gemma-4-e4b-formosanlu-lora) · [Phi-4-mini LoRA](https://huggingface.co/steven0226/phi-4-mini-formosanlu-lora) · [線上 demo（Phi-4-mini 版，ZeroGPU）](https://huggingface.co/spaces/steven0226/formosanlu-demo)（單句 base 與 LoRA 並排對照，非評測） · [原始碼封存 DOI](https://doi.org/10.5281/zenodo.21879133) · [English technical report](https://doi.org/10.5281/zenodo.21879155)（尚未 peer review）
 
 ```python
 from datasets import load_dataset
